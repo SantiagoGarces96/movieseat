@@ -1,6 +1,7 @@
 import { Schema, Document } from "mongoose";
 
 export interface ITransaction extends Document {
+  _id: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   ticketId: Schema.Types.ObjectId;
   foodItems: Schema.Types.ObjectId[];

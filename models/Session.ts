@@ -3,7 +3,11 @@ import { Schema, model, models } from "mongoose";
 
 const sessionSchema = new Schema<ISession>({
   movieId: { type: Schema.Types.ObjectId, ref: "Movie", required: true },
-  room: { type: String, enum: ["2D", "3D", "IMAX"], required: true },
+  room: {
+    type: String,
+    enum: ["2D", "3D", "IMAX"],
+    default: "2D",
+  },
   price: { type: Number, required: true },
   dateTime: { type: Date, required: true },
   availableSeats: { type: Number, required: true },
