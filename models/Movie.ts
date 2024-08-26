@@ -9,6 +9,10 @@ const movieSchema = new Schema<IMovie>({
   genre: { type: String, required: true },
   director: { type: String, required: true },
   cast: [{ type: String, required: true }],
+  language: [{ type: String, required: true }],
+  subtitles: { type: Boolean, required: true },
+  trailer: { type: String, required: true },
+  poster: { type: String, required: true },
   status: {
     type: String,
     enum: ["pre-sale", "billboard", "upcoming"],
