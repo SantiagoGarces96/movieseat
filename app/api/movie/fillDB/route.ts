@@ -1,43 +1,29 @@
-import { TMDB_API_URL } from "@/constants";
+import { IParsedMovie } from "@/interfaces/movie";
+import { IDetailMovieListTMDB } from "@/interfaces/TMDB";
 import dbConnect from "@/lib/dbConnect";
-import { getNowPlaying, getUpcoming } from "@/lib/TMDB";
-import User from "@/models/User";
-import axios from "axios";
+import { getNowPlayingTMDB, getUpcomingTMDB, parseMovie } from "@/lib/TMDB";
 
 export async function POST() {
+  await dbConnect();
   try {
-    const nowPlaying = await getNowPlaying();
-    const upcoming = await getUpcoming();
-    return Response.json({ nowPlaying, upcoming });
-  } catch (error) {
-    return new Response(`message: ${error}`, {
-      status: 500,
-    });
+    const nowPlaying: IDetailMovieListTMDB[] = await getNowPlayingTMDB();
+    const parseNowPlaying: IParsedMovie[] = await parseMovie(nowPlaying);
+
+    const upcoming: IDetailMovieListTMDB[] = await getUpcomingTMDB();
+    const parseUpcoming: IParsedMovie[] = await parseMovie(upcoming);
+
+    const moviesDetail: IParsedMovie[] = [...parseNowPlaying, ...parseUpcoming];
+
+    return Response.json({ message: "Fullfilled DB", moviesDetail });
+  } catch (error: any) {
+    return new Response(
+      JSON.stringify({ message: error.message || "An error occurred" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
   }
-  // try {
-  //   await dbConnect();
-  //   const { email, password, name, lastName } = await request.json();
-
-  //   if (!email || !password || !name || !lastName) {
-  //     return new Response("Fields requiered.", {
-  //       status: 400,
-  //     });
-  //   }
-
-  //   const userExist = await User.findOne({ email });
-  //   if (userExist) {
-  //     return new Response("User already exist.", {
-  //       status: 400,
-  //     });
-  //   }
-
-  //   await User.create({ email, password, name, lastName });
-  //   return new Response("User created successfully", {
-  //     status: 200,
-  //   });
-  // } catch (error) {
-  //   return new Response(`message: ${error}`, {
-  //     status: 500,
-  //   });
-  // }
 }
