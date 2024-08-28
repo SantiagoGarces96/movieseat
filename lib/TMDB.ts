@@ -6,6 +6,8 @@ import axios from "axios";
 import { getMovieDetailOMDB } from "./OMDB";
 import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
+import { progressBar } from "@/utils/progressBar";
+import { calculateDates } from "@/utils/calculateDays";
 
 export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
   try {
@@ -26,9 +28,10 @@ export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
 };
 
 export const getUpcomingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
+  const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=2024-08-28&primary_release_date.lte=2024-12-31&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -100,8 +103,11 @@ const getMovieStatus = (releaseDate: string): MovieStatus => {
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
 ): Promise<IParsedMovie[]> => {
-  const response = [];
-  for (const movie of moviesData) {
+  const response: IParsedMovie[] = [];
+  const totalMovies = moviesData.length;
+
+  for (let i = 0; i < totalMovies; i++) {
+    const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
     const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
       dataTMDB.imdb_id,
@@ -122,16 +128,18 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: trailerVideo
-        ? `https://www.youtube.com/watch?v=${trailerVideo.key}`
-        : null,
+      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0].key}`,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
     };
-    console.log(trailerVideo);
 
     response.push(parsedMovie);
-    await sleep(2000);
+
+    // Update progress bar
+    progressBar(i + 1, totalMovies);
+
+    await sleep(1000); // Simulate delay or throttle requests
   }
+
   return response;
 };
