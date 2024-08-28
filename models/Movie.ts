@@ -3,6 +3,7 @@ import { Schema, model, models } from "mongoose";
 
 const movieSchema = new Schema<IMovie>({
   title: { type: String, required: true },
+  backdrop: { type: String, required: true },
   description: { type: String, required: true },
   releaseDate: { type: Date, required: true },
   duration: { type: Number, required: true },
