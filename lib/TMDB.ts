@@ -1,4 +1,4 @@
-import { TMDB_API_URL } from "@/constants";
+import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
 import { IParsedMovie } from "@/interfaces/movie";
 import { IMovieDetailOMDB } from "@/interfaces/OMDB";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
@@ -28,7 +28,7 @@ export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
 export const getUpcomingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
   try {
     const options = {
-      url: `${TMDB_API_URL}/upcoming?language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=2024-08-28&primary_release_date.lte=2024-12-31&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -48,34 +48,48 @@ export const getMovieDetailTMDB = async (
 ): Promise<IMovieDetailTMDB> => {
   try {
     const options = {
-      url: `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
     };
-    const { data } = await axios.request(options);
 
-    return data as IMovieDetailTMDB;
+    // solicita el trailer en español latino (es-MX)
+    let response = await axios.get(
+      `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=es-MX`,
+      options,
+    );
+    let data = response.data as IMovieDetailTMDB;
+
+    // Si el tráiler es nulo, hacer una segunda solicitud en inglés (en-US)
+    if (!data.videos.results[0]) {
+      response = await axios.get(
+        `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=en-US`,
+        options,
+      );
+      data = response.data as IMovieDetailTMDB;
+    }
+
+    return data;
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
 
-const getMovieStatus = (release_date: string): MovieStatus => {
+const getMovieStatus = (releaseDate: string): MovieStatus => {
   const today = new Date();
-  const release = new Date(release_date);
+  const release = new Date(releaseDate);
   const todayPlus8 = new Date(today);
   todayPlus8.setDate(today.getDate() + 8);
 
-  if (release > today) {
-    if (release.getTime() === todayPlus8.getTime()) {
-      return MovieStatus.PRE_SALE;
-    }
+  if (release > todayPlus8) {
     return MovieStatus.UPCOMING;
+  } else if (release > today && release <= todayPlus8) {
+    return MovieStatus.PRE_SALE;
+  } else {
+    return MovieStatus.BILLBOARD;
   }
-  return MovieStatus.BILLBOARD;
 };
 
 export const parseMovie = async (
@@ -90,6 +104,7 @@ export const parseMovie = async (
     console.log(dataTMDB.videos.results[0] || dataTMDB.videos);
     const parsedMovie: IParsedMovie = {
       title: dataTMDB.original_title,
+      backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
       description: dataTMDB.overview,
       releaseDate: new Date(dataTMDB.release_date),
       duration: dataTMDB.runtime,
