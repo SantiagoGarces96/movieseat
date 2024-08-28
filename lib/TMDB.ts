@@ -55,20 +55,25 @@ export const getMovieDetailTMDB = async (
       },
     };
 
-    // solicita el trailer en español latino (es-MX)
     let response = await axios.get(
-      `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=es-MX`,
+      `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=es-MX`,
       options,
     );
     let data = response.data as IMovieDetailTMDB;
 
-    // Si el tráiler es nulo, hacer una segunda solicitud en inglés (en-US)
-    if (!data.videos.results[0]) {
+    if (!data.videos.results[0] || !data.overview) {
       response = await axios.get(
-        `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=en-US`,
+        `${TMDB_API_URL}/${movie_id}?append_to_response=videos&language=en-US`,
         options,
       );
-      data = response.data as IMovieDetailTMDB;
+      const dataEN = response.data as IMovieDetailTMDB;
+
+      if (!data.videos.results[0]) {
+        data.videos = dataEN.videos;
+      }
+      if (!data.overview) {
+        data.overview = dataEN.overview;
+      }
     }
 
     return data;
@@ -101,7 +106,10 @@ export const parseMovie = async (
     const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
       dataTMDB.imdb_id,
     );
-    console.log(dataTMDB.videos.results[0] || dataTMDB.videos);
+    const trailerVideo = dataTMDB.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    );
+
     const parsedMovie: IParsedMovie = {
       title: dataTMDB.original_title,
       backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
@@ -114,12 +122,13 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: dataTMDB.videos.results[0]
-        ? `https://www.youtube.com/watch?v=${dataTMDB.videos.results[0].key}`
+      trailer: trailerVideo
+        ? `https://www.youtube.com/watch?v=${trailerVideo.key}`
         : null,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
     };
+    console.log(trailerVideo);
 
     response.push(parsedMovie);
     await sleep(2000);
