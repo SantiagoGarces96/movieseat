@@ -1,4 +1,4 @@
-import { TMDB_API_URL } from "@/constants";
+import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
 import { IParsedMovie } from "@/interfaces/movie";
 import { IMovieDetailOMDB } from "@/interfaces/OMDB";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
@@ -28,7 +28,7 @@ export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
 export const getUpcomingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
   try {
     const options = {
-      url: `${TMDB_API_URL}/upcoming?language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=2024-08-28&primary_release_date.lte=2024-12-31&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -48,34 +48,53 @@ export const getMovieDetailTMDB = async (
 ): Promise<IMovieDetailTMDB> => {
   try {
     const options = {
-      url: `${TMDB_API_URL}/${movie_id}?append_to_response=credits%2Cvideos&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
     };
-    const { data } = await axios.request(options);
 
-    return data as IMovieDetailTMDB;
+    let response = await axios.get(
+      `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=es-MX`,
+      options,
+    );
+    let data = response.data as IMovieDetailTMDB;
+
+    if (!data.videos.results[0] || !data.overview) {
+      response = await axios.get(
+        `${TMDB_API_URL}/${movie_id}?append_to_response=videos&language=en-US`,
+        options,
+      );
+      const dataEN = response.data as IMovieDetailTMDB;
+
+      if (!data.videos.results[0]) {
+        data.videos = dataEN.videos;
+      }
+      if (!data.overview) {
+        data.overview = dataEN.overview;
+      }
+    }
+
+    return data;
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
 
-const getMovieStatus = (release_date: string): MovieStatus => {
+const getMovieStatus = (releaseDate: string): MovieStatus => {
   const today = new Date();
-  const release = new Date(release_date);
+  const release = new Date(releaseDate);
   const todayPlus8 = new Date(today);
   todayPlus8.setDate(today.getDate() + 8);
 
-  if (release > today) {
-    if (release.getTime() === todayPlus8.getTime()) {
-      return MovieStatus.PRE_SALE;
-    }
+  if (release > todayPlus8) {
     return MovieStatus.UPCOMING;
+  } else if (release > today && release <= todayPlus8) {
+    return MovieStatus.PRE_SALE;
+  } else {
+    return MovieStatus.BILLBOARD;
   }
-  return MovieStatus.BILLBOARD;
 };
 
 export const parseMovie = async (
@@ -87,9 +106,13 @@ export const parseMovie = async (
     const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
       dataTMDB.imdb_id,
     );
-    console.log(dataTMDB.videos.results[0] || dataTMDB.videos);
+    const trailerVideo = dataTMDB.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    );
+
     const parsedMovie: IParsedMovie = {
       title: dataTMDB.original_title,
+      backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
       description: dataTMDB.overview,
       releaseDate: new Date(dataTMDB.release_date),
       duration: dataTMDB.runtime,
@@ -99,12 +122,13 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: dataTMDB.videos.results[0]
-        ? `https://www.youtube.com/watch?v=${dataTMDB.videos.results[0].key}`
+      trailer: trailerVideo
+        ? `https://www.youtube.com/watch?v=${trailerVideo.key}`
         : null,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
     };
+    console.log(trailerVideo);
 
     response.push(parsedMovie);
     await sleep(2000);

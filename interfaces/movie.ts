@@ -3,6 +3,7 @@ import { Schema, Document } from "mongoose";
 export interface IMovie extends Document {
   _id: Schema.Types.ObjectId;
   title: string;
+  backdrop: string;
   description: string;
   releaseDate: Date;
   duration: number;
@@ -21,6 +22,7 @@ export interface IMovie extends Document {
 
 export interface IParsedMovie {
   title: string;
+  backdrop: string;
   description: string;
   releaseDate: Date;
   duration: number;
