@@ -1,12 +1,13 @@
 import { ISession } from "@/interfaces/session";
+import { SessionRoom } from "@/types/session";
 import { Schema, model, models } from "mongoose";
 
 const sessionSchema = new Schema<ISession>({
   movieId: { type: Schema.Types.ObjectId, ref: "Movie", required: true },
   room: {
     type: String,
-    enum: ["2D", "3D", "IMAX"],
-    default: "2D",
+    enum: Object.values(SessionRoom),
+    default: SessionRoom.TwoD,
   },
   price: { type: Number, required: true },
   dateTime: { type: Date, required: true },
