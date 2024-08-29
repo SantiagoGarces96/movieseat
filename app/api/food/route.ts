@@ -1,4 +1,3 @@
-// src/app/api/food/route.ts
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Food from "@/models/Food";
