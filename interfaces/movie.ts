@@ -1,3 +1,4 @@
+import { MovieStatus } from "@/types/movie";
 import { Schema, Document } from "mongoose";
 
 export interface IMovie extends Document {
@@ -14,7 +15,7 @@ export interface IMovie extends Document {
   subtitles: boolean;
   trailer: string;
   poster: string;
-  status: "pre-sale" | "billboard" | "upcoming";
+  status: MovieStatus;
   sessions: Schema.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
@@ -32,5 +33,5 @@ export interface IParsedMovie {
   language: string[];
   trailer: string | null;
   poster: string;
-  status: "pre-sale" | "billboard" | "upcoming";
+  status: MovieStatus;
 }
