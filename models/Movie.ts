@@ -1,4 +1,5 @@
 import { IMovie } from "@/interfaces/movie";
+import { MovieStatus } from "@/types/movie";
 import { Schema, model, models } from "mongoose";
 
 const movieSchema = new Schema<IMovie>({
@@ -14,7 +15,11 @@ const movieSchema = new Schema<IMovie>({
   subtitles: { type: Boolean, default: false },
   trailer: { type: String, required: true },
   poster: { type: String, required: true },
-  status: { type: String, default: "upcoming" },
+  status: {
+    type: String,
+    enum: Object.values(MovieStatus),
+    default: MovieStatus.UPCOMING,
+  },
   sessions: [{ type: Schema.Types.ObjectId, ref: "Session" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
