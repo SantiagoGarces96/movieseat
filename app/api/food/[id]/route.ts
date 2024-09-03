@@ -77,15 +77,8 @@ export async function PATCH(
     );
   }
 
-  const updates = await request.json();
-  if (!updates) {
-    return NextResponse.json(
-      { message: "Fields are required" },
-      { status: 404 },
-    );
-  }
-
   try {
+    const updates = await request.json();
     const food: IFood | null = await Food.findByIdAndUpdate(id, updates, {
       new: true,
     });
