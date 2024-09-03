@@ -13,7 +13,7 @@ export async function GET(
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json(
-      { message: "Invalid movie ID format" },
+      { message: "Invalid session ID format" },
       { status: 400 },
     );
   }
@@ -44,7 +44,7 @@ export async function DELETE(
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json(
-      { message: "Invalid movie ID format" },
+      { message: "Invalid session ID format" },
       { status: 400 },
     );
   }
@@ -78,7 +78,7 @@ export async function PATCH(
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json(
-      { message: "Invalid movie ID format" },
+      { message: "Invalid session ID format" },
       { status: 400 },
     );
   }
