@@ -1,8 +1,8 @@
-import { ITransaction } from "@/interfaces/transaction";
+import { ITransactionModel } from "@/interfaces/transaction";
 import { TransactionStatus } from "@/types/transaction";
 import { Schema, model, models } from "mongoose";
 
-const transactionSchema = new Schema<ITransaction>({
+const transactionSchema = new Schema<ITransactionModel>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   ticketId: { type: Schema.Types.ObjectId, ref: "Ticket", required: true },
   foodItems: [{ type: Schema.Types.ObjectId, ref: "Food" }],
@@ -17,4 +17,4 @@ const transactionSchema = new Schema<ITransaction>({
 });
 
 export default models.Transaction ||
-  model<ITransaction>("Transaction", transactionSchema);
+  model<ITransactionModel>("Transaction", transactionSchema);

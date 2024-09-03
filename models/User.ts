@@ -1,8 +1,8 @@
-import { IUser } from "@/interfaces/user";
+import { IUserModel } from "@/interfaces/user";
 import { userRole } from "@/types/user";
 import { Schema, model, models } from "mongoose";
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUserModel>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
@@ -18,4 +18,4 @@ const userSchema = new Schema<IUser>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default models.User || model<IUser>("User", userSchema);
+export default models.User || model<IUserModel>("User", userSchema);

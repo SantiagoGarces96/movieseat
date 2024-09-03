@@ -1,8 +1,8 @@
-import { ISession } from "@/interfaces/session";
+import { ISessionModel } from "@/interfaces/session";
 import { SessionRoom } from "@/types/session";
 import { Schema, model, models } from "mongoose";
 
-const sessionSchema = new Schema<ISession>({
+const sessionSchema = new Schema<ISessionModel>({
   movieId: { type: Schema.Types.ObjectId, ref: "Movie", required: true },
   room: {
     type: String,
@@ -17,4 +17,4 @@ const sessionSchema = new Schema<ISession>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default models.Session || model<ISession>("Session", sessionSchema);
+export default models.Session || model<ISessionModel>("Session", sessionSchema);

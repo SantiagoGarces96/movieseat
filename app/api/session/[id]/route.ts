@@ -1,16 +1,25 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import Session from "@/models/Session";
+import { ISession } from "@/interfaces/session";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid session ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const session = await Session.findById(id);
+    const session: ISession | null = await Session.findById(id);
     if (!session) {
       return NextResponse.json(
         { message: "Session not found" },
@@ -31,10 +40,17 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid session ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const result = await Session.findByIdAndDelete(id);
+    const result: ISession | null = await Session.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json(
         { message: "Session not found" },
@@ -58,11 +74,22 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
-  const updates = await request.json();
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid session ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const session = await Session.findByIdAndUpdate(id, updates, { new: true });
+    const updates = await request.json();
+    const session: ISession | null = await Session.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true },
+    );
     if (!session) {
       return NextResponse.json(
         { message: "Session not found" },

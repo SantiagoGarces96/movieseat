@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Ticket from "@/models/Ticket";
+import { ITicket } from "@/interfaces/ticket";
 
 export async function GET() {
   await dbConnect();
   try {
-    const tickets = await Ticket.find({});
+    const tickets: ITicket[] = await Ticket.find({});
     return NextResponse.json(tickets, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -19,8 +20,7 @@ export async function POST(request: Request) {
   await dbConnect();
   try {
     const ticketData = await request.json();
-    const newTicket = new Ticket(ticketData);
-    await newTicket.save();
+    const newTicket: ITicket | null = await Ticket.create(ticketData);
     return NextResponse.json(newTicket, { status: 201 });
   } catch (error) {
     return NextResponse.json(
