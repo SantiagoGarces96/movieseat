@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-
+    // TODO remember create all information in english.
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {

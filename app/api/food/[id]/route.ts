@@ -56,6 +56,7 @@ export async function PATCH(
   await dbConnect();
 
   const { id } = params;
+  // TODO imagine if user not send body, what happens?
   const updates = await request.json();
 
   try {
