@@ -1,15 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
+import { IMovie } from "@/interfaces/movie";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
-  const { id } = params;
 
+  const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json(
       { message: "Invalid movie ID format" },
@@ -18,15 +19,14 @@ export async function GET(
   }
 
   try {
-    const movie = await Movie.findById(id).populate("sessions");
+    const movie: IMovie | null = await Movie.findById(id).populate("sessions");
     if (!movie) {
       return NextResponse.json({ message: "Movie not found" }, { status: 404 });
     }
     return NextResponse.json(movie, { status: 200 });
   } catch (error: any) {
-    console.error("Error retrieving movie:", error); // Log detallado del error
     return NextResponse.json(
-      { message: `Failed to retrieve movie. Error: ${error.message}` },
+      { message: "Failed to retrieve movie." },
       { status: 500 },
     );
   }
@@ -47,7 +47,7 @@ export async function DELETE(
   }
 
   try {
-    const result = await Movie.findByIdAndDelete(id);
+    const result: IMovie | null = await Movie.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json({ message: "Movie not found" }, { status: 404 });
     }
@@ -64,13 +64,11 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
   const { id } = params;
-  const updates = await request.json();
-
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json(
       { message: "Invalid movie ID format" },
@@ -79,7 +77,10 @@ export async function PATCH(
   }
 
   try {
-    const movie = await Movie.findByIdAndUpdate(id, updates, { new: true });
+    const updates = await request.json();
+    const movie: IMovie | null = await Movie.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
     if (!movie) {
       return NextResponse.json({ message: "Movie not found" }, { status: 404 });
     }
