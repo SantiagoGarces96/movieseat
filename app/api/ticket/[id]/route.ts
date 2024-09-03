@@ -1,16 +1,25 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Ticket from "@/models/Ticket";
+import mongoose from "mongoose";
+import { ITicket } from "@/interfaces/ticket";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid ticket ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const ticket = await Ticket.findById(id);
+    const ticket: ITicket | null = await Ticket.findById(id);
     if (!ticket) {
       return NextResponse.json(
         { message: "Ticket not found" },
@@ -31,10 +40,17 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid ticket ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const result = await Ticket.findByIdAndDelete(id);
+    const result: ITicket | null = await Ticket.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json(
         { message: "Ticket not found" },
@@ -58,11 +74,20 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
+
   const { id } = params;
-  const updates = await request.json();
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid ticket ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const ticket = await Ticket.findByIdAndUpdate(id, updates, { new: true });
+    const updates = await request.json();
+    const ticket: ITicket | null = await Ticket.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
     if (!ticket) {
       return NextResponse.json(
         { message: "Ticket not found" },
