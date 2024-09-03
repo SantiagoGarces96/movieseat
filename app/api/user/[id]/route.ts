@@ -1,33 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
-import { verifyToken } from "@/utils/checkAdmin";
 import { hashPassword } from "@/utils/bcrypt";
-
-async function checkAdminAuthorization(request: NextRequest) {
-  const authHeader = request.headers.get("Authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return {
-      authorized: false,
-      response: NextResponse.json({ message: "Unauthorized" }, { status: 401 }),
-    };
-  }
-
-  const token = authHeader.split(" ")[1];
-  const payload = verifyToken(token);
-
-  if (!payload || payload.role !== "admin") {
-    return {
-      authorized: false,
-      response: NextResponse.json(
-        { message: "Access denied. Admins only." },
-        { status: 403 },
-      ),
-    };
-  }
-
-  return { authorized: true };
-}
+import { checkAdminAuthorization } from "@/middleware/checkAdminAuthorization";
+import { IUser } from "@/interfaces/user";
 
 export async function GET(
   request: NextRequest,
@@ -39,9 +16,15 @@ export async function GET(
   if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid user ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const user = await User.findById(id);
+    const user: IUser | null = await User.findById(id);
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
@@ -64,9 +47,15 @@ export async function DELETE(
   if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid user ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
-    const result = await User.findByIdAndDelete(id);
+    const result: IUser | null = await User.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
@@ -92,14 +81,22 @@ export async function PATCH(
   if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
-  const updates = await request.json();
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid user ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
+    const updates = await request.json();
     if (updates.password) {
       updates.password = await hashPassword(updates.password);
     }
 
-    const user = await User.findByIdAndUpdate(id, updates, { new: true });
+    const user: IUser | null = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }

@@ -1,11 +1,16 @@
+import { IUser } from "@/interfaces/user";
 import dbConnect from "@/lib/dbConnect";
+import { checkAdminAuthorization } from "@/middleware/checkAdminAuthorization";
 import User from "@/models/User";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authCheck = await checkAdminAuthorization(request);
+  if (!authCheck.authorized) return authCheck.response;
+
   await dbConnect();
   try {
-    const users = await User.find({});
+    const users: IUser[] = await User.find({});
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -14,20 +19,6 @@ export async function GET() {
     );
   }
 }
-
-// otra manera de hacer el post
-
-// export async function POST(request: Request) {
-//   await dbConnect();
-//   try {
-//     const userData = await request.json();
-//     const newUser = new User(userData);
-//     await newUser.save();
-//     return NextResponse.json(newUser, { status: 201 });
-//   } catch (error) {
-//     return NextResponse.json({ message: "Failed to create user."}, { status: 500 });
-//   }
-// }
 
 export async function POST(request: Request) {
   try {
@@ -40,7 +31,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const userExist = await User.findOne({ email });
+    const userExist: IUser | null = await User.findOne({ email });
     if (userExist) {
       return new Response("User already exist.", {
         status: 400,
