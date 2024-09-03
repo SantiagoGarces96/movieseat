@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Food from "@/models/Food";
 import { IFood } from "@/interfaces/food";
+import mongoose from "mongoose";
 
 export async function GET(
   request: Request,
@@ -10,6 +11,12 @@ export async function GET(
   await dbConnect();
 
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid movie ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
     const food: IFood | null = await Food.findById(id);
@@ -32,6 +39,12 @@ export async function DELETE(
   await dbConnect();
 
   const { id } = params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid movie ID format" },
+      { status: 400 },
+    );
+  }
 
   try {
     const result: IFood | null = await Food.findByIdAndDelete(id);
@@ -57,8 +70,20 @@ export async function PATCH(
   await dbConnect();
 
   const { id } = params;
-  // TODO imagine if user not send body, what happens?
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "Invalid movie ID format" },
+      { status: 400 },
+    );
+  }
+
   const updates = await request.json();
+  if (!updates) {
+    return NextResponse.json(
+      { message: "Fields are required" },
+      { status: 404 },
+    );
+  }
 
   try {
     const food: IFood | null = await Food.findByIdAndUpdate(id, updates, {
