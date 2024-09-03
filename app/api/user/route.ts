@@ -1,5 +1,33 @@
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  await dbConnect();
+  try {
+    const users = await User.find({});
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch users." },
+      { status: 500 },
+    );
+  }
+}
+
+// otra manera de hacer el post
+
+// export async function POST(request: Request) {
+//   await dbConnect();
+//   try {
+//     const userData = await request.json();
+//     const newUser = new User(userData);
+//     await newUser.save();
+//     return NextResponse.json(newUser, { status: 201 });
+//   } catch (error) {
+//     return NextResponse.json({ message: "Failed to create user."}, { status: 500 });
+//   }
+// }
 
 export async function POST(request: Request) {
   try {

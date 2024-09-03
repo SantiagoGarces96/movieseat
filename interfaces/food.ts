@@ -1,3 +1,4 @@
+import { FoodCategory, FoodSize, FoodType } from "@/types/food";
 import { Document, Schema } from "mongoose";
 
 export interface IFood extends Document {
@@ -6,10 +7,10 @@ export interface IFood extends Document {
   image: string;
   description: string;
   price: number;
-  size: "small" | "large" | "extralarge";
+  size: FoodSize;
   availableAmount: number;
-  category: "foods" | "drinks" | "combos";
-  type: "popcorn" | "fast-food" | "bakery" | "drink" | "combo";
+  category: FoodCategory;
+  type: FoodType;
   createdAt: Date;
   updatedAt: Date;
 }
