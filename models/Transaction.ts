@@ -1,4 +1,5 @@
 import { ITransaction } from "@/interfaces/transaction";
+import { TransactionStatus } from "@/types/transaction";
 import { Schema, model, models } from "mongoose";
 
 const transactionSchema = new Schema<ITransaction>({
@@ -8,8 +9,8 @@ const transactionSchema = new Schema<ITransaction>({
   totalAmount: { type: Number, required: true },
   status: {
     type: String,
-    enum: ["pending", "completed", "cancelled"],
-    default: "pending",
+    enum: Object.values(TransactionStatus),
+    default: TransactionStatus.PENDING,
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
