@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Food from "@/models/Food";
+import { IFood } from "@/interfaces/food";
 
 export async function GET(
   request: Request,
@@ -11,7 +12,7 @@ export async function GET(
   const { id } = params;
 
   try {
-    const food = await Food.findById(id);
+    const food: IFood | null = await Food.findById(id);
     if (!food) {
       return NextResponse.json({ message: "Food not found" }, { status: 404 });
     }
@@ -33,12 +34,12 @@ export async function DELETE(
   const { id } = params;
 
   try {
-    const result = await Food.findByIdAndDelete(id);
+    const result: IFood | null = await Food.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json({ message: "Food not found" }, { status: 404 });
     }
     return NextResponse.json(
-      { message: "Food deleted successfully" },
+      { result, message: "Food deleted successfully" },
       { status: 200 },
     );
   } catch (error) {
@@ -60,7 +61,9 @@ export async function PATCH(
   const updates = await request.json();
 
   try {
-    const food = await Food.findByIdAndUpdate(id, updates, { new: true });
+    const food: IFood | null = await Food.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
     if (!food) {
       return NextResponse.json({ message: "Food not found" }, { status: 404 });
     }

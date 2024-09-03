@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Food from "@/models/Food";
+import { IFood } from "@/interfaces/food";
 
 export async function GET() {
   await dbConnect();
 
   try {
-    const foods = await Food.find({});
+    const foods: IFood[] = await Food.find({});
     return NextResponse.json(foods, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     const data = await request.json();
     // This is other way to insert a data.
     // Is important to create a new interface to return this data.
-    const food = await Food.create(data);
+    const food: IFood = await Food.create(data);
     return NextResponse.json(food, { status: 201 });
   } catch (error) {
     return NextResponse.json(
