@@ -132,7 +132,6 @@ export const parseMovie = async (
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
     };
-    console.log(trailerVideo);
 
     response.push(parsedMovie);
 
