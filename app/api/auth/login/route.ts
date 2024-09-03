@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // TODO remember create all information in english.
     // Buscar usuario por email
     const user = await User.findOne({ email });
     if (!user) {
