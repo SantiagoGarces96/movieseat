@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
@@ -64,7 +64,7 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
