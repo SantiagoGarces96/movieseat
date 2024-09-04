@@ -1,11 +1,21 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import { IParsedMovie } from "@/interfaces/movie";
 import { IDetailMovieListTMDB } from "@/interfaces/TMDB";
 import dbConnect from "@/lib/dbConnect";
 import { getNowPlayingTMDB, getUpcomingTMDB, parseMovie } from "@/lib/TMDB";
 import Movie from "@/models/Movie";
 
-export async function POST() {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  // Verify if the request comes with the correct authorization.
+  if (req.headers["authorization"] !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).end("Unauthorized");
+  }
+
   await dbConnect();
+
   try {
     const nowPlaying: IDetailMovieListTMDB[] = await getNowPlayingTMDB();
     const parseNowPlaying: IParsedMovie[] = await parseMovie(nowPlaying);
@@ -18,27 +28,13 @@ export async function POST() {
     if (moviesDetail.length) {
       await Movie.deleteMany({});
       await Movie.insertMany(moviesDetail);
-      return Response.json({ message: "Fullfilled DB with new data." });
+      return res.status(200).json({ message: "Fullfilled DB with new data." });
     }
 
-    return new Response(
-      JSON.stringify({ message: "Not found any new movies!" }),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    return res.status(400).json({ message: "Not found any new movies!" });
   } catch (error: any) {
-    return new Response(
-      JSON.stringify({ message: error.message || "An error occurred" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    return res
+      .status(500)
+      .json({ message: error.message || "An error occurred" });
   }
 }
