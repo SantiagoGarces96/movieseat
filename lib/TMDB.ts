@@ -95,8 +95,10 @@ const getMovieStatus = (releaseDate: string): MovieStatus => {
     return MovieStatus.UPCOMING;
   } else if (release > today && release <= todayPlus8) {
     return MovieStatus.PRE_SALE;
-  } else {
+  } else if (today.getTime() - release.getTime() <= 120 * 24 * 60 * 60 * 1000) {
     return MovieStatus.BILLBOARD;
+  } else {
+    return MovieStatus.ARCHIVED;
   }
 };
 
