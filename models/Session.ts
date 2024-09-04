@@ -7,7 +7,7 @@ const sessionSchema = new Schema<ISessionModel>({
   room: {
     type: String,
     enum: Object.values(SessionRoom),
-    default: SessionRoom.TwoD,
+    default: SessionRoom["2D"],
   },
   price: { type: Number, required: true },
   dateTime: { type: Date, required: true },
