@@ -1,13 +1,21 @@
-import { SessionRoom } from "@/types/session";
 import { Schema, Document } from "mongoose";
+import { IRoom } from "./room";
+
+export interface ISeats {
+  [key: string]: boolean;
+}
 
 export interface ISessionModel extends Document {
   movieId: Schema.Types.ObjectId;
-  room: SessionRoom;
-  price: number;
+  roomId: Schema.Types.ObjectId;
   dateTime: Date;
+  seatsPreferential: ISeats;
+  availableSeatsPreferential: number;
+  preferentialPrice: number;
+  seatsGeneral: ISeats;
+  availableSeatsGenneral: number;
+  generalPrice: number;
   availableSeats: number;
-  totalSeats: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,11 +23,15 @@ export interface ISessionModel extends Document {
 export interface ISession {
   _id: Schema.Types.ObjectId;
   movieId: Schema.Types.ObjectId;
-  room: SessionRoom;
-  price: number;
+  roomId: IRoom;
   dateTime: Date;
+  seatsPreferential: ISeats;
+  availableSeatsPreferential: number;
+  preferentialPrice: number;
+  seatsGeneral: ISeats;
+  availableSeatsGenneral: number;
+  generalPrice: number;
   availableSeats: number;
-  totalSeats: number;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

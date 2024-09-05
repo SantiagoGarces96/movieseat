@@ -1,10 +1,9 @@
 import { IRoomModel } from "@/interfaces/room";
-import { SeatType } from "@/types/room";
 import { SessionRoom } from "@/types/session";
 import { Schema, model, models } from "mongoose";
 
-const sessionSchema = new Schema<IRoomModel>({
-  name: { type: String, ref: "Movie", required: true },
+const roomSchema = new Schema<IRoomModel>({
+  name: { type: String, required: true },
   room: {
     type: String,
     enum: Object.values(SessionRoom),
@@ -17,4 +16,4 @@ const sessionSchema = new Schema<IRoomModel>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default models.Session || model<IRoomModel>("Session", sessionSchema);
+export default models.Room || model<IRoomModel>("Room", roomSchema);
