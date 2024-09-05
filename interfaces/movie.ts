@@ -1,8 +1,9 @@
 import { MovieStatus } from "@/types/movie";
-import { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import { ISession } from "./session";
 
 export interface IMovieModel extends Document {
+  _id: mongoose.Types.ObjectId;
   title: string;
   backdrop: string;
   description: string;
@@ -22,6 +23,7 @@ export interface IMovieModel extends Document {
 }
 
 export interface IParsedMovie {
+  _id: mongoose.Types.ObjectId;
   title: string;
   backdrop: string;
   description: string;
