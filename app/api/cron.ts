@@ -8,7 +8,7 @@ import Movie from "@/models/Movie";
 export default async function handler(req: Request, res: NextApiResponse) {
   // Verify if the request comes with the correct authorization.
   if (
-    req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
+    req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
     return res.status(401).end("Unauthorized");
   }
