@@ -1,16 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 import { IParsedMovie } from "@/interfaces/movie";
 import { IDetailMovieListTMDB } from "@/interfaces/TMDB";
 import dbConnect from "@/lib/dbConnect";
 import { getNowPlayingTMDB, getUpcomingTMDB, parseMovie } from "@/lib/TMDB";
 import Movie from "@/models/Movie";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: Request, res: NextApiResponse) {
   // Verify if the request comes with the correct authorization.
-  if (req.headers["authorization"] !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (
+    req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
     return res.status(401).end("Unauthorized");
   }
 
