@@ -182,100 +182,114 @@ const getSeatsPreferentialNumber = (availableSeats: number): ISeats => {
   return response;
 };
 
+const createSession = (
+  rooms: IRoom[],
+  sessionDay: Date,
+  firstSession: Date,
+  sessionDuration: Date,
+  i: number,
+  existingSessions: ISession[],
+  movieId: mongoose.Types.ObjectId,
+  status: MovieStatus,
+  sessions: any[],
+) => {
+  for (const room of rooms) {
+    const sessionTime = new Date(
+      sessionDay.getTime() +
+        firstSession.getTime() +
+        i * sessionDuration.getTime(),
+    );
+
+    // Check for conflicts in the same room
+    const conflict = existingSessions?.some((session) => {
+      const sessionDateTime = new Date(session.dateTime).getTime();
+      return (
+        session.roomId._id === room._id &&
+        Math.abs(sessionDateTime - sessionTime.getTime()) <
+          sessionDuration.getTime()
+      );
+    });
+
+    if (!conflict) {
+      const session = new Session({
+        movieId,
+        roomId: room._id,
+        dateTime: sessionTime,
+        seatsPreferential: getSeatsPreferentialNumber(
+          room.totalSeatsPreferential,
+        ),
+        availableSeatsPreferential: room.totalSeatsPreferential,
+        preferentialPrice: calculatePrice(
+          SeatType.PREFERENTIAL,
+          room.room,
+          sessionTime,
+          status,
+        ),
+        seatsGeneral: getSeatsPreferentialNumber(room.totalSeatsGeneral),
+        availableSeatsGeneral: room.totalSeatsGeneral,
+        generalPrice: calculatePrice(
+          SeatType.GENERAL,
+          room.room,
+          sessionTime,
+          status,
+        ),
+        availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
+      });
+      sessions.push(session);
+      break; // Exit the loop once a session is created
+    }
+  }
+};
+
 const createMovieSessions = async (
   releaseDate: string,
   duration: number,
   status: MovieStatus,
   movieId: mongoose.Types.ObjectId,
-) => {
+): Promise<ISession[]> => {
   const release: Date = new Date(releaseDate);
   const today: Date = new Date();
   const rooms: IRoom[] = await Room.find({});
 
-  if (status === MovieStatus.ARCHIVED) return;
+  if (status === MovieStatus.ARCHIVED) return [];
 
-  // Calculate session intervals
   const firstSession: Date = new Date(
     `1970-01-01T${SessionTimeManagement.FIRST_SESSION_TIME}:00Z`,
   );
-  const lastSession: Date = new Date(
-    `1970-01-01T${SessionTimeManagement.LAST_SESSION_TIME}:00Z`,
-  );
-
   const sessionDuration: Date = new Date(
     `1970-01-01T${duration + SessionTimeManagement.CLEANING_TIME + SessionTimeManagement.SETUP_TIME}:00Z`,
   );
 
-  // Fetch existing sessions to avoid time conflicts
   const existingSessions: ISession[] = await Session.find({
     dateTime: { $gte: today },
   }).lean();
 
-  // Generate movie sessions based on status
-  const sessions = [];
+  const sessions: ISession[] = [];
 
   if (status === MovieStatus.PRE_SALE) {
-    // Create sessions for 2 days before the release date (2 sessions per day)
     for (let day = 2; day > 0; day--) {
       const sessionDay = new Date(
         release.getTime() - day * 24 * 60 * 60 * 1000,
       );
 
       for (let i = 0; i < 2; i++) {
-        // 2 sessions per day
-        for (const room of rooms) {
-          const sessionTime = new Date(
-            sessionDay.getTime() +
-              firstSession.getTime() +
-              i * sessionDuration.getTime(),
-          );
-
-          // Check for conflicts in the same room
-          const conflict = existingSessions?.some((session) => {
-            const sessionDateTime = new Date(session.dateTime).getTime();
-            return (
-              session.roomId._id === room._id &&
-              Math.abs(sessionDateTime - sessionTime.getTime()) <
-                sessionDuration.getTime()
-            );
-          });
-
-          if (!conflict) {
-            const session = new Session({
-              movieId,
-              roomId: room._id,
-              dateTime: sessionTime,
-              seatsPreferential: getSeatsPreferentialNumber(
-                room.totalSeatsPreferential,
-              ),
-              availableSeatsPreferential: room.totalSeatsPreferential,
-              preferentialPrice: calculatePrice(
-                SeatType.PREFERENTIAL,
-                room.room,
-                sessionTime,
-                status,
-              ),
-              seatsGeneral: getSeatsPreferentialNumber(room.totalSeatsGeneral),
-              availableSeatsGeneral: room.totalSeatsGeneral,
-              generalPrice: calculatePrice(
-                SeatType.GENERAL,
-                room.room,
-                sessionTime,
-                status,
-              ),
-              availableSeats:
-                room.totalSeatsPreferential + room.totalSeatsGeneral,
-            });
-            sessions.push(session);
-            break; // Exit the loop once a session is created
-          }
-        }
+        createSession(
+          rooms,
+          sessionDay,
+          firstSession,
+          sessionDuration,
+          i,
+          existingSessions,
+          movieId,
+          status,
+          sessions,
+        );
       }
     }
   }
 
   if (status === MovieStatus.BILLBOARD) {
-    const sessionDays = 120; // 4 months in days
+    const sessionDays = 120;
 
     for (let day = 0; day < sessionDays; day++) {
       const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
@@ -289,83 +303,52 @@ const createMovieSessions = async (
       } else if (daysSinceRelease > 90 && daysSinceRelease <= 120) {
         sessionsPerDay = 1;
       } else if (daysSinceRelease > 120) {
-        break; // Stop creating sessions after 4 months
+        break;
       }
 
       for (let i = 0; i < sessionsPerDay; i++) {
-        for (const room of rooms) {
-          const sessionTime = new Date(
-            sessionDay.getTime() +
-              firstSession.getTime() +
-              i * sessionDuration.getTime(),
-          );
-
-          // Check for conflicts in the same room
-          const conflict = existingSessions?.some((session) => {
-            const sessionDateTime = new Date(session.dateTime).getTime();
-            return (
-              session.roomId._id === room._id &&
-              Math.abs(sessionDateTime - sessionTime.getTime()) <
-                sessionDuration.getTime()
-            );
-          });
-
-          if (!conflict) {
-            const session = new Session({
-              movieId,
-              roomId: room._id,
-              dateTime: sessionTime,
-              seatsPreferential: getSeatsPreferentialNumber(
-                room.totalSeatsPreferential,
-              ),
-              availableSeatsPreferential: room.totalSeatsPreferential,
-              preferentialPrice: calculatePrice(
-                SeatType.PREFERENTIAL,
-                room.room,
-                sessionTime,
-                status,
-              ),
-              seatsGeneral: getSeatsPreferentialNumber(room.totalSeatsGeneral),
-              availableSeatsGeneral: room.totalSeatsGeneral,
-              generalPrice: calculatePrice(
-                SeatType.GENERAL,
-                room.room,
-                sessionTime,
-                status,
-              ),
-              availableSeats:
-                room.totalSeatsPreferential + room.totalSeatsGeneral,
-            });
-            sessions.push(session);
-            break; // Exit the loop once a session is created
-          }
-        }
+        createSession(
+          rooms,
+          sessionDay,
+          firstSession,
+          sessionDuration,
+          i,
+          existingSessions,
+          movieId,
+          status,
+          sessions,
+        );
       }
     }
   }
 
-  // Save the movie with its sessions
-  // const movie = new MovieModel({
-  //   _id: movieId,
-  //   title: "Example Movie",
-  //   backdrop: "example.jpg",
-  //   description: "An example movie",
-  //   releaseDate,
-  //   duration: duration,
-  //   genre: ["Drama"],
-  //   director: "Director Name",
-  //   cast: ["Actor 1", "Actor 2"],
-  //   language: ["English"],
-  //   subtitles: true,
-  //   trailer: "example_trailer.mp4",
-  //   poster: "example_poster.jpg",
-  //   status,
-  //   sessions: sessions.map((session) => session._id),
-  // });
+  await Session.insertMany(sessions);
+  console.log("Sessions created for movie:", movieId);
 
-  // await movie.save();
-  // await SessionModel.insertMany(sessions);
+  return sessions;
 };
+
+// Save the movie with its sessions
+// const movie = new MovieModel({
+//   _id: movieId,
+//   title: "Example Movie",
+//   backdrop: "example.jpg",
+//   description: "An example movie",
+//   releaseDate,
+//   duration: duration,
+//   genre: ["Drama"],
+//   director: "Director Name",
+//   cast: ["Actor 1", "Actor 2"],
+//   language: ["English"],
+//   subtitles: true,
+//   trailer: "example_trailer.mp4",
+//   poster: "example_poster.jpg",
+//   status,
+//   sessions: sessions.map((session) => session._id),
+// });
+
+// await movie.save();
+// await SessionModel.insertMany(sessions);
 
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
@@ -384,6 +367,16 @@ export const parseMovie = async (
     );
     const movieId = new mongoose.Types.ObjectId();
 
+    const status = getMovieStatus(dataTMDB.release_date);
+
+    // Crear las sesiones para la película
+    const sessions = await createMovieSessions(
+      dataTMDB.release_date,
+      dataTMDB.runtime,
+      status,
+      movieId,
+    );
+
     const parsedMovie: IParsedMovie = {
       _id: movieId,
       title: dataTMDB.original_title,
@@ -397,9 +390,10 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0].key}`,
+      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos?.results[0].key}  `,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
+      sessions: sessions.map((session) => session._id),
     };
 
     response.push(parsedMovie);

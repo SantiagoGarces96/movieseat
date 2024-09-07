@@ -36,6 +36,7 @@ export interface IParsedMovie {
   trailer: string | null;
   poster: string;
   status: MovieStatus;
+  sessions: Schema.Types.ObjectId[];
 }
 
 export interface IMovie {
