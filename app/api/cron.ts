@@ -29,7 +29,7 @@ export default async function handler(req: Request, res: NextApiResponse) {
       await Movie.insertMany(moviesDetail);
       return res.status(200).json({ message: "Fullfilled DB with new data." });
     }
-
+    console.log("Cron Job Executed !!!");
     return res.status(400).json({ message: "Not found any new movies!" });
   } catch (error: any) {
     return res
