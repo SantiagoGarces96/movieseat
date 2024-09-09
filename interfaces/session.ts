@@ -13,7 +13,7 @@ export interface ISessionModel extends Document {
   availableSeatsPreferential: number;
   preferentialPrice: number;
   seatsGeneral: ISeats;
-  availableSeatsGenneral: number;
+  availableSeatsGeneral: number;
   generalPrice: number;
   availableSeats: number;
   createdAt: Date;
@@ -29,7 +29,7 @@ export interface ISession {
   availableSeatsPreferential: number;
   preferentialPrice: number;
   seatsGeneral: ISeats;
-  availableSeatsGenneral: number;
+  availableSeatsGeneral: number;
   generalPrice: number;
   availableSeats: number;
   createdAt: Date;
