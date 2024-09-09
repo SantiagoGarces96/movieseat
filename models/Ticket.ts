@@ -1,7 +1,7 @@
-import { ITicket } from "@/interfaces/ticket";
+import { ITicketModel } from "@/interfaces/ticket";
 import { Schema, model, models } from "mongoose";
 
-const ticketSchema = new Schema<ITicket>({
+const ticketSchema = new Schema<ITicketModel>({
   sessionId: { type: Schema.Types.ObjectId, ref: "Session", required: true },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   quantity: { type: Number, required: true },
@@ -10,4 +10,4 @@ const ticketSchema = new Schema<ITicket>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default models.Ticket || model<ITicket>("Ticket", ticketSchema);
+export default models.Ticket || model<ITicketModel>("Ticket", ticketSchema);

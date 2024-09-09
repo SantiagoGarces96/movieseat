@@ -1,4 +1,5 @@
 import { IFood } from "@/interfaces/food";
+import { FoodCategory, FoodSize, FoodType } from "@/types/food";
 import { Schema, model, models } from "mongoose";
 
 const foodSchema = new Schema<IFood>({
@@ -8,19 +9,19 @@ const foodSchema = new Schema<IFood>({
   price: { type: Number, required: true },
   size: {
     type: String,
-    enum: ["small", "large", "extralarge"],
-    default: "small",
+    enum: Object.values(FoodSize),
+    default: FoodSize.SMALL,
   },
   availableAmount: { type: Number, required: true },
   category: {
     type: String,
-    enum: ["foods", "drinks", "combos"],
-    default: "foods",
+    enum: Object.values(FoodCategory),
+    default: FoodCategory.FOODS,
   },
   type: {
     type: String,
-    enum: ["popcorn", "fast-food", "bakery", "drink", "combo"],
-    default: "popcorn",
+    enum: Object.values(FoodType),
+    default: FoodType.POPCORN,
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

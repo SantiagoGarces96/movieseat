@@ -1,15 +1,30 @@
-import { Document, Schema } from "mongoose";
+import { FoodCategory, FoodSize, FoodType } from "@/types/food";
+import { Document } from "mongoose";
 
-export interface IFood extends Document {
-  _id: Schema.Types.ObjectId;
+export interface IFoodModel extends Document {
   name: string;
   image: string;
   description: string;
   price: number;
-  size: "small" | "large" | "extralarge";
+  size: FoodSize;
   availableAmount: number;
-  category: "foods" | "drinks" | "combos";
-  type: "popcorn" | "fast-food" | "bakery" | "drink" | "combo";
+  category: FoodCategory;
+  type: FoodType;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IFood {
+  _id: string;
+  name: string;
+  image: string;
+  description: string;
+  price: number;
+  size: FoodSize;
+  availableAmount: number;
+  category: FoodCategory;
+  type: FoodType;
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
 }

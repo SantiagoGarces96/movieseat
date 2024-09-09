@@ -1,5 +1,24 @@
+import { IUser } from "@/interfaces/user";
 import dbConnect from "@/lib/dbConnect";
+import { checkAdminAuthorization } from "@/middleware/checkAdminAuthorization";
 import User from "@/models/User";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(request: NextRequest) {
+  const authCheck = await checkAdminAuthorization(request);
+  if (!authCheck.authorized) return authCheck.response;
+
+  await dbConnect();
+  try {
+    const users: IUser[] = await User.find({});
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch users." },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +31,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const userExist = await User.findOne({ email });
+    const userExist: IUser | null = await User.findOne({ email });
     if (userExist) {
       return new Response("User already exist.", {
         status: 400,
