@@ -20,8 +20,9 @@ import Room from "@/models/Room";
 import { IRoom } from "@/interfaces/room";
 import { ISeats, ISession } from "@/interfaces/session";
 import { SeatType } from "@/types/room";
+import Movie from "@/models/Movie";
 
-export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
+export const getNowPlayingTMDB = async (): Promise<void> => {
   try {
     const options = {
       url: `${TMDB_API_URL}/now_playing?language=es-MX`,
@@ -32,14 +33,13 @@ export const getNowPlayingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
       },
     };
     const { data } = await axios.request(options);
-
-    return data.results as IDetailMovieListTMDB[];
+    await parseMovie(data.results);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
 
-export const getUpcomingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
+export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
@@ -51,8 +51,7 @@ export const getUpcomingTMDB = async (): Promise<IDetailMovieListTMDB[]> => {
       },
     };
     const { data } = await axios.request(options);
-
-    return data.results as IDetailMovieListTMDB[];
+    await parseMovie(data.results);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
@@ -170,43 +169,65 @@ const getLetterByPosition = (position: number): string | null => {
   return String.fromCharCode(96 + position).toUpperCase();
 };
 
-const getSeatsPreferentialNumber = (availableSeats: number): ISeats => {
+const getSeatsNumber = (availableSeats: number): ISeats => {
   const response: ISeats = {};
   const rows = availableSeats / 10;
   for (let index = 1; index <= rows; index++) {
     const row = getLetterByPosition(index) || "A";
     for (let index = 1; index <= 10; index++) {
-      response[row + 1] = true;
+      response[row + index] = true;
     }
   }
   return response;
 };
 
-const createSession = (
+const createSession = async (
   rooms: IRoom[],
   sessionDay: Date,
   firstSession: Date,
-  sessionDuration: Date,
-  i: number,
+  sessionDuration: number,
+  sessionNumber: number,
   existingSessions: ISession[],
   movieId: mongoose.Types.ObjectId,
   status: MovieStatus,
-  sessions: any[],
-) => {
+  sessions: ISession[],
+  sessionsPerDay?: number,
+): Promise<void> => {
   for (const room of rooms) {
+    /**
+     * // TODO
+     * Pelicula se estrena hoy la hora actua es 8:00am, la pelicula tiene una duracion de 1h:30m,
+     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 10:00am.
+     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 05:00pm.
+     * En la Sala 3 inicia una funcion. en IMAX. a las 08:00pm.
+     *
+     * Tenemos otra pelicula, la pelicula tiene una duracion de 1h:30m,
+     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 01:30pm.
+     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 08:00pm.
+     * En la Sala 3 inicia una funcion. en IMAX. a las 05:00pm.
+     */
+    const sesssions: ISession[] = await Session.find({
+      dateTime: sessionDay,
+      roomId: room._id,
+    });
+
+    if (sesssions.length) {
+      sesssions.forEach(({ dateTime }) => {
+        dateTime.getHours();
+      });
+    }
+
     const sessionTime = new Date(
       sessionDay.getTime() +
         firstSession.getTime() +
-        i * sessionDuration.getTime(),
+        sessionNumber * sessionDuration,
     );
 
-    // Check for conflicts in the same room
-    const conflict = existingSessions?.some((session) => {
+    const conflict = existingSessions.some((session) => {
       const sessionDateTime = new Date(session.dateTime).getTime();
       return (
         session.roomId._id === room._id &&
-        Math.abs(sessionDateTime - sessionTime.getTime()) <
-          sessionDuration.getTime()
+        Math.abs(sessionDateTime - sessionTime.getTime()) < sessionDuration
       );
     });
 
@@ -215,9 +236,7 @@ const createSession = (
         movieId,
         roomId: room._id,
         dateTime: sessionTime,
-        seatsPreferential: getSeatsPreferentialNumber(
-          room.totalSeatsPreferential,
-        ),
+        seatsPreferential: getSeatsNumber(room.totalSeatsPreferential),
         availableSeatsPreferential: room.totalSeatsPreferential,
         preferentialPrice: calculatePrice(
           SeatType.PREFERENTIAL,
@@ -225,7 +244,7 @@ const createSession = (
           sessionTime,
           status,
         ),
-        seatsGeneral: getSeatsPreferentialNumber(room.totalSeatsGeneral),
+        seatsGeneral: getSeatsNumber(room.totalSeatsGeneral),
         availableSeatsGeneral: room.totalSeatsGeneral,
         generalPrice: calculatePrice(
           SeatType.GENERAL,
@@ -236,7 +255,7 @@ const createSession = (
         availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
       });
       sessions.push(session);
-      break; // Exit the loop once a session is created
+      break;
     }
   }
 };
@@ -256,9 +275,11 @@ const createMovieSessions = async (
   const firstSession: Date = new Date(
     `1970-01-01T${SessionTimeManagement.FIRST_SESSION_TIME}:00Z`,
   );
-  const sessionDuration: Date = new Date(
-    `1970-01-01T${duration + SessionTimeManagement.CLEANING_TIME + SessionTimeManagement.SETUP_TIME}:00Z`,
-  );
+
+  const sessionDuration: number =
+    duration +
+    SessionTimeManagement.CLEANING_TIME +
+    SessionTimeManagement.SETUP_TIME;
 
   const existingSessions: ISession[] = await Session.find({
     dateTime: { $gte: today },
@@ -272,13 +293,13 @@ const createMovieSessions = async (
         release.getTime() - day * 24 * 60 * 60 * 1000,
       );
 
-      for (let i = 0; i < 2; i++) {
+      for (let sessionNumber = 0; sessionNumber < 2; sessionNumber++) {
         createSession(
           rooms,
           sessionDay,
           firstSession,
           sessionDuration,
-          i,
+          sessionNumber,
           existingSessions,
           movieId,
           status,
@@ -289,7 +310,7 @@ const createMovieSessions = async (
   }
 
   if (status === MovieStatus.BILLBOARD) {
-    const sessionDays = 120;
+    const sessionDays = 119;
 
     for (let day = 0; day < sessionDays; day++) {
       const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
@@ -297,63 +318,42 @@ const createMovieSessions = async (
         (sessionDay.getTime() - release.getTime()) / (1000 * 60 * 60 * 24),
       );
 
-      let sessionsPerDay = 4;
+      let sessionsPerDay = 5;
       if (daysSinceRelease > 60 && daysSinceRelease <= 90) {
-        sessionsPerDay = 2;
+        sessionsPerDay = 4;
       } else if (daysSinceRelease > 90 && daysSinceRelease <= 120) {
-        sessionsPerDay = 1;
+        sessionsPerDay = 2;
       } else if (daysSinceRelease > 120) {
         break;
       }
 
-      for (let i = 0; i < sessionsPerDay; i++) {
+      for (
+        let sessionNumber = 0;
+        sessionNumber < sessionsPerDay;
+        sessionNumber++
+      ) {
         createSession(
           rooms,
           sessionDay,
           firstSession,
           sessionDuration,
-          i,
+          sessionNumber,
           existingSessions,
           movieId,
           status,
           sessions,
+          sessionsPerDay,
         );
       }
     }
   }
-
   await Session.insertMany(sessions);
-  console.log("Sessions created for movie:", movieId);
-
   return sessions;
 };
 
-// Save the movie with its sessions
-// const movie = new MovieModel({
-//   _id: movieId,
-//   title: "Example Movie",
-//   backdrop: "example.jpg",
-//   description: "An example movie",
-//   releaseDate,
-//   duration: duration,
-//   genre: ["Drama"],
-//   director: "Director Name",
-//   cast: ["Actor 1", "Actor 2"],
-//   language: ["English"],
-//   subtitles: true,
-//   trailer: "example_trailer.mp4",
-//   poster: "example_poster.jpg",
-//   status,
-//   sessions: sessions.map((session) => session._id),
-// });
-
-// await movie.save();
-// await SessionModel.insertMany(sessions);
-
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
-): Promise<IParsedMovie[]> => {
-  const response: IParsedMovie[] = [];
+): Promise<void> => {
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
@@ -369,7 +369,6 @@ export const parseMovie = async (
 
     const status = getMovieStatus(dataTMDB.release_date);
 
-    // Crear las sesiones para la película
     const sessions = await createMovieSessions(
       dataTMDB.release_date,
       dataTMDB.runtime,
@@ -390,18 +389,14 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos?.results[0].key}  `,
+      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos?.results[0].key}`,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
       sessions: sessions.map((session) => session._id),
     };
-
-    response.push(parsedMovie);
-
+    await Movie.create(parsedMovie);
     progressBar(i + 1, totalMovies);
 
     await sleep(1000);
   }
-
-  return response;
 };

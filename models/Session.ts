@@ -21,7 +21,7 @@ const sessionSchema = new Schema<ISessionModel>({
     of: Boolean,
     required: true,
   },
-  availableSeatsGenneral: { type: Number, required: true },
+  availableSeatsGeneral: { type: Number, required: true },
   generalPrice: { type: Number, required: true },
   availableSeats: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
