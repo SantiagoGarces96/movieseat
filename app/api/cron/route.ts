@@ -4,7 +4,7 @@ import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
 import Movie from "@/models/Movie";
 import Session from "@/models/Session";
 
-export default async function handler(req: Request, res: NextApiResponse) {
+export default async function GET(req: Request, res: NextApiResponse) {
   // Verify if the request comes with the correct authorization.
   if (
     req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
