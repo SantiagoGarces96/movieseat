@@ -13,7 +13,6 @@ import {
   SessionPrice,
   SessionPriceAfternoon,
   SessionRoom,
-  SessionTimeManagement,
 } from "@/types/session";
 import Session from "@/models/Session";
 import Room from "@/models/Room";
@@ -181,88 +180,72 @@ const getSeatsNumber = (availableSeats: number): ISeats => {
   return response;
 };
 
-const createSession = async (
+const createSession = (
   rooms: IRoom[],
-  sessionDay: Date,
-  firstSession: Date,
-  sessionDuration: number,
-  sessionNumber: number,
+  sessionTime: Date,
   existingSessions: ISession[],
   movieId: mongoose.Types.ObjectId,
   status: MovieStatus,
   sessions: ISession[],
-  sessionsPerDay?: number,
-): Promise<void> => {
-  for (const room of rooms) {
-    /**
-     * // TODO
-     * Pelicula se estrena hoy la hora actua es 8:00am, la pelicula tiene una duracion de 1h:30m,
-     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 10:00am.
-     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 05:00pm.
-     * En la Sala 3 inicia una funcion. en IMAX. a las 08:00pm.
-     *
-     * Tenemos otra pelicula, la pelicula tiene una duracion de 1h:30m,
-     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 01:30pm.
-     * En la Sala 1 y Sala 2 inicia una funcion. en 2D y 3D. a las 08:00pm.
-     * En la Sala 3 inicia una funcion. en IMAX. a las 05:00pm.
-     */
-    const sesssions: ISession[] = await Session.find({
-      dateTime: sessionDay,
-      roomId: room._id,
-    });
+  usedRoomTimes: Set<string | unknown>, // Control de combinaciones usadas
+) => {
+  const availableRooms = rooms.slice(); // Copia de las salas disponibles
 
-    if (sesssions.length) {
-      sesssions.forEach(({ dateTime }) => {
-        dateTime.getHours();
+  while (availableRooms.length > 0) {
+    // Elegir aleatoriamente una sala
+    const roomIndex = Math.floor(Math.random() * availableRooms.length);
+    const room = availableRooms[roomIndex];
+
+    const roomTimeKey = `${room._id}-${sessionTime.getTime()}`;
+
+    // Verificar si la combinación sala-horario ya fue usada
+    if (!usedRoomTimes.has(roomTimeKey)) {
+      // Verificar conflictos en las sesiones existentes
+      const conflict = existingSessions?.some((session) => {
+        const sessionDateTime = new Date(session.dateTime).getTime();
+        return (
+          session.roomId._id === room._id &&
+          Math.abs(sessionDateTime - sessionTime.getTime()) < 0
+        );
       });
+
+      if (!conflict) {
+        const session = new Session({
+          movieId: movieId._id,
+          roomId: room._id,
+          dateTime: sessionTime,
+          seatsPreferential: getSeatsNumber(room.totalSeatsPreferential),
+          availableSeatsPreferential: room.totalSeatsPreferential,
+          preferentialPrice: calculatePrice(
+            SeatType.PREFERENTIAL,
+            room.room,
+            sessionTime,
+            status,
+          ),
+          seatsGeneral: getSeatsNumber(room.totalSeatsGeneral),
+          availableSeatsGeneral: room.totalSeatsGeneral,
+          generalPrice: calculatePrice(
+            SeatType.GENERAL,
+            room.room,
+            sessionTime,
+            status,
+          ),
+          availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
+        });
+
+        sessions.push(session);
+        usedRoomTimes.add(roomTimeKey); // Registrar la combinación de sala y horario
+        break;
+      }
     }
 
-    const sessionTime = new Date(
-      sessionDay.getTime() +
-        firstSession.getTime() +
-        sessionNumber * sessionDuration,
-    );
-
-    const conflict = existingSessions.some((session) => {
-      const sessionDateTime = new Date(session.dateTime).getTime();
-      return (
-        session.roomId._id === room._id &&
-        Math.abs(sessionDateTime - sessionTime.getTime()) < sessionDuration
-      );
-    });
-
-    if (!conflict) {
-      const session = new Session({
-        movieId,
-        roomId: room._id,
-        dateTime: sessionTime,
-        seatsPreferential: getSeatsNumber(room.totalSeatsPreferential),
-        availableSeatsPreferential: room.totalSeatsPreferential,
-        preferentialPrice: calculatePrice(
-          SeatType.PREFERENTIAL,
-          room.room,
-          sessionTime,
-          status,
-        ),
-        seatsGeneral: getSeatsNumber(room.totalSeatsGeneral),
-        availableSeatsGeneral: room.totalSeatsGeneral,
-        generalPrice: calculatePrice(
-          SeatType.GENERAL,
-          room.room,
-          sessionTime,
-          status,
-        ),
-        availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
-      });
-      sessions.push(session);
-      break;
-    }
+    // Si hay conflicto o la sala ya fue usada, removerla de las opciones
+    availableRooms.splice(roomIndex, 1);
   }
 };
 
 const createMovieSessions = async (
   releaseDate: string,
-  duration: number,
   status: MovieStatus,
   movieId: mongoose.Types.ObjectId,
 ): Promise<ISession[]> => {
@@ -270,84 +253,93 @@ const createMovieSessions = async (
   const today: Date = new Date();
   const rooms: IRoom[] = await Room.find({});
 
-  if (status === MovieStatus.ARCHIVED) return [];
+  if (status === MovieStatus.ARCHIVED || status === MovieStatus.UPCOMING)
+    return [];
 
-  const firstSession: Date = new Date(
-    `1970-01-01T${SessionTimeManagement.FIRST_SESSION_TIME}:00Z`,
-  );
-
-  const sessionDuration: number =
-    duration +
-    SessionTimeManagement.CLEANING_TIME +
-    SessionTimeManagement.SETUP_TIME;
+  const sessionTimes = [
+    "10:00:00",
+    "13:00:00",
+    "16:00:00",
+    "19:00:00",
+    "22:00:00",
+  ];
 
   const existingSessions: ISession[] = await Session.find({
     dateTime: { $gte: today },
   }).lean();
 
   const sessions: ISession[] = [];
+  const usedRoomTimes = new Set();
+  const sessionDays = 7;
 
   if (status === MovieStatus.PRE_SALE) {
     for (let day = 2; day > 0; day--) {
-      const sessionDay = new Date(
-        release.getTime() - day * 24 * 60 * 60 * 1000,
-      );
+      const sessionDay = new Date(today.getTime() - day * 24 * 60 * 60 * 1000);
+
+      let sessionsPerDay = 2;
+
+      const shuffledSessionTimes = sessionTimes
+        .slice(0, sessionsPerDay)
+        .sort(() => Math.random() - 0.5);
 
       for (let sessionNumber = 0; sessionNumber < 2; sessionNumber++) {
+        const sessionTime = new Date(
+          `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[sessionNumber]}Z`,
+        );
         createSession(
           rooms,
-          sessionDay,
-          firstSession,
-          sessionDuration,
-          sessionNumber,
+          sessionTime,
           existingSessions,
           movieId,
           status,
           sessions,
+          usedRoomTimes,
         );
       }
     }
+
+    await Session.insertMany(sessions);
+    return sessions;
   }
 
-  if (status === MovieStatus.BILLBOARD) {
-    const sessionDays = 119;
+  for (let day = 0; day < sessionDays; day++) {
+    const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
+    const daysSinceRelease = Math.floor(
+      (sessionDay.getTime() - release.getTime()) / (1000 * 60 * 60 * 24),
+    );
 
-    for (let day = 0; day < sessionDays; day++) {
-      const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
-      const daysSinceRelease = Math.floor(
-        (sessionDay.getTime() - release.getTime()) / (1000 * 60 * 60 * 24),
+    let sessionsPerDay = 3;
+    if (daysSinceRelease > 30 && daysSinceRelease <= 60) {
+      sessionsPerDay = 2;
+    } else if (daysSinceRelease > 60 && daysSinceRelease <= 120) {
+      sessionsPerDay = 1;
+    } else if (daysSinceRelease > 120) {
+      break; // Más de 120 días: película archivada
+    }
+
+    // Aleatorizar el orden de los horarios del día
+    const shuffledSessionTimes = sessionTimes
+      .slice(0, sessionsPerDay)
+      .sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < sessionsPerDay; i++) {
+      const sessionTime = new Date(
+        `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[i]}Z`,
       );
-
-      let sessionsPerDay = 5;
-      if (daysSinceRelease > 60 && daysSinceRelease <= 90) {
-        sessionsPerDay = 4;
-      } else if (daysSinceRelease > 90 && daysSinceRelease <= 120) {
-        sessionsPerDay = 2;
-      } else if (daysSinceRelease > 120) {
-        break;
-      }
-
-      for (
-        let sessionNumber = 0;
-        sessionNumber < sessionsPerDay;
-        sessionNumber++
-      ) {
-        createSession(
-          rooms,
-          sessionDay,
-          firstSession,
-          sessionDuration,
-          sessionNumber,
-          existingSessions,
-          movieId,
-          status,
-          sessions,
-          sessionsPerDay,
-        );
-      }
+      createSession(
+        rooms,
+        sessionTime,
+        existingSessions,
+        movieId,
+        status,
+        sessions,
+        usedRoomTimes,
+      );
     }
   }
+
   await Session.insertMany(sessions);
+
   return sessions;
 };
 
@@ -371,7 +363,6 @@ export const parseMovie = async (
 
     const sessions = await createMovieSessions(
       dataTMDB.release_date,
-      dataTMDB.runtime,
       status,
       movieId,
     );
@@ -389,7 +380,7 @@ export const parseMovie = async (
       language: dataTMDB.spoken_languages.map(
         ({ english_name }) => english_name,
       ),
-      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos?.results[0].key}`,
+      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
       poster: dataOMDB.Poster,
       status: getMovieStatus(dataTMDB.release_date),
       sessions: sessions.map((session) => session._id),
