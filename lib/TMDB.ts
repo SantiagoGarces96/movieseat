@@ -266,13 +266,13 @@ const createMovieSessions = async (
 
   const sessions: ISession[] = [];
   const usedRoomTimes = new Set();
-  const sessionDays = 7;
+  const sessionDays = 120;
 
   if (status === MovieStatus.PRE_SALE) {
     for (let day = 2; day > 0; day--) {
       const sessionDay = new Date(today.getTime() - day * 24 * 60 * 60 * 1000);
 
-      let sessionsPerDay = 2;
+      const sessionsPerDay = 2;
 
       const shuffledSessionTimes = sessionTimes
         .slice(0, sessionsPerDay)
