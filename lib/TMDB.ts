@@ -343,6 +343,7 @@ export const parseMovie = async (
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
+    progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
     const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
@@ -353,6 +354,12 @@ export const parseMovie = async (
     const currentMovie: IMovie | null = await Movie.findOne({
       imdb_id: dataTMDB.imdb_id,
     });
+
+    if (status === MovieStatus.ARCHIVED) {
+      await Movie.findOneAndDelete({ _id: currentMovie?._id });
+      await Session.deleteMany({ movieId: currentMovie?._id });
+      continue;
+    }
 
     if (currentMovie?.status !== status) {
       if (currentMovie) {
@@ -390,6 +397,5 @@ export const parseMovie = async (
         await sleep(1000);
       }
     }
-    progressBar(i + 1, totalMovies);
   }
 };
