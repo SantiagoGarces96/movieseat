@@ -355,37 +355,40 @@ export const parseMovie = async (
     });
 
     if (currentMovie?.status !== status) {
-      const trailerVideo = dataTMDB.videos.results.find(
-        (video) => video.type === "Trailer" || video.type === "Teaser",
-      );
-      const movieId = new mongoose.Types.ObjectId();
-      const sessions = await createMovieSessions(
-        dataTMDB.release_date,
-        status,
-        movieId,
-      );
-
-      const parsedMovie: IParsedMovie = {
-        _id: movieId,
-        imdb_id: dataTMDB.imdb_id,
-        title: dataTMDB.original_title,
-        backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
-        description: dataTMDB.overview,
-        releaseDate: new Date(dataTMDB.release_date),
-        duration: dataTMDB.runtime,
-        genre: dataTMDB.genres.map(({ name }) => name),
-        director: dataOMDB.Director,
-        cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
-        language: dataTMDB.spoken_languages.map(
-          ({ english_name }) => english_name,
-        ),
-        trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
-        poster: dataOMDB.Poster,
-        status: getMovieStatus(dataTMDB.release_date),
-        sessions: sessions.map((session) => session._id),
-      };
-      await Movie.create(parsedMovie);
-      await sleep(1000);
+      if (currentMovie) {
+        await Movie.findOneAndUpdate({ imdb_id: dataTMDB.imdb_id }, { status });
+      } else {
+        const trailerVideo = dataTMDB.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        );
+        const movieId = new mongoose.Types.ObjectId();
+        const sessions = await createMovieSessions(
+          dataTMDB.release_date,
+          status,
+          movieId,
+        );
+        const parsedMovie: IParsedMovie = {
+          _id: movieId,
+          imdb_id: dataTMDB.imdb_id,
+          title: dataTMDB.original_title,
+          backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
+          description: dataTMDB.overview,
+          releaseDate: new Date(dataTMDB.release_date),
+          duration: dataTMDB.runtime,
+          genre: dataTMDB.genres.map(({ name }) => name),
+          director: dataOMDB.Director,
+          cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
+          language: dataTMDB.spoken_languages.map(
+            ({ english_name }) => english_name,
+          ),
+          trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
+          poster: dataOMDB.Poster,
+          status,
+          sessions: sessions.map((session) => session._id),
+        };
+        await Movie.create(parsedMovie);
+        await sleep(1000);
+      }
     }
     progressBar(i + 1, totalMovies);
   }
