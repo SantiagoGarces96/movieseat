@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
-import Movie from "@/models/Movie";
-import Session from "@/models/Session";
 
 export async function POST() {
   await dbConnect();
 
   try {
-    await Movie.deleteMany({});
-    await Session.deleteMany({});
-
     await getNowPlayingTMDB();
-    // await getUpcomingTMDB();
+    await getUpcomingTMDB();
 
     return NextResponse.json({
       message: "Base de datos completada exitosamente",
