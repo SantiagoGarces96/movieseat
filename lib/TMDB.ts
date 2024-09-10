@@ -383,6 +383,8 @@ export const parseMovie = async (
           status,
           movieId,
         );
+        const youtubeId =
+          trailerVideo?.key || dataTMDB.videos.results[0]?.key || null;
         const parsedMovie: IParsedMovie = {
           _id: movieId,
           imdb_id: dataTMDB.imdb_id,
@@ -397,7 +399,9 @@ export const parseMovie = async (
           language: dataTMDB.spoken_languages.map(
             ({ english_name }) => english_name,
           ),
-          trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
+          trailer: youtubeId
+            ? `https://www.youtube.com/watch?v=${youtubeId}`
+            : "",
           poster: dataOMDB.Poster,
           status,
           sessions: sessions.map((session) => session._id),
