@@ -363,7 +363,16 @@ export const parseMovie = async (
 
     if (currentMovie?.status !== status) {
       if (currentMovie) {
-        await Movie.findOneAndUpdate({ imdb_id: dataTMDB.imdb_id }, { status });
+        await Session.deleteMany({ movieId: currentMovie._id });
+        const sessions = await createMovieSessions(
+          dataTMDB.release_date,
+          status,
+          new mongoose.Types.ObjectId(currentMovie._id),
+        );
+        await Movie.findOneAndUpdate(
+          { _id: currentMovie._id },
+          { status, sessions: sessions.map((session) => session._id) },
+        );
       } else {
         const trailerVideo = dataTMDB.videos.results.find(
           (video) => video.type === "Trailer" || video.type === "Teaser",
