@@ -187,20 +187,17 @@ const createSession = (
   movieId: mongoose.Types.ObjectId,
   status: MovieStatus,
   sessions: ISession[],
-  usedRoomTimes: Set<string | unknown>, // Control de combinaciones usadas
+  usedRoomTimes: Set<string | unknown>,
 ) => {
-  const availableRooms = rooms.slice(); // Copia de las salas disponibles
+  const availableRooms = rooms.slice();
 
   while (availableRooms.length > 0) {
-    // Elegir aleatoriamente una sala
     const roomIndex = Math.floor(Math.random() * availableRooms.length);
     const room = availableRooms[roomIndex];
 
     const roomTimeKey = `${room._id}-${sessionTime.getTime()}`;
 
-    // Verificar si la combinación sala-horario ya fue usada
     if (!usedRoomTimes.has(roomTimeKey)) {
-      // Verificar conflictos en las sesiones existentes
       const conflict = existingSessions?.some((session) => {
         const sessionDateTime = new Date(session.dateTime).getTime();
         return (
@@ -234,12 +231,11 @@ const createSession = (
         });
 
         sessions.push(session);
-        usedRoomTimes.add(roomTimeKey); // Registrar la combinación de sala y horario
+        usedRoomTimes.add(roomTimeKey);
         break;
       }
     }
 
-    // Si hay conflicto o la sala ya fue usada, removerla de las opciones
     availableRooms.splice(roomIndex, 1);
   }
 };
@@ -314,10 +310,9 @@ const createMovieSessions = async (
     } else if (daysSinceRelease > 60 && daysSinceRelease <= 120) {
       sessionsPerDay = 1;
     } else if (daysSinceRelease > 120) {
-      break; // Más de 120 días: película archivada
+      break;
     }
 
-    // Aleatorizar el orden de los horarios del día
     const shuffledSessionTimes = sessionTimes
       .slice(0, sessionsPerDay)
       .sort(() => Math.random() - 0.5);
@@ -339,7 +334,6 @@ const createMovieSessions = async (
   }
 
   await Session.insertMany(sessions);
-
   return sessions;
 };
 
