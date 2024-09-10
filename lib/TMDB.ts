@@ -343,6 +343,7 @@ export const parseMovie = async (
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
+    progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
     const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
@@ -354,9 +355,24 @@ export const parseMovie = async (
       imdb_id: dataTMDB.imdb_id,
     });
 
+    if (status === MovieStatus.ARCHIVED) {
+      await Movie.findOneAndDelete({ _id: currentMovie?._id });
+      await Session.deleteMany({ movieId: currentMovie?._id });
+      continue;
+    }
+
     if (currentMovie?.status !== status) {
       if (currentMovie) {
-        await Movie.findOneAndUpdate({ imdb_id: dataTMDB.imdb_id }, { status });
+        await Session.deleteMany({ movieId: currentMovie._id });
+        const sessions = await createMovieSessions(
+          dataTMDB.release_date,
+          status,
+          new mongoose.Types.ObjectId(currentMovie._id),
+        );
+        await Movie.findOneAndUpdate(
+          { _id: currentMovie._id },
+          { status, sessions: sessions.map((session) => session._id) },
+        );
       } else {
         const trailerVideo = dataTMDB.videos.results.find(
           (video) => video.type === "Trailer" || video.type === "Teaser",
@@ -367,6 +383,8 @@ export const parseMovie = async (
           status,
           movieId,
         );
+        const youtubeId =
+          trailerVideo?.key || dataTMDB.videos.results[0]?.key || null;
         const parsedMovie: IParsedMovie = {
           _id: movieId,
           imdb_id: dataTMDB.imdb_id,
@@ -381,7 +399,9 @@ export const parseMovie = async (
           language: dataTMDB.spoken_languages.map(
             ({ english_name }) => english_name,
           ),
-          trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
+          trailer: youtubeId
+            ? `https://www.youtube.com/watch?v=${youtubeId}`
+            : "",
           poster: dataOMDB.Poster,
           status,
           sessions: sessions.map((session) => session._id),
@@ -390,6 +410,5 @@ export const parseMovie = async (
         await sleep(1000);
       }
     }
-    progressBar(i + 1, totalMovies);
   }
 };
