@@ -4,6 +4,7 @@ import { Schema, model, models } from "mongoose";
 
 const movieSchema = new Schema<IMovieModel>({
   _id: { type: Schema.Types.ObjectId, required: true, unique: true },
+  imdb_id: { type: String, require: true },
   title: { type: String, required: true },
   backdrop: { type: String, required: true },
   description: { type: String, required: true },
