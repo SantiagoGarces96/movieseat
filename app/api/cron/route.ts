@@ -1,7 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
 import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
-import Movie from "@/models/Movie";
-import Session from "@/models/Session";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -14,8 +12,6 @@ export async function GET(req: NextRequest) {
 
   try {
     await dbConnect();
-    await Movie.deleteMany({});
-    await Session.deleteMany({});
     await getNowPlayingTMDB();
     await getUpcomingTMDB();
 
