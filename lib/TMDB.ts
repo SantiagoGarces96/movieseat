@@ -363,6 +363,7 @@ export const parseMovie = async (
 
     const parsedMovie: IParsedMovie = {
       _id: movieId,
+      imdb_id: dataTMDB.imdb_id,
       title: dataTMDB.original_title,
       backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
       description: dataTMDB.overview,
