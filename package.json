@@ -12,6 +12,7 @@
     "@types/mongoose": "^5.11.97",
     "axios": "^1.7.5",
     "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.3.30",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.4",
