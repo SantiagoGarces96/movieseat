@@ -1,9 +1,5 @@
 import Image from "next/image";
-import {
-  HiBars3CenterLeft,
-  HiMagnifyingGlass,
-  HiOutlineBell,
-} from "react-icons/hi2";
+import { HiBars3CenterLeft, HiMagnifyingGlass } from "react-icons/hi2";
 
 export default function DefaultNavBar() {
   return (
@@ -17,12 +13,6 @@ export default function DefaultNavBar() {
         </button>
       </div>
       <div className="navbar-end">
-        <button className="btn btn-ghost btn-circle">
-          <div className="indicator">
-            <HiOutlineBell className="h-5 w-5" />
-            <span className="badge badge-xs badge-secondary indicator-item"></span>
-          </div>
-        </button>
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}
@@ -32,7 +22,7 @@ export default function DefaultNavBar() {
             <div className="w-10 rounded-full">
               <Image
                 alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                src="https://avatars.githubusercontent.com/u/93413716?v=4&size=256"
                 width={100}
                 height={100}
               />
@@ -40,15 +30,32 @@ export default function DefaultNavBar() {
           </div>
           <div
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 z-[1] mt-3 w-52 rounded-lg p-2 shadow"
+            className="menu menu-sm dropdown-content bg-base-100 z-[1] mt-3 w-64 rounded-lg shadow-md"
           >
-            <div>
+            <div className="flex w-full items-center justify-start gap-3 border-b p-4">
               <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content w-12 rounded-full">
+                <div className="bg-accent text-primary w-12 rounded-full">
                   <span>FY</span>
                 </div>
               </div>
+              <div className="flex flex-col gap-1 overflow-hidden">
+                <h3 className="truncate font-bold">Felipe Yepes</h3>
+                <div>
+                  <div className="overflow-hidden truncate font-normal text-gray-400">
+                    yepilef@gmail.com
+                  </div>
+                  <a className="link link-secondary">Cerrar Sesion</a>
+                </div>
+              </div>
             </div>
+            <ul className="menu menu-md bg-base-100">
+              <li>
+                <a>Profile</a>
+              </li>
+              <li>
+                <a>Settings</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
