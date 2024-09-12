@@ -1,7 +1,7 @@
 import Link from "next/link";
-import NavLinks from "@/app/ui/dashboard/NavBar/NavLinks";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
-import ShowHideMenu from "./ShowHideMenu";
+import ShowHideMenu from "./Icons/ShowHideMenuIcon";
+import NavLinks from "@/app/ui/dashboard/NavBar/NavLinks";
 
 export default function SideNav() {
   return (

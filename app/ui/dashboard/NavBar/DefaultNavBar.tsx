@@ -1,17 +1,17 @@
 import Image from "next/image";
-import { HiMagnifyingGlass } from "react-icons/hi2";
-import MenuIcon from "./MenuIcon";
-import ModalSideNavBar from "./ModalSideNavBar";
+import ModalSideNavBar from "./Modals/ModalSideNavBar";
+import ModalSearch from "./Modals/ModalSearch";
+import MenuIcon from "./Icons/MenuIcon";
+import SearchIcon from "./Icons/SearchIcon";
 
 export default function DefaultNavBar() {
   return (
     <div className="navbar border-b bg-base-100">
       <ModalSideNavBar />
+      <ModalSearch />
       <div className="navbar-start">
         <MenuIcon />
-        <button className="btn btn-circle btn-ghost">
-          <HiMagnifyingGlass className="h-5 w-5" />
-        </button>
+        <SearchIcon />
       </div>
       <div className="navbar-end">
         {/* TODO get all data from next-auth */}
