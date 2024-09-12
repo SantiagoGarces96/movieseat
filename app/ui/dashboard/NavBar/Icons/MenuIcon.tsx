@@ -11,7 +11,7 @@ export default function MenuIcon() {
     }
   };
   return (
-    <button className="btn btn-ghost btn-circle" onClick={openModal}>
+    <button className="btn btn-circle btn-ghost btn-sm" onClick={openModal}>
       <HiBars3CenterLeft className="h-5 w-5" />
     </button>
   );

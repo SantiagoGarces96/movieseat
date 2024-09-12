@@ -12,7 +12,7 @@ export default function CloseSearchIcon() {
     }
   };
   return (
-    <button className="btn btn-circle btn-ghost" onClick={closeModal}>
+    <button className="btn btn-circle btn-ghost btn-sm" onClick={closeModal}>
       <HiOutlineXMark className="h-5 w-5" />
     </button>
   );

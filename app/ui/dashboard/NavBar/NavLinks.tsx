@@ -8,7 +8,7 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <ul className="menu menu-md w-full rounded-box bg-base-100">
+    <ul className="menu menu-sm w-full rounded-box bg-base-100">
       {navLinks.map((link) => {
         if (link.icon && link.href) {
           const LinkIcon = link.icon;
@@ -18,8 +18,8 @@ export default function NavLinks() {
                 href={link.href}
                 className={clsx("", { "bg-accent/50": pathname === link.href })}
               >
-                <LinkIcon className="h-6 w-6" />
-                <span className="text-lg font-light">{link.name}</span>
+                <LinkIcon className="h-5 w-5" />
+                <span className="text-base font-normal">{link.name}</span>
               </Link>
             </li>
           );

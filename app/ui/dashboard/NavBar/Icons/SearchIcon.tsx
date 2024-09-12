@@ -11,7 +11,7 @@ export default function SearchIcon() {
     }
   };
   return (
-    <button className="btn btn-circle btn-ghost" onClick={openModal}>
+    <button className="btn btn-circle btn-ghost btn-sm" onClick={openModal}>
       <HiMagnifyingGlass className="h-5 w-5" />
     </button>
   );

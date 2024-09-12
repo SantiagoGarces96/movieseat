@@ -19,7 +19,7 @@ export default function DefaultNavBar() {
           <div
             tabIndex={0}
             role="button"
-            className="avatar btn btn-circle btn-ghost"
+            className="avatar btn btn-circle btn-ghost btn-md"
           >
             <div className="w-10 rounded-full">
               <Image
