@@ -1,13 +1,14 @@
 import Image from "next/image";
-import { HiBars3CenterLeft, HiMagnifyingGlass } from "react-icons/hi2";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import MenuIcon from "./MenuIcon";
+import ModalSideNavBar from "./ModalSideNavBar";
 
 export default function DefaultNavBar() {
   return (
     <div className="navbar bg-base-100 border-b">
+      <ModalSideNavBar />
       <div className="navbar-start">
-        <button className="btn btn-ghost btn-circle">
-          <HiBars3CenterLeft className="h-5 w-5" />
-        </button>
+        <MenuIcon />
         <button className="btn btn-ghost btn-circle">
           <HiMagnifyingGlass className="h-5 w-5" />
         </button>
