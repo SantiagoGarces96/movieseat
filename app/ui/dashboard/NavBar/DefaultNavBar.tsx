@@ -5,20 +5,21 @@ import ModalSideNavBar from "./ModalSideNavBar";
 
 export default function DefaultNavBar() {
   return (
-    <div className="navbar bg-base-100 border-b">
+    <div className="navbar border-b bg-base-100">
       <ModalSideNavBar />
       <div className="navbar-start">
         <MenuIcon />
-        <button className="btn btn-ghost btn-circle">
+        <button className="btn btn-circle btn-ghost">
           <HiMagnifyingGlass className="h-5 w-5" />
         </button>
       </div>
       <div className="navbar-end">
+        {/* TODO get all data from next-auth */}
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}
             role="button"
-            className="btn btn-ghost btn-circle avatar"
+            className="avatar btn btn-circle btn-ghost"
           >
             <div className="w-10 rounded-full">
               <Image
@@ -31,11 +32,11 @@ export default function DefaultNavBar() {
           </div>
           <div
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 z-[1] mt-3 w-64 rounded-lg shadow-md"
+            className="menu dropdown-content menu-sm z-[1] mt-3 w-64 rounded-lg bg-base-100 shadow-md"
           >
             <div className="flex w-full items-center justify-start gap-3 border-b p-4">
               <div className="avatar placeholder">
-                <div className="bg-accent text-primary w-12 rounded-full">
+                <div className="w-12 rounded-full bg-accent text-primary">
                   <span>FY</span>
                 </div>
               </div>
