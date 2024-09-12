@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NavLinks from "@/app/ui/dashboard/NavBar/NavLinks";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
-import { HiLogin, HiOutlineTemplate } from "react-icons/hi";
+import ShowHideMenu from "./ShowHideMenu";
 
 export default function SideNav() {
   return (
@@ -14,11 +14,11 @@ export default function SideNav() {
           <HiOutlineVideoCamera className="h-9 w-9" />
           <h1 className="text-xl font-bold">MoviesSeat</h1>
         </Link>
-        <button className="btn btn-circle btn-ghost">
-          <HiLogin className="h-5 w-5" />
-        </button>
+        <ShowHideMenu />
       </div>
-      <NavLinks />
+      <div className="overflow-auto">
+        <NavLinks />
+      </div>
     </div>
   );
 }
