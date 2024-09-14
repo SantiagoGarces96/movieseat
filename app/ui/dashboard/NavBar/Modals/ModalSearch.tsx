@@ -2,49 +2,20 @@ import React from "react";
 import CloseSearchIcon from "../Icons/CloseSearchIcon";
 import SearchInput from "../Inputs/SearchInput";
 import RecentSearch from "../DataDisplay/RecentSearch";
-import ResultsSearchs from "../DataDisplay/ResultsSearch";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
+import ResultsSearchs from "../DataDisplay/ResultsSearch";
 
-export default function ModalSearch() {
-  //TODO this data is getting from API
-  const usersData: IResultDataDashboard[] = [
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-  ];
-  const moviesData: IResultDataDashboard[] = [];
-  const foodData: IResultDataDashboard[] = [
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-    {
-      src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
-      label: "felipe yepes",
-    },
-  ];
-  const roomsData: IResultDataDashboard[] = [];
+export default async function ModalSearch({
+  usersData,
+  moviesData,
+  foodData,
+  roomsData,
+}: {
+  usersData: IResultDataDashboard[];
+  moviesData: IResultDataDashboard[];
+  foodData: IResultDataDashboard[];
+  roomsData: IResultDataDashboard[];
+}) {
   return (
     <dialog id="modal_search" className="modal modal-top">
       <div className="absolute h-full w-[98%] overflow-auto rounded-none bg-base-100">
