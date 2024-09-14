@@ -1,4 +1,3 @@
-// "use client";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import Image from "next/image";
 import Link from "next/link";

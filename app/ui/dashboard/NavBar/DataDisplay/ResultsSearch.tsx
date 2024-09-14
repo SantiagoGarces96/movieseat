@@ -1,5 +1,4 @@
 import { IResultsSearchsDashboard } from "@/interfaces/dasboard";
-import React from "react";
 import ResultCard from "./ResultCard";
 
 export default function ResultsSearchs({

@@ -1,4 +1,3 @@
-import React from "react";
 import CloseSearchIcon from "../Icons/CloseSearchIcon";
 import SearchInput from "../Inputs/SearchInput";
 import RecentSearch from "../DataDisplay/RecentSearch";
