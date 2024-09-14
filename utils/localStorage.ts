@@ -10,3 +10,7 @@ export const recentSearchSaver = (query: string): void => {
     localStorage.setItem("recentSearches", JSON.stringify(limitedSearches));
   }
 };
+
+export const getRecentSearch = (): string[] => {
+  return JSON.parse(localStorage.getItem("recentSearches") || "[]");
+};
