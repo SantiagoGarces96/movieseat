@@ -14,10 +14,11 @@ export const getRoomsByQuery = async (
     const sooms: IRoom[] = await Room.find({
       $or: [{ name: { $regex: query, $options: "i" } }],
     });
-    const parsedRooms: IResultDataDashboard[] = sooms.map(({ name }) => {
+    const parsedRooms: IResultDataDashboard[] = sooms.map(({ _id, name }) => {
       return {
         src: "https://archivos-cms.cinecolombia.com/images/_aliases/medium/0/8/0/8/18080-3-esl-CO/17.png",
         label: name,
+        href: `/rooms/${_id}`,
       };
     });
     return parsedRooms;

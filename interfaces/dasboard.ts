@@ -13,6 +13,7 @@ export interface IBadgeDashboard {
 export interface IResultDataDashboard {
   src: string;
   label: string;
+  href: string;
 }
 
 export interface IResultsSearchsDashboard {
