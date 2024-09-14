@@ -1,7 +1,7 @@
+// "use client";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 export default function ResultCard({ src, label, href }: IResultDataDashboard) {
   return (
