@@ -17,7 +17,7 @@ export default function DefaultNavBar() {
           <div
             tabIndex={0}
             role="button"
-            className="avatar btn btn-circle btn-ghost btn-md"
+            className="avatar btn btn-circle btn-ghost btn-sm"
           >
             <div className="w-8 rounded-full">
               <Image
