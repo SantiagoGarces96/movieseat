@@ -19,7 +19,7 @@ export default function DefaultNavBar() {
             role="button"
             className="avatar btn btn-circle btn-ghost btn-md"
           >
-            <div className="w-10 rounded-full">
+            <div className="w-8 rounded-full">
               <Image
                 alt="Tailwind CSS Navbar component"
                 src="https://avatars.githubusercontent.com/u/93413716?v=4&size=256"
