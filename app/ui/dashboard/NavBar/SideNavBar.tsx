@@ -5,7 +5,7 @@ import NavLinks from "@/app/ui/dashboard/NavBar/NavLinks";
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col p-2">
+    <div className="flex h-full flex-col border-r p-2">
       <div className="flex w-full items-center justify-between px-2 py-4">
         <Link
           className="flex items-center justify-center gap-2"
