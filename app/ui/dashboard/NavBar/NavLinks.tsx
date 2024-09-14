@@ -16,7 +16,9 @@ export default function NavLinks() {
             <li key={link.name} className="mb-3">
               <Link
                 href={link.href}
-                className={clsx("", { "bg-accent/50": pathname === link.href })}
+                className={clsx("", {
+                  "bg-accent/10 text-accent": pathname === link.href,
+                })}
               >
                 <LinkIcon className="h-5 w-5" />
                 <span className="text-base font-normal">{link.name}</span>
