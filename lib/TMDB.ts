@@ -42,7 +42,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -80,12 +80,26 @@ export const getMovieDetailTMDB = async (
         options,
       );
       const dataEN = response.data as IMovieDetailTMDB;
-
       if (!data.videos.results[0]) {
         data.videos = dataEN.videos;
       }
       if (!data.overview) {
         data.overview = dataEN.overview;
+      }
+    }
+
+    if (!data.videos.results[0] || !data.overview) {
+      response = await axios.get(
+        `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=id`,
+        options,
+      );
+      const dataDefault = response.data as IMovieDetailTMDB;
+
+      if (!data.videos.results[0]) {
+        data.videos = dataDefault.videos;
+      }
+      if (!data.overview) {
+        data.overview = dataDefault.overview;
       }
     }
 
@@ -383,18 +397,25 @@ export const parseMovie = async (
           status,
           movieId,
         );
+        const director = dataTMDB.credits.crew.find(
+          (crewMember) => crewMember.job === "Director",
+        )?.original_name;
+
+        if (!director) {
+          throw new Error("Director not found in TMDB data");
+        }
         const youtubeId =
           trailerVideo?.key || dataTMDB.videos.results[0]?.key || null;
         const parsedMovie: IParsedMovie = {
           _id: movieId,
           imdb_id: dataTMDB.imdb_id,
-          title: dataTMDB.original_title,
+          title: dataTMDB.title,
           backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
           description: dataTMDB.overview,
           releaseDate: new Date(dataTMDB.release_date),
           duration: dataTMDB.runtime,
           genre: dataTMDB.genres.map(({ name }) => name),
-          director: dataOMDB.Director,
+          director,
           cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
           language: dataTMDB.spoken_languages.map(
             ({ english_name }) => english_name,
@@ -402,7 +423,7 @@ export const parseMovie = async (
           trailer: youtubeId
             ? `https://www.youtube.com/watch?v=${youtubeId}`
             : "",
-          poster: dataOMDB.Poster,
+          poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
           status,
           sessions: sessions.map((session) => session._id),
         };
