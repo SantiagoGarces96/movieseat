@@ -15,7 +15,7 @@ const movieSchema = new Schema<IMovieModel>({
   cast: [{ type: String, required: true }],
   language: [{ type: String, required: true }],
   subtitles: { type: Boolean, default: false },
-  trailer: { type: String, required: true },
+  trailer: { type: String, default: null },
   poster: { type: String, required: true },
   status: {
     type: String,
