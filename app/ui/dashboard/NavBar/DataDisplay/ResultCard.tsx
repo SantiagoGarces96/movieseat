@@ -1,16 +1,18 @@
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
 
-export default function ResultCard({ src, label }: IResultDataDashboard) {
+export default function ResultCard({ src, label, href }: IResultDataDashboard) {
   return (
-    <div className="flex items-center justify-start gap-2">
-      <div className="avatar">
-        <div className="w-10 rounded-full">
-          <Image src={src} alt={label} width={100} height={100} />
+    <li className="">
+      <Link href={href}>
+        <div className="avatar">
+          <div className="w-10 rounded-full">
+            <Image src={src} alt={label} width={100} height={100} />
+          </div>
         </div>
-      </div>
-      <span className="text-base capitalize">{label}</span>
-    </div>
+        <span className="text-base capitalize">{label}</span>
+      </Link>
+    </li>
   );
 }

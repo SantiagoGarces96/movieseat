@@ -14,12 +14,15 @@ export const getFoodByQuery = async (
     const food: IFood[] = await Food.find({
       $or: [{ name: { $regex: query, $options: "i" } }],
     });
-    const parsedFood: IResultDataDashboard[] = food.map(({ image, name }) => {
-      return {
-        src: image,
-        label: name,
-      };
-    });
+    const parsedFood: IResultDataDashboard[] = food.map(
+      ({ _id, image, name }) => {
+        return {
+          src: image,
+          label: name,
+          href: `/food/${_id}`,
+        };
+      },
+    );
     return parsedFood;
   } catch (error: any) {
     return [];

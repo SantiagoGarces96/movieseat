@@ -1,4 +1,5 @@
 "use client";
+import { recentSearchSaver } from "@/utils/localStorage";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useDebouncedCallback } from "use-debounce";
@@ -12,11 +13,12 @@ export default function SearchInput() {
     const params = new URLSearchParams(searchParams);
     if (term) {
       params.set("query", term);
+      recentSearchSaver(term);
     } else {
       params.delete("query");
     }
     replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  }, 500);
 
   return (
     <label className="input input-sm input-bordered flex w-full items-center gap-2">
