@@ -32,7 +32,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t"></div>
 
         {/* Social Links & Copyright */}

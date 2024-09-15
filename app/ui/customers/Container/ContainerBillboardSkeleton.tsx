@@ -1,8 +1,8 @@
 import React from "react";
 
 const MovieCardSkeleton: React.FC = () => {
-  const cardWidth = 300; // Ancho fijo para el esqueleto
-  const cardHeight = 550; // Altura fija para el esqueleto
+  const cardWidth = 300;
+  const cardHeight = 550;
 
   return (
     <div
