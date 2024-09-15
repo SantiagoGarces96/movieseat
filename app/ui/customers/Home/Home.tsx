@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import MovieCardSkeleton from "@/app/ui/customers/Container/ContainerBillboardSkeleton";
 import Box from "@/app/ui/customers/Container/ContainerBillboard";
+import PreSaleUpcomingBox from "@/app/ui/customers/Container/ContainerUpcoming";
 import { IMovie } from "@/interfaces/movie";
 import { MovieStatus } from "@/types/movie";
 
@@ -38,14 +39,24 @@ const HomePage: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Carousel of films on the "billboard" */}
+         <h2 className="text-2xl font-bold my-6">
+         estrenos / cartelera
+          </h2>
+          {/* Carousel of movies on "billboard" */}
           {movies && (
             <Box
               movies={movies.filter(
-                (movie) => movie.status === MovieStatus.BILLBOARD 
+                (movie) => movie.status === MovieStatus.BILLBOARD
               )}
             />
           )}
+
+          <h2 className="text-2xl font-bold my-6">
+            Preventa / Próximo Estreno
+          </h2>
+
+          {/* Carousel of movies on "pre-sale" and "upcoming" */}
+          {movies && <PreSaleUpcomingBox movies={movies} />}
         </>
       )}
     </div>
