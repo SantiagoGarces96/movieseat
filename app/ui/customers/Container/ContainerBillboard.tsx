@@ -8,39 +8,37 @@ interface BoxProps {
 
 const Box: React.FC<BoxProps> = ({ movies }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const moviesToShow = 6; // Mostrar una película a la vez
-  const cardWidth = 300; // Ancho fijo para las tarjetas
-  const cardHeight = 550; // Altura fija para las tarjetas
-
-  // Función para ir a la siguiente película
+  const moviesToShow = 6;
+  const cardWidth = 300;
+  const cardHeight = 550;
   const nextPage = () => {
     if (currentIndex + moviesToShow < movies.length) {
       setCurrentIndex(currentIndex + moviesToShow);
     }
   };
 
-  // Función para ir a la película anterior
+ 
   const prevPage = () => {
     if (currentIndex - moviesToShow >= 0) {
       setCurrentIndex(currentIndex - moviesToShow);
     }
   };
 
-  // Obtener la película actual a mostrar
+  
   const currentMovies = movies.slice(currentIndex, currentIndex + moviesToShow);
 
   return (
     <div className="relative flex items-center overflow-hidden">
-      {/* Botón de flecha izquierda */}
+      {/* Left arrow button */}
       <button
         onClick={prevPage}
         className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 z-10"
-        disabled={currentIndex === 0} // Deshabilitar si estamos en la primera película
+        disabled={currentIndex === 0}
       >
         &lt;
       </button>
 
-      {/* Carrusel de películas */}
+      {/* Carousel of movies */}
       <div className="flex space-x-4 py-4">
         {currentMovies.map((movie) => (
           <div
@@ -62,11 +60,11 @@ const Box: React.FC<BoxProps> = ({ movies }) => {
         ))}
       </div>
 
-      {/* Botón de flecha derecha */}
+      {/* Right arrow button */}
       <button
         onClick={nextPage}
         className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 z-10"
-        disabled={currentIndex + moviesToShow >= movies.length} // Deshabilitar si estamos en la última película
+        disabled={currentIndex + moviesToShow >= movies.length} 
       >
         &gt;
       </button>

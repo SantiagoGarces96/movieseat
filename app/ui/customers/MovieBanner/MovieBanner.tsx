@@ -40,7 +40,6 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
           quality={100}
         />
       </div>
-      {/* Content */}
       <div className="relative container mx-auto flex items-center gap-4 p-4">
         {/* Poster */}
         <div className="w-1/5">

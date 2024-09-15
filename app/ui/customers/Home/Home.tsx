@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Carrusel de películas en "billboard" */}
+          {/* Carousel of films on the "billboard" */}
           {movies && (
             <Box
               movies={movies.filter(

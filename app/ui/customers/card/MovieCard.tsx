@@ -7,7 +7,7 @@ export interface MovieCardProps {
   id: string;
   title: string;
   poster: string;
-  backdrop: string;  // Asegúrate de recibir el backdrop
+  backdrop: string;
   status: MovieStatus;
   duration: number;
   releaseDate: string;
@@ -25,7 +25,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   id,
   title,
   poster,
-  backdrop,  // Recibimos el backdrop como propiedad
+  backdrop,
   status,
   duration,
   releaseDate,
@@ -37,12 +37,10 @@ const MovieCard: React.FC<MovieCardProps> = ({
     router.push(`/movie/${id}`);
   };
 
-  // Aseguramos que el status sea válido
   const statusLabel = status in statusColors
     ? status.charAt(0).toUpperCase() + status.slice(1)
     : "Unknown";
 
-  // Manejo de la URL del poster o backdrop
   const imageUrl = poster !== "N/A" ? poster : (backdrop !== "N/A" ? backdrop : "/default-poster.png");
 
   const displayedGenres = genre.slice(0, 3).join(", ");
@@ -61,7 +59,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <div className="relative">
           <span
             className={`absolute top-2 left-2 text-white text-xs font-semibold py-1 px-2 rounded ${statusColors[status]}`}
-            style={{ zIndex: 10 }} // Asegura que el sticker esté encima del contenido
+            style={{ zIndex: 10 }}
           >
             {statusLabel}
           </span>
