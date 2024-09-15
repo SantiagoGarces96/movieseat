@@ -4,17 +4,10 @@ import Footer from '@/app/ui/customers/Footer/Footer';
 import { Inter } from "next/font/google";
 import { ReactNode } from 'react';
 
-
 export const metadata = {
   title: "Movieseat",
-  description:
-    "cine.",
+  description: "cine.",
 };
-
-// interface LayoutProps {
-//     children: ReactNode;
-//   }
-  
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +17,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <Head>
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
+        <meta charSet="UTF-8" /> {/* Ensure correct character encoding */}
       </Head>
       <body className={inter.className}>
         <Navbar />
-          {children}
+        <main>{children}</main> {/* Use <main> for children */}
         <Footer />
       </body>
     </html>
