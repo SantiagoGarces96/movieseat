@@ -54,7 +54,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
         {/* Movie Info */}
         <div className="w-2/3 text-white">
           <h1 className="text-4xl font-bold">{title}</h1>
-          <p className="text-lg mt-2">{new Date(releaseDate).toLocaleDateString()}</p>
+          <p className="text-lg mt-2">{releaseDate}</p>
           <p className="text-md mt-2">{genre.join(', ')}</p>
           <p className="text-md mt-2">Duración: {duration} minutos</p>
           <button
