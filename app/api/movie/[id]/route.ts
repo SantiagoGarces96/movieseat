@@ -19,7 +19,7 @@ export async function GET(
   }
 
   try {
-    const movie: IMovie | null = await Movie.findById(id).populate("sessions");
+    const movie: IMovie | null = await Movie.findById(id);
     if (!movie) {
       return NextResponse.json({ message: "Movie not found" }, { status: 404 });
     }
