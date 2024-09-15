@@ -11,25 +11,28 @@ const Box: React.FC<BoxProps> = ({ movies }) => {
   const moviesToShow = 6;
   const cardWidth = 300;
   const cardHeight = 550;
+
+  const sortedMovies = movies.sort(
+    (a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
+  );
+
   const nextPage = () => {
-    if (currentIndex + moviesToShow < movies.length) {
+    if (currentIndex + moviesToShow < sortedMovies.length) {
       setCurrentIndex(currentIndex + moviesToShow);
     }
   };
-
- 
   const prevPage = () => {
     if (currentIndex - moviesToShow >= 0) {
       setCurrentIndex(currentIndex - moviesToShow);
     }
   };
-
-  
-  const currentMovies = movies.slice(currentIndex, currentIndex + moviesToShow);
+  const currentMovies = sortedMovies.slice(
+    currentIndex,
+    currentIndex + moviesToShow
+  );
 
   return (
     <div className="relative flex items-center overflow-hidden">
-      {/* Left arrow button */}
       <button
         onClick={prevPage}
         className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 z-10"
@@ -38,7 +41,6 @@ const Box: React.FC<BoxProps> = ({ movies }) => {
         &lt;
       </button>
 
-      {/* Carousel of movies */}
       <div className="flex space-x-4 py-4">
         {currentMovies.map((movie) => (
           <div
@@ -60,11 +62,10 @@ const Box: React.FC<BoxProps> = ({ movies }) => {
         ))}
       </div>
 
-      {/* Right arrow button */}
       <button
         onClick={nextPage}
         className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 z-10"
-        disabled={currentIndex + moviesToShow >= movies.length} 
+        disabled={currentIndex + moviesToShow >= sortedMovies.length} 
       >
         &gt;
       </button>
