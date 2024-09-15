@@ -77,8 +77,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <h2 className="text-xl font-semibold mb-2 truncate overflow-hidden whitespace-nowrap" style={{ width: '100%' }}>
             {title}
           </h2>
-          <span className="block text-sm mb-1">Estreno: {new Date(releaseDate).toLocaleDateString()}</span>
-          <span className="block text-sm mb-2">Género: {displayedGenres}</span>
+          <span className="block text-sm mb-1">Estreno: {releaseDate}</span>
+          <span className="block text-sm mb-2 truncate overflow-hidden whitespace-nowrap">Género: {displayedGenres}</span>
           <div className="flex flex-wrap gap-2">
             <span className="inline-block bg-gray-200 text-gray-800 text-xs font-medium py-1 px-2 rounded">
               {duration} Min
