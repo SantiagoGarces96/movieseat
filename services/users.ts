@@ -1,3 +1,4 @@
+"use server";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import { IUser } from "@/interfaces/user";
 import User from "@/models/User";

@@ -1,12 +1,10 @@
 import Image from "next/image";
-import ModalSideNavBar from "./Modals/ModalSideNavBar";
 import MenuIcon from "./Icons/MenuIcon";
 import SearchIcon from "./Icons/SearchIcon";
 
 export default function DefaultNavBar() {
   return (
     <div className="navbar border-b bg-base-100">
-      <ModalSideNavBar />
       <div className="navbar-start">
         <MenuIcon />
         <SearchIcon />
