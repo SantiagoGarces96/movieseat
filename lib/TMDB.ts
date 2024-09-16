@@ -8,6 +8,7 @@ import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
 import { progressBar } from "@/utils/progressBar";
 import { calculateDates } from "@/utils/calculateDays";
+import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
 import mongoose from "mongoose";
 import {
   SessionPrice,
@@ -22,9 +23,10 @@ import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
 
 export const getNowPlayingTMDB = async (): Promise<void> => {
+  const { startDate, endDate } = calculateDatesBillboard();
   try {
     const options = {
-      url: `${TMDB_API_URL}/now_playing?language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&language=es-MX`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -55,6 +57,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
     throw new Error(error.message || "An error occurred");
   }
 };
+const isNonLatin = (text: string) => /[^\u0000-\u00ff]/.test(text);
 
 export const getMovieDetailTMDB = async (
   movie_id: number,
@@ -74,23 +77,29 @@ export const getMovieDetailTMDB = async (
     );
     let data = response.data as IMovieDetailTMDB;
 
-    if (!data.videos.results[0] || !data.overview) {
+    const language = data.spoken_languages.map(({ iso_639_1 }) => iso_639_1);
+
+    if (!data.videos.results[0] || !data.overview || isNonLatin(data.title)) {
       response = await axios.get(
         `${TMDB_API_URL}/${movie_id}?append_to_response=videos&language=en-US`,
         options,
       );
       const dataEN = response.data as IMovieDetailTMDB;
+
       if (!data.videos.results[0]) {
         data.videos = dataEN.videos;
       }
       if (!data.overview) {
         data.overview = dataEN.overview;
       }
+      if (isNonLatin(data.title)) {
+        data.title = dataEN.title;
+      }
     }
 
     if (!data.videos.results[0] || !data.overview) {
       response = await axios.get(
-        `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=id`,
+        `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=${language}`,
         options,
       );
       const dataDefault = response.data as IMovieDetailTMDB;
@@ -408,7 +417,7 @@ export const parseMovie = async (
           trailerVideo?.key || dataTMDB.videos.results[0]?.key || null;
         const parsedMovie: IParsedMovie = {
           _id: movieId,
-          imdb_id: dataTMDB.imdb_id,
+          imdb_id: dataTMDB.id,
           title: dataTMDB.title,
           backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
           description: dataTMDB.overview,
