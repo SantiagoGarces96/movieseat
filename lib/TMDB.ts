@@ -26,7 +26,7 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=32485%2C%20149142%2C%201976`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -44,7 +44,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=32485%2C%20149142%2C%201976`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -77,18 +77,24 @@ export const getMovieDetailTMDB = async (
     );
     let data = response.data as IMovieDetailTMDB;
 
-    const language = data.spoken_languages.map(({ iso_639_1 }) => iso_639_1);
+    let Video = data.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    );
 
-    if (!data.videos.results[0] || !data.overview || isNonLatin(data.title)) {
+    // Si no hay trailer en español, buscar en inglés
+    if (!Video || !data.overview || isNonLatin(data.title)) {
       response = await axios.get(
         `${TMDB_API_URL}/${movie_id}?append_to_response=videos&language=en-US`,
         options,
       );
       const dataEN = response.data as IMovieDetailTMDB;
 
-      if (!data.videos.results[0]) {
-        data.videos = dataEN.videos;
-      }
+      Video =
+        Video ||
+        dataEN.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        );
+
       if (!data.overview) {
         data.overview = dataEN.overview;
       }
@@ -97,20 +103,28 @@ export const getMovieDetailTMDB = async (
       }
     }
 
-    if (!data.videos.results[0] || !data.overview) {
+    if (!Video || !data.overview) {
+      const language = data.spoken_languages
+        .map(({ iso_639_1 }) => iso_639_1)
+        .join(",");
       response = await axios.get(
         `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=${language}`,
         options,
       );
       const dataDefault = response.data as IMovieDetailTMDB;
 
-      if (!data.videos.results[0]) {
-        data.videos = dataDefault.videos;
-      }
+      Video =
+        Video ||
+        dataDefault.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        );
+
       if (!data.overview) {
         data.overview = dataDefault.overview;
       }
     }
+
+    data.videos.results = Video ? [Video] : [];
 
     return data;
   } catch (error: any) {
@@ -369,13 +383,11 @@ export const parseMovie = async (
     progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-    const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
-      dataTMDB.imdb_id,
-    );
+    const data: IMovieDetailTMDB = await getMovieDetailTMDB(dataTMDB.id);
 
     const status = getMovieStatus(dataTMDB.release_date);
     const currentMovie: IMovie | null = await Movie.findOne({
-      imdb_id: dataTMDB.imdb_id,
+      imdb_id: dataTMDB.id,
     });
 
     if (status === MovieStatus.ARCHIVED) {
@@ -397,9 +409,6 @@ export const parseMovie = async (
           { status, sessions: sessions.map((session) => session._id) },
         );
       } else {
-        const trailerVideo = dataTMDB.videos.results.find(
-          (video) => video.type === "Trailer" || video.type === "Teaser",
-        );
         const movieId = new mongoose.Types.ObjectId();
         const sessions = await createMovieSessions(
           dataTMDB.release_date,
@@ -414,7 +423,9 @@ export const parseMovie = async (
           throw new Error("Director not found in TMDB data");
         }
         const youtubeId =
-          trailerVideo?.key || dataTMDB.videos.results[0]?.key || null;
+          dataTMDB.videos.results.find(
+            (video) => video.type === "Trailer" || video.type === "Teaser",
+          )?.key || null;
         const parsedMovie: IParsedMovie = {
           _id: movieId,
           imdb_id: dataTMDB.id,
