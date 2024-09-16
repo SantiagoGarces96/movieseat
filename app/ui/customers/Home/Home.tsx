@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
         </div>
       ) : (
         <>
-         <h2 className="text-2xl font-bold my-6">
+         <h2 className="text-2xl font-bold my-6 capitalize">
          estrenos / cartelera
           </h2>
           {/* Carousel of movies on "billboard" */}
@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
             />
           )}
 
-          <h2 className="text-2xl font-bold my-6">
+          <h2 className="text-2xl font-bold my-6 capitalize">
             Preventa / Próximo Estreno
           </h2>
 
