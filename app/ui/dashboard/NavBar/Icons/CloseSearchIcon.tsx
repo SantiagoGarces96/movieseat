@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { HiOutlineXMark } from "react-icons/hi2";
 
 export default function CloseSearchIcon() {

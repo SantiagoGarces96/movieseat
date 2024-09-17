@@ -1,3 +1,4 @@
+"use server";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
 import { IMovie } from "@/interfaces/movie";

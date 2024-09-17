@@ -1,16 +1,10 @@
 "use client";
-import { useEffect, useRef } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
+import SearchInput from "../Inputs/SearchInput";
+import { useRef } from "react";
 
 export default function SearchIcon() {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const focusInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
   const openModal = (): void => {
     const modal = document.getElementById(
       "modal_search",
@@ -20,34 +14,10 @@ export default function SearchIcon() {
     }
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === "k") {
-        event.preventDefault();
-        focusInput();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
   return (
     <div>
       <div className="hidden lg:flex">
-        <label className="input input-sm input-bordered flex items-center gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            className="grow"
-            placeholder="Search"
-          />
-          <kbd className="kbd kbd-sm">CTRL</kbd>+
-          <kbd className="kbd kbd-sm">K</kbd>
-        </label>
+        <SearchInput inputRef={inputRef} />
       </div>
       <button
         className="btn btn-circle btn-ghost btn-sm lg:hidden"
