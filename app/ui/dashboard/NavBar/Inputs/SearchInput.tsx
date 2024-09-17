@@ -35,20 +35,20 @@ function Input({
     }
   }, [inputRef]);
 
-  const closeModal = (): void => {
+  const closeModal = useCallback(() => {
     const modal = document.getElementById(
       "modal_search",
     ) as HTMLDialogElement | null;
-    if (modal) {
+    if (modal?.open) {
       modal.close();
+      focusInput();
     }
-  };
+  }, [focusInput]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024) {
         closeModal();
-        focusInput();
       }
     };
 
@@ -57,7 +57,7 @@ function Input({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [focusInput]);
+  }, [closeModal]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
