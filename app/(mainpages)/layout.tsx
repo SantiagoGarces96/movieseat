@@ -13,17 +13,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es">
-      <Head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-        <meta charSet="UTF-8" /> {/* Ensure correct character encoding */}
-      </Head>
-      <body className={inter.className}>
-        <Navbar />
-        <main>{children}</main> {/* Use <main> for children */}
-        <Footer />
-      </body>
-    </html>
+    <div>
+      <Navbar />
+      <main>{children}</main> {/* Use <main> for children */}
+      <Footer />
+    </div>
+      
   );
 }
