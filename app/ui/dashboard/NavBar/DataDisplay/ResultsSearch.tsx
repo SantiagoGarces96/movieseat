@@ -10,6 +10,7 @@ import { getFoodByQuery } from "@/services/food";
 import { getRoomsByQuery } from "@/services/rooms";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ResultSearchSkeleton from "../../Skeleton/ResultSearch";
 
 function ContainResults({ title, resultData }: IResultsSearchsDashboard) {
   if (!resultData.length) {
@@ -33,10 +34,22 @@ export default function ResultsSearchs() {
   const [movies, setMovies] = useState<IResultDataDashboard[]>([]);
   const [food, setFood] = useState<IResultDataDashboard[]>([]);
   const [rooms, setRooms] = useState<IResultDataDashboard[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
+  const clearStates = (): void => {
+    setUsers([]);
+    setMovies([]);
+    setFood([]);
+    setRooms([]);
+  };
   useEffect(() => {
-    const getData = async () => {
+    const getData = async (): Promise<void> => {
+      clearStates();
+      if (!query) {
+        return;
+      }
+      setLoading(true);
       const usersData = await getUsersByQuery(query);
       const moviesData = await getMoviesByQuery(query);
       const foodData = await getFoodByQuery(query);
@@ -45,11 +58,13 @@ export default function ResultsSearchs() {
       setMovies(moviesData);
       setFood(foodData);
       setRooms(roomsData);
+      setLoading(false);
     };
     getData();
   }, [query]);
   return (
     <div className="lg:min-h-30 h-[85%] w-full overflow-auto lg:h-full lg:max-h-60">
+      {loading && <ResultSearchSkeleton />}
       <ContainResults title="Users" resultData={users} />
       <ContainResults title="Movies" resultData={movies} />
       <ContainResults title="Food" resultData={food} />
