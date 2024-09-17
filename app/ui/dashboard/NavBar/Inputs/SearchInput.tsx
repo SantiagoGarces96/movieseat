@@ -31,10 +31,33 @@ function Input({
 
   const focusInput = useCallback(() => {
     if (inputRef?.current) {
-      console.log(inputRef);
       inputRef.current.focus();
     }
   }, [inputRef]);
+
+  const closeModal = (): void => {
+    const modal = document.getElementById(
+      "modal_search",
+    ) as HTMLDialogElement | null;
+    if (modal) {
+      modal.close();
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        closeModal();
+        focusInput();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [focusInput]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
