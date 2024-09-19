@@ -4,7 +4,7 @@ import SearchIcon from "./Icons/SearchIcon";
 
 export default function DefaultNavBar() {
   return (
-    <div className="navbar border-b bg-base-100">
+    <div className="navbar sticky top-0 z-50 border-b bg-base-100">
       <div className="navbar-start">
         <MenuIcon />
         <SearchIcon />
