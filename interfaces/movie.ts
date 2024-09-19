@@ -62,3 +62,13 @@ export interface IMovie {
   updatedAt: Date;
   __v: number;
 }
+
+export interface IMovieByGenre {
+  _id: string;
+  count: number;
+}
+
+export interface IMovieByStatus {
+  _id: MovieStatus;
+  count: number;
+}

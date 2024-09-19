@@ -36,3 +36,8 @@ export interface ISession {
   updatedAt: Date;
   __v: number;
 }
+
+export interface IAvailableSeatsByRoom {
+  _id: string;
+  availableSeats: number;
+}

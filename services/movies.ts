@@ -1,7 +1,7 @@
 "use server";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
-import { IMovie } from "@/interfaces/movie";
+import { IMovie, IMovieByGenre, IMovieByStatus } from "@/interfaces/movie";
 import Movie from "@/models/Movie";
 
 export const getMoviesByQuery = async (
@@ -28,6 +28,38 @@ export const getMoviesByQuery = async (
       },
     );
     return parsedMovies;
+  } catch (error: any) {
+    return [];
+  }
+};
+
+export const getMoviesByGenre = async (): Promise<IMovieByGenre[]> => {
+  await dbConnect();
+  try {
+    const movies: IMovieByGenre[] = await Movie.aggregate([
+      { $unwind: "$genre" },
+      { $group: { _id: "$genre", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]);
+    return movies;
+  } catch (error: any) {
+    return [];
+  }
+};
+
+export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
+  await dbConnect();
+  try {
+    const movies: IMovieByStatus[] = await Movie.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    return movies;
   } catch (error: any) {
     return [];
   }

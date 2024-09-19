@@ -25,3 +25,13 @@ export interface ITransaction {
   updatedAt: Date;
   __v: number;
 }
+
+export interface IFoodSells {
+  _id: string;
+  total: number;
+}
+
+export interface IMonthlyRevenue {
+  _id: string;
+  totalAmount: number;
+}
