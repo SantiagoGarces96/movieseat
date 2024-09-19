@@ -1,12 +1,12 @@
 import React from 'react';
 import { IMovie } from '@/interfaces/movie';
-import MovieBanner from '@/app/ui/customers/MovieBanner/MovieBanner';
-import DetailsMovie from '@/app/ui/customers/DetailsMovie/DetailsMovie';
+import MovieBanner from '@/app/ui/customers/movie/MovieBanner/MovieBanner';
+import DetailsMovie from '@/app/ui/customers/movie/DetailsMovie/DetailsMovie';
 
 interface MoviePageProps {
   params: { id: string };
 }
-
+ 
 async function fetchMovie(id: string): Promise<IMovie> {
   const res = await fetch(`http://localhost:3000/api/movie/${id}`, {
     cache: 'no-store',
