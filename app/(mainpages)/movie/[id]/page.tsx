@@ -1,18 +1,17 @@
-'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { IMovie } from '@/interfaces/movie';
 import MovieBanner from '@/app/ui/customers/MovieBanner/MovieBanner';
 import DetailsMovie from '@/app/ui/customers/DetailsMovie/DetailsMovie';
-import MovieBannerSkeleton from '@/app/ui/customers/MovieBanner/MovieBannerSkeleton';
-import DetailsMovieSkeleton from '@/app/ui/customers/DetailsMovie/DetailsMovieSkeleton';
 
 interface MoviePageProps {
   params: { id: string };
 }
 
 async function fetchMovie(id: string): Promise<IMovie> {
-  const res = await fetch(`http://localhost:3000/api/movie/${id}`);
-  
+  const res = await fetch(`http://localhost:3000/api/movie/${id}`, {
+    cache: 'no-store',
+  });
+
   if (!res.ok) {
     throw new Error('Failed to fetch the movie');
   }
@@ -20,32 +19,13 @@ async function fetchMovie(id: string): Promise<IMovie> {
   return res.json();
 }
 
-const MoviePage: React.FC<MoviePageProps> = ({ params }) => {
-  const [movie, setMovie] = useState<IMovie | null>(null);
-  const [loading, setLoading] = useState(true);
+const MoviePage = async ({ params }: MoviePageProps) => {
+  let movie: IMovie | null = null;
 
-  useEffect(() => {
-    const loadMovie = async () => {
-      try {
-        const fetchedMovie = await fetchMovie(params.id);
-        setMovie(fetchedMovie);
-      } catch (error) {
-        console.error("Error fetching movie:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMovie();
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto p-4 md:p-6 lg:p-12">
-        <MovieBannerSkeleton />
-        <DetailsMovieSkeleton />
-      </div>
-    );
+  try {
+    movie = await fetchMovie(params.id);
+  } catch (error) {
+    console.error("Error fetching movie:", error);
   }
 
   if (!movie) {
@@ -53,7 +33,7 @@ const MoviePage: React.FC<MoviePageProps> = ({ params }) => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 lg:p-12">
+    <div className=" pt-16">
       {/* Movie Banner */}
       <MovieBanner
         backdrop={movie.backdrop}
@@ -63,6 +43,7 @@ const MoviePage: React.FC<MoviePageProps> = ({ params }) => {
         genre={movie.genre}
         duration={movie.duration}
         trailer={movie.trailer}
+        status={movie.status}
       />
 
       {/* DetailsMovie */}

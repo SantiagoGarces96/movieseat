@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { MovieStatus } from "@/types/movie";
 
 export interface MovieCardProps {
@@ -41,13 +41,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
     ? status.charAt(0).toUpperCase() + status.slice(1)
     : "Unknown";
 
-  const imageUrl = poster !== "N/A" ? poster : (backdrop !== "N/A" ? backdrop : "/default-poster.png");
+  const imageUrl =
+    poster !== "N/A" ? poster : backdrop !== "N/A" ? backdrop : "/default-poster.png";
 
   const displayedGenres = genre.slice(0, 3).join(", ");
 
   return (
     <div
-      className="col-span-1 md:col-span-3"
+      className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4"
       data-aos="fade-up"
       data-aos-delay="0"
     >
@@ -63,7 +64,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           >
             {statusLabel}
           </span>
-          <figure className="relative w-full h-96">
+          <figure className="relative w-full h-48  sm:h-60 md:h-72 lg:h-80 xl:h-90 2xl:h-[25rem]">
             <Image
               src={imageUrl}
               alt={title}
@@ -74,16 +75,22 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </figure>
         </div>
         <div className="p-4">
-        <h2 className="text-xl font-semibold mb-2 truncate overflow-hidden whitespace-nowrap" style={{ width: '100%' }}>
+          <h2 className="text-lg sm:text-xl font-semibold mb-1 truncate overflow-hidden whitespace-nowrap">
             {title}
           </h2>
-          <span className="block text-sm mb-1">Estreno: {releaseDate}</span>
-          <span className="block text-sm mb-2 truncate overflow-hidden whitespace-nowrap">Género: {displayedGenres}</span>
+          <span className="block text-xs sm:text-sm mb-1">
+            Estreno: {releaseDate}
+          </span>
+          <span className="block text-xs sm:text-sm mb-2 truncate overflow-hidden whitespace-nowrap">
+            Género: {displayedGenres}
+          </span>
           <div className="flex flex-wrap gap-2">
             <span className="inline-block bg-gray-200 text-gray-800 text-xs font-medium py-1 px-2 rounded">
               {duration} Min
             </span>
-            <span className={`inline-block text-white text-xs font-medium py-1 px-2 rounded ${statusColors[status]}`}>
+            <span
+              className={`inline-block text-white text-xs font-medium py-1 px-2 rounded ${statusColors[status]}`}
+            >
               {statusLabel}
             </span>
           </div>
