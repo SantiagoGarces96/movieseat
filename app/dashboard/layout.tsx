@@ -1,5 +1,6 @@
 import DefaultNavBar from "@/app/ui/dashboard/NavBar/DefaultNavBar";
 import SideNav from "../ui/dashboard/NavBar/SideNavBar";
+import DashboardFooter from "../ui/dashboard/Footer";
 
 export default function DashboardLayout({
   children,
@@ -7,13 +8,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen flex-col md:overflow-hidden lg:flex-row">
+    <div className="flex h-screen flex-col overflow-hidden lg:flex-row">
       <div className="hidden lg:flex">
         <SideNav />
       </div>
-      <div className="w-full">
+      <div className="flex w-full flex-col overflow-auto">
         <DefaultNavBar />
-        <div className="h-full grow">{children}</div>
+        {children}
+        <DashboardFooter />
       </div>
     </div>
   );
