@@ -1,6 +1,6 @@
 import React from "react";
-import Box from "@/app/ui/customers/Container/ContainerBillboard";
-import PreSaleUpcomingBox from "@/app/ui/customers/Container/ContainerUpcoming";
+import Box from "@/app/ui/customers/Home/Container/ContainerBillboard";
+import PreSaleUpcomingBox from "@/app/ui/customers/Home/Container/ContainerUpcoming";
 import { IMovie } from "@/interfaces/movie";
 import { MovieStatus } from "@/types/movie";
 
