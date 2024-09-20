@@ -1,54 +1,56 @@
-"use client";
-import React, { useState } from "react";
-import MobileMenu from "./menuNavbar";
+import MobileMenu from "./MobileMenu";
+import { HiBars3 } from "react-icons/hi2";
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   return (
-    <>
-      <nav className="fixed top-0 w-full p-4 bg-white z-50 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <a href="/home">
-            <div className="text-2xl font-bold">MovieSeat</div>
-          </a>
-          <div className="hidden md:flex gap-6">
-            <a href="/releases" className="hover:text-[#0072BB] capitalize">Cartelera</a>
-            <a href="/upcoming" className="hover:text-[#0072BB] capitalize">Proximos Estrenos</a>
-            <a href="/foods" className="hover:text-[#0072BB] capitalize">Comidas</a>
-            <a href="/about" className="hover:text-[#0072BB] capitalize">Nosotros</a>
+    <div className="drawer z-50">
+      <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+      <div className="drawer-content">
+        {/* Page content here */}
+        <nav className="sticky top-0 w-full bg-white p-4 shadow-md">
+          <div className="container mx-auto flex items-center justify-between">
+            <a href="/home">
+              <div className="text-2xl font-bold">MovieSeat</div>
+            </a>
+            <div className="hidden gap-6 md:flex">
+              <a href="/releases" className="capitalize hover:text-[#0072BB]">
+                Cartelera
+              </a>
+              <a href="/upcoming" className="capitalize hover:text-[#0072BB]">
+                Proximos Estrenos
+              </a>
+              <a href="/foods" className="capitalize hover:text-[#0072BB]">
+                Comidas
+              </a>
+              <a href="/about" className="capitalize hover:text-[#0072BB]">
+                Nosotros
+              </a>
+            </div>
+            <div className="hidden md:block">
+              <button className="rounded bg-[#0072BB] px-4 py-2 capitalize text-[#FFFDF6]">
+                Login
+              </button>
+            </div>
+            <div className="md:hidden">
+              <label htmlFor="my-drawer" className="btn bg-transparent">
+                <HiBars3 className="h-6 w-6" />
+              </label>
+            </div>
           </div>
-          <div className="hidden md:block">
-            <button className="bg-[#0072BB] text-[#FFFDF6] px-4 py-2 rounded capitalize">Login</button>
-          </div>
-
-          <div className="md:hidden">
-            <button onClick={toggleMenu}>
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-            </button>
-          </div>
+        </nav>
+      </div>
+      <div className="drawer-side">
+        <label
+          htmlFor="my-drawer"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
+        <div className="menu min-h-full w-80 bg-white p-4 text-base-content">
+          {/* Sidebar content here */}
+          <MobileMenu />
         </div>
-      </nav>
-
-      <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
+      </div>
+    </div>
   );
 };
 
