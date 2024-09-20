@@ -21,7 +21,7 @@ export default async function OverviewPage() {
   const dailyTicketSales = await getDailyTicketSales();
 
   return (
-    <section className="w-full px-2 py-9">
+    <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
       <SearchModal />
       <SideNavBarModal />
       <div className="flex flex-col gap-3">

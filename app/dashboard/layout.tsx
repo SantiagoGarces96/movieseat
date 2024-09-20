@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <div className="hidden lg:flex">
         <SideNav />
       </div>
-      <div className="flex w-full flex-col overflow-auto">
+      <div className="flex w-full flex-col items-center overflow-auto">
         <DefaultNavBar />
         {children}
         <DashboardFooter />
