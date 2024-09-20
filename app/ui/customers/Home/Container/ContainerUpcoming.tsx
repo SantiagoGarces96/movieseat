@@ -82,11 +82,11 @@ const PreSaleUpcomingBox: React.FC<PreSaleUpcomingBoxProps> = ({ movies }) => {
       </button>
 
       {/* Contenedor de tarjetas de películas */}
-      <div className="flex justify-center space-x-2 py-2 w-full px-8">
+      <div className="flex justify-center space-x-2 py-4 w-full px-8">
         {currentMovies.map((movie) => (
           <div
             key={movie._id}
-            className="flex-shrink-0"
+            className="transition-transform transform hover:scale-105"
              style={{ width: cardSize.width, height: cardSize.height }}
           >
             <MovieCard
