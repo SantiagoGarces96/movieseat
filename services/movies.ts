@@ -4,6 +4,16 @@ import dbConnect from "../lib/dbConnect";
 import { IMovie, IMovieByGenre, IMovieByStatus } from "@/interfaces/movie";
 import Movie from "@/models/Movie";
 
+export const getAllMovies = async (): Promise<IMovie[]> => {
+  await dbConnect();
+  try {
+    const movies: IMovie[] = await Movie.find({});
+    return movies;
+  } catch (error: any) {
+    return [];
+  }
+};
+
 export const getMoviesByQuery = async (
   query: string,
 ): Promise<IResultDataDashboard[]> => {
