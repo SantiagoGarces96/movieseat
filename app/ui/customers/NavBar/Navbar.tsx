@@ -31,7 +31,6 @@ const Navbar = () => {
                 Login
               </button>
             </div>
-
             <div className="md:hidden">
               <label htmlFor="my-drawer" className="btn bg-transparent">
                 <HiBars3 className="h-6 w-6" />
