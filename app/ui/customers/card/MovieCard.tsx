@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { useRouter } from "next/navigation";
 import { MovieStatus } from "@/types/movie";
+import Link from "next/link";
 
 export interface MovieCardProps {
   id: string;
@@ -31,18 +31,17 @@ const MovieCard: React.FC<MovieCardProps> = ({
   releaseDate,
   genre,
 }) => {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(`/movie/${id}`);
-  };
-
-  const statusLabel = status in statusColors
-    ? status.charAt(0).toUpperCase() + status.slice(1)
-    : "Unknown";
+  const statusLabel =
+    status in statusColors
+      ? status.charAt(0).toUpperCase() + status.slice(1)
+      : "Unknown";
 
   const imageUrl =
-    poster !== "N/A" ? poster : backdrop !== "N/A" ? backdrop : "/default-poster.png";
+    poster !== "N/A"
+      ? poster
+      : backdrop !== "N/A"
+        ? backdrop
+        : "/default-poster.png";
 
   const displayedGenres = genre.slice(0, 3).join(", ");
 
@@ -52,19 +51,18 @@ const MovieCard: React.FC<MovieCardProps> = ({
       data-aos="fade-up"
       data-aos-delay="0"
     >
-      <a
+      <Link
         href={`/movie/${id}`}
-        className="block bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
-        onClick={handleClick}
+        className="block overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
       >
         <div className="relative">
           <span
-            className={`absolute top-2 left-2 text-white text-xs font-semibold py-1 px-2 rounded ${statusColors[status]}`}
+            className={`absolute left-2 top-2 rounded px-2 py-1 text-xs font-semibold text-white ${statusColors[status]}`}
             style={{ zIndex: 10 }}
           >
             {statusLabel}
           </span>
-          <figure className="relative w-full h-48  sm:h-60 md:h-72 lg:h-80 xl:h-90 2xl:h-[25rem]">
+          <figure className="xl:h-90 relative h-48 w-full sm:h-60 md:h-72 lg:h-80 2xl:h-[25rem]">
             <Image
               src={imageUrl}
               alt={title}
@@ -75,27 +73,27 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </figure>
         </div>
         <div className="p-4">
-          <h2 className="text-lg sm:text-xl font-semibold mb-1 truncate overflow-hidden whitespace-nowrap">
+          <h2 className="mb-1 overflow-hidden truncate whitespace-nowrap text-lg font-semibold sm:text-xl">
             {title}
           </h2>
-          <span className="block text-xs sm:text-sm mb-1">
+          <span className="mb-1 block text-xs sm:text-sm">
             Estreno: {releaseDate}
           </span>
-          <span className="block text-xs sm:text-sm mb-2 truncate overflow-hidden whitespace-nowrap">
+          <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs sm:text-sm">
             Género: {displayedGenres}
           </span>
           <div className="flex flex-wrap gap-2">
-            <span className="inline-block bg-gray-200 text-gray-800 text-xs font-medium py-1 px-2 rounded">
+            <span className="inline-block rounded bg-gray-200 px-2 py-1 text-xs font-medium text-gray-800">
               {duration} Min
             </span>
             <span
-              className={`inline-block text-white text-xs font-medium py-1 px-2 rounded ${statusColors[status]}`}
+              className={`inline-block rounded px-2 py-1 text-xs font-medium text-white ${statusColors[status]}`}
             >
               {statusLabel}
             </span>
           </div>
         </div>
-      </a>
+      </Link>
     </div>
   );
 };

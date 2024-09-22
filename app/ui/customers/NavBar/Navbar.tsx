@@ -1,3 +1,4 @@
+import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import { HiBars3 } from "react-icons/hi2";
 
@@ -9,22 +10,28 @@ const Navbar = () => {
         {/* Page content here */}
         <nav className="sticky top-0 w-full bg-white p-4 shadow-md">
           <div className="container mx-auto flex items-center justify-between">
-            <a href="/home">
+            <Link href="/">
               <div className="text-2xl font-bold">MovieSeat</div>
-            </a>
+            </Link>
             <div className="hidden gap-6 md:flex">
-              <a href="/releases" className="capitalize hover:text-[#0072BB]">
+              <Link
+                href="/releases"
+                className="capitalize hover:text-[#0072BB]"
+              >
                 Cartelera
-              </a>
-              <a href="/upcoming" className="capitalize hover:text-[#0072BB]">
+              </Link>
+              <Link
+                href="/upcoming"
+                className="capitalize hover:text-[#0072BB]"
+              >
                 Proximos Estrenos
-              </a>
-              <a href="/foods" className="capitalize hover:text-[#0072BB]">
+              </Link>
+              <Link href="/foods" className="capitalize hover:text-[#0072BB]">
                 Comidas
-              </a>
-              <a href="/about" className="capitalize hover:text-[#0072BB]">
+              </Link>
+              <Link href="/about" className="capitalize hover:text-[#0072BB]">
                 Nosotros
-              </a>
+              </Link>
             </div>
             <div className="hidden md:block">
               <button className="rounded bg-[#0072BB] px-4 py-2 capitalize text-[#FFFDF6]">
