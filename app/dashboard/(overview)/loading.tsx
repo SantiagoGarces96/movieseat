@@ -5,7 +5,7 @@ import StatOverviewSkeleton from "@/app/ui/dashboard/Skeleton/Stat";
 
 export default function Loading() {
   return (
-    <section className="w-full px-2 py-9">
+    <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl font-bold">Bienvenido</h2>
         <p className="text-base text-gray-400">
@@ -14,7 +14,7 @@ export default function Loading() {
         </p>
       </div>
       <div className="my-8 flex flex-col gap-4">
-        <div className="flex h-full w-full flex-col gap-4 lg:flex-row">
+        <div className="flex flex-col gap-4 lg:flex-row">
           <OverviewCard title="Películas por Género">
             <BarChartOverviewSkeleton />
             <StatOverviewSkeleton />
