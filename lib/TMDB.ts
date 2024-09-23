@@ -26,7 +26,7 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=32485%2C%20149142%2C%201976`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4`,
 
       method: "GET",
       headers: {
@@ -45,7 +45,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=32485%2C%20149142%2C%201976`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4`,
 
       method: "GET",
       headers: {

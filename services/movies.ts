@@ -14,6 +14,20 @@ export const getAllMovies = async (): Promise<IMovie[]> => {
   }
 };
 
+export const getMovieById = async (id: string): Promise<IMovie | null> => {
+  if (!id) {
+    return null;
+  }
+  await dbConnect();
+  try {
+    const movie: IMovie | null = await Movie.findById(id);
+    return movie;
+  } catch (error: any) {
+    console.error("Error fetching movie by ID:", error);
+    return null;
+  }
+};
+
 export const getMoviesByQuery = async (
   query: string,
 ): Promise<IResultDataDashboard[]> => {
