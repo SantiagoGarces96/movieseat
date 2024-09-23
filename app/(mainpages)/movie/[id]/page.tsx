@@ -2,39 +2,22 @@ import React from 'react';
 import { IMovie } from '@/interfaces/movie';
 import MovieBanner from '@/app/ui/customers/movie/MovieBanner/MovieBanner';
 import DetailsMovie from '@/app/ui/customers/movie/DetailsMovie/DetailsMovie';
+import { getMovieById } from '@/services/movies';
 
 interface MoviePageProps {
   params: { id: string };
 }
- 
-async function fetchMovie(id: string): Promise<IMovie> {
-  const res = await fetch(`http://localhost:3000/api/movie/${id}`, {
-    cache: 'no-store',
-  });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch the movie');
-  }
-
-  return res.json();
-}
-
-const MoviePage = async ({ params }: MoviePageProps) => {
-  let movie: IMovie | null = null;
-
-  try {
-    movie = await fetchMovie(params.id);
-  } catch (error) {
-    console.error("Error fetching movie:", error);
-  }
+export default async function MoviePage({ params }: MoviePageProps) {
+  const movieId = params.id;
+  const movie: IMovie | null = await getMovieById(movieId);
 
   if (!movie) {
-    return <div>Movie not found</div>;
+    return <div>Película no encontrada</div>;
   }
 
   return (
-    <div className=" pt-16">
-      {/* Movie Banner */}
+    <div className="pt-16">
       <MovieBanner
         backdrop={movie.backdrop}
         poster={movie.poster}
@@ -46,7 +29,6 @@ const MoviePage = async ({ params }: MoviePageProps) => {
         status={movie.status}
       />
 
-      {/* DetailsMovie */}
       <DetailsMovie
         description={movie.description}
         director={movie.director}
@@ -55,6 +37,4 @@ const MoviePage = async ({ params }: MoviePageProps) => {
       />
     </div>
   );
-};
-
-export default MoviePage;
+}
