@@ -17,9 +17,7 @@ export default function DashboardLayout({
         </Suspense>
       </div>
       <div className="flex w-full flex-col items-center overflow-auto">
-        <Suspense fallback={<div>Loading...</div>}>
-          <DefaultNavBar />
-        </Suspense>
+        <DefaultNavBar />
         {children}
         <DashboardFooter />
       </div>
