@@ -11,9 +11,9 @@ export default function DashboardLayout({
     <div className="flex h-screen flex-col overflow-hidden lg:flex-row">
       <div className="hidden lg:flex">{/* <SideNav /> */}</div>
       <div className="flex w-full flex-col items-center overflow-auto">
-        {/* <DefaultNavBar /> */}
+        <DefaultNavBar />
         {children}
-        {/* <DashboardFooter /> */}
+        <DashboardFooter />
       </div>
     </div>
   );
