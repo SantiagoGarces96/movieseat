@@ -1,8 +1,7 @@
-"use client";
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import TrailerPopup from './TrailerPopup';
 import { MovieStatus } from '@/types/movie';
+import TrailerButton from './TrailerButton';
 
 interface MovieBannerProps {
   backdrop: string;
@@ -15,6 +14,13 @@ interface MovieBannerProps {
   status: MovieStatus;
 }
 
+const statusColors: Record<MovieStatus, string> = {
+  [MovieStatus.PRE_SALE]: "bg-blue-500",
+  [MovieStatus.UPCOMING]: "bg-yellow-500",
+  [MovieStatus.BILLBOARD]: "bg-green-500",
+  [MovieStatus.ARCHIVED]: "bg-gray-500",
+};
+
 const MovieBanner: React.FC<MovieBannerProps> = ({
   backdrop,
   poster,
@@ -25,12 +31,6 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
   trailer,
   status,
 }) => {
-  const [showTrailer, setShowTrailer] = useState<boolean>(false);
-
-  const handleOpenTrailer = () => setShowTrailer(true);
-  const handleCloseTrailer = () => setShowTrailer(false);
-
-
   return (
     <section className="relative w-full h-[450px] pt-16">
       {/* Backdrop */}
@@ -38,8 +38,8 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
         <Image
           src={backdrop}
           alt={`${title} backdrop`}
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           quality={100}
           className="brightness-75" 
         />
@@ -58,7 +58,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
               alt={`${title} poster`}
               width={350}
               height={600}
-              objectFit="cover"
+              style={{ objectFit: "fill" }}
               className="rounded-lg"
             />
           </div>
@@ -70,40 +70,18 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
             <p className="text-md">{`Duración: ${duration} min`}</p>
             <p className="text-md">{genre.join(', ')}</p>
 
-            {/* Clasificación por edad y estado de preventa */}
+            {/* estado */}
             <div className="flex items-center space-x-2">
-              <span className="bg-blue-600 text-white px-2 py-1 rounded">
+              <span className={`text-white px-2 py-1 rounded ${statusColors[status]}`}>
                 {status}
               </span>
             </div>
 
             {/* Botón para el tráiler */}
-            <button
-              onClick={handleOpenTrailer}
-              className="mt-4 flex items-center bg-red-500 px-4 py-2 rounded text-white hover:bg-red-600 transition"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M14.752 11.168l-3.197-2.132a1 1 0 00-1.555.832v4.264a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                ></path>
-              </svg>
-              Ver tráiler
-            </button>
+            <TrailerButton trailerUrl={trailer} />
           </div>
         </div>
       </div>
-
-      {/* Popup del tráiler */}
-      {showTrailer && <TrailerPopup url={trailer} onClose={handleCloseTrailer} />}
     </section>
   );
 };
