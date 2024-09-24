@@ -13,12 +13,12 @@ import { getDailyTicketSales } from "@/services/tickets";
 import { getFoodSells, getMonthlyRevenue } from "@/services/transactions";
 
 export default async function OverviewPage() {
-  const moviesData = await getMoviesByGenre();
-  const moviesByStatus = await getMoviesByStatus();
-  const foodSellsData = await getFoodSells();
-  const monthlyRevenue = await getMonthlyRevenue();
-  const availableSeats = await getAvailableSeatsByRoom();
-  const dailyTicketSales = await getDailyTicketSales();
+  // const moviesData = await getMoviesByGenre();
+  // const moviesByStatus = await getMoviesByStatus();
+  // const foodSellsData = await getFoodSells();
+  // const monthlyRevenue = await getMonthlyRevenue();
+  // const availableSeats = await getAvailableSeatsByRoom();
+  // const dailyTicketSales = await getDailyTicketSales();
 
   return (
     <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
