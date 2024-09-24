@@ -11,6 +11,7 @@ import { getMoviesByGenre, getMoviesByStatus } from "@/services/movies";
 import { getAvailableSeatsByRoom } from "@/services/sessions";
 import { getDailyTicketSales } from "@/services/tickets";
 import { getFoodSells, getMonthlyRevenue } from "@/services/transactions";
+import { Suspense } from "react";
 
 export default async function OverviewPage() {
   const moviesData = await getMoviesByGenre();
@@ -22,8 +23,12 @@ export default async function OverviewPage() {
 
   return (
     <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
-      <SearchModal />
-      <SideNavBarModal />
+      <Suspense fallback={<div>Loading Search...</div>}>
+        <SearchModal />
+      </Suspense>
+      <Suspense fallback={<div>Loading Search...</div>}>
+        <SideNavBarModal />
+      </Suspense>
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl font-bold">Bienvenido</h2>
         <p className="text-base text-gray-400">
