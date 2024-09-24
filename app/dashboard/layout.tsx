@@ -11,10 +11,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen flex-col overflow-hidden lg:flex-row">
       <div className="hidden lg:flex">
-        <Suspense fallback={<div>Loading...</div>}>
-          {" "}
-          <SideNav />
-        </Suspense>
+        <SideNav />
       </div>
       <div className="flex w-full flex-col items-center overflow-auto">
         <DefaultNavBar />
