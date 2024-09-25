@@ -1,6 +1,7 @@
 import DefaultNavBar from "@/app/ui/dashboard/NavBar/DefaultNavBar";
 import SideNav from "../ui/dashboard/NavBar/SideNavBar";
 import DashboardFooter from "../ui/dashboard/Footer";
+import { Suspense } from "react";
 
 export default function DashboardLayout({
   children,
