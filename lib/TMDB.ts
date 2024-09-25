@@ -34,11 +34,8 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
     };
-    console.log(options);
 
     const { data } = await axios.request(options);
-    console.log(data);
-
     await parseMovie(data.results);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
@@ -429,10 +426,10 @@ export const parseMovie = async (
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
-    progressBar(i + 1, totalMovies);
+    // progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-    dataTMDB.id === 1022789 && console.log(dataTMDB.release_date);
+    console.log(dataTMDB);
 
     const status = getMovieStatus(dataTMDB.release_date);
 
