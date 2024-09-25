@@ -426,7 +426,7 @@ export const updateMoviesStatus = async (): Promise<void> => {
     if (currentMovie.status !== status) {
       await updateMovieStatus(currentMovie._id, formattedDate, status);
     }
-    await sleep(100);
+    await sleep(1000);
   }
 };
 
