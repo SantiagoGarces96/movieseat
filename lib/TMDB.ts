@@ -398,7 +398,7 @@ const updateMovieStatus = async (
   );
 };
 
-const updateMoviesStatus = async (): Promise<void> => {
+export const updateMoviesStatus = async (): Promise<void> => {
   const movies: IMovie[] = await Movie.find({});
   const totalMovies = movies.length;
 
