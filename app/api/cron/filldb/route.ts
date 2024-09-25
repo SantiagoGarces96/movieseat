@@ -1,9 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
-import {
-  getNowPlayingTMDB,
-  getUpcomingTMDB,
-  updateMoviesStatus,
-} from "@/lib/TMDB";
+import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +14,6 @@ export async function GET(request: Request) {
     await dbConnect();
     await getNowPlayingTMDB();
     await getUpcomingTMDB();
-    // await updateMoviesStatus();
     console.log("Fullfilled DB with new data.");
     return new Response("Fullfilled DB with new data.", { status: 200 });
   } catch (error: any) {
