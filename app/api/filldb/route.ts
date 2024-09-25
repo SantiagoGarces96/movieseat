@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   try {
     await dbConnect();
     await getNowPlayingTMDB();
-    // await getUpcomingTMDB();
+    await getUpcomingTMDB();
     // await updateMoviesStatus();
     console.log("Fullfilled DB with new data.");
     return new Response("Fullfilled DB with new data.", { status: 200 });
