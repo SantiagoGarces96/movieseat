@@ -16,12 +16,14 @@ export async function GET(request: Request) {
   // }
   try {
     await dbConnect();
-    await getNowPlayingTMDB();
-    await getUpcomingTMDB();
-    await updateMoviesStatus();
+    // await getNowPlayingTMDB();
+    // await getUpcomingTMDB();
+    // await updateMoviesStatus();
     console.log("Fullfilled DB with new data.");
     return new Response("Fullfilled DB with new data.", { status: 200 });
   } catch (error: any) {
+    console.log(error);
+
     return new Response(error.message || "An error occurred", {
       status: 500,
     });
