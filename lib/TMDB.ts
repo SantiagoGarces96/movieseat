@@ -479,7 +479,7 @@ export const parseMovie = async (
         status,
       };
       await Movie.create(parsedMovie);
-      await sleep(1000);
+      // await sleep(1000);
     }
   }
 };
