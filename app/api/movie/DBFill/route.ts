@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
+import {
+  getNowPlayingTMDB,
+  getUpcomingTMDB,
+  updateMoviesStatus,
+} from "@/lib/TMDB";
 
 export async function POST() {
   await dbConnect();
@@ -8,6 +12,7 @@ export async function POST() {
   try {
     await getNowPlayingTMDB();
     await getUpcomingTMDB();
+    await updateMoviesStatus();
 
     return NextResponse.json({
       message: "Base de datos completada exitosamente",

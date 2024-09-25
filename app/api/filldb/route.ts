@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     await getNowPlayingTMDB();
     await getUpcomingTMDB();
     await updateMoviesStatus();
+    console.log("Fullfilled DB with new data.");
     return new Response("Fullfilled DB with new data.", { status: 200 });
   } catch (error: any) {
     console.log(error);
