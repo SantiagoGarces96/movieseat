@@ -412,7 +412,7 @@ export const updateMoviesStatus = async (): Promise<void> => {
 
     if (status === MovieStatus.ARCHIVED) {
       await deleteArchivedMovies(currentMovie._id);
-      await sleep(1000);
+      await sleep(100);
       continue;
     }
 
@@ -421,13 +421,13 @@ export const updateMoviesStatus = async (): Promise<void> => {
       (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
     ) {
       await updateMovieStatus(currentMovie._id, formattedDate, status);
-      await sleep(1000);
+      await sleep(100);
       continue;
     }
 
     if (currentMovie.status !== status) {
       await updateMovieStatus(currentMovie._id, formattedDate, status);
-      await sleep(1000);
+      await sleep(100);
     }
   }
 };
