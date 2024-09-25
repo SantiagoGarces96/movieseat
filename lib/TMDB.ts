@@ -34,6 +34,8 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
     };
+    console.log(options);
+
     const { data } = await axios.request(options);
     await parseMovie(data.results);
   } catch (error: any) {
