@@ -37,6 +37,8 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
     console.log(options);
 
     const { data } = await axios.request(options);
+    console.log(data);
+
     await parseMovie(data.results);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
