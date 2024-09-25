@@ -480,7 +480,7 @@ export const parseMovie = async (
           sessions: sessions.map((session) => session._id),
         };
         await Movie.create(parsedMovie);
-        await sleep(1000);
+        // await sleep(1000);
       }
     }
   } catch (error) {
