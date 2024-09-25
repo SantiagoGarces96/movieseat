@@ -423,65 +423,67 @@ export const updateMoviesStatus = async (): Promise<void> => {
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
 ): Promise<void> => {
-  const totalMovies = moviesData.length;
+  try {
+    const totalMovies = moviesData.length;
 
-  for (let i = 0; i < totalMovies; i++) {
-    // progressBar(i + 1, totalMovies);
-    const movie = moviesData[i];
-    const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-    console.log(dataTMDB);
+    for (let i = 0; i < totalMovies; i++) {
+      const movie = moviesData[i];
+      const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
 
-    const status = getMovieStatus(dataTMDB.release_date);
+      const status = getMovieStatus(dataTMDB.release_date);
 
-    if (status === MovieStatus.ARCHIVED) {
-      continue;
-    }
-
-    const currentMovie: IMovie | null = await Movie.findOne({
-      imdb_id: dataTMDB.id,
-    });
-
-    if (!currentMovie) {
-      const movieId = new mongoose.Types.ObjectId();
-      const sessions = await createMovieSessions(
-        dataTMDB.release_date,
-        status,
-        movieId,
-      );
-      const director = dataTMDB.credits.crew.find(
-        (crewMember) => crewMember.job === "Director",
-      )?.original_name;
-
-      if (!director) {
-        throw new Error("Director not found in TMDB data");
+      if (status === MovieStatus.ARCHIVED) {
+        continue;
       }
-      const youtubeId =
-        dataTMDB.videos.results.find(
-          (video) => video.type === "Trailer" || video.type === "Teaser",
-        )?.key || null;
-      const parsedMovie: IParsedMovie = {
-        _id: movieId,
+
+      const currentMovie: IMovie | null = await Movie.findOne({
         imdb_id: dataTMDB.id,
-        title: dataTMDB.title,
-        backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
-        description: dataTMDB.overview,
-        releaseDate: new Date(dataTMDB.release_date + "T00:00:00"),
-        duration: dataTMDB.runtime,
-        genre: dataTMDB.genres.map(({ name }) => name),
-        director,
-        cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
-        language: dataTMDB.spoken_languages.map(
-          ({ english_name }) => english_name,
-        ),
-        trailer: youtubeId
-          ? `https://www.youtube.com/watch?v=${youtubeId}`
-          : "",
-        poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
-        status,
-        sessions: sessions.map((session) => session._id),
-      };
-      await Movie.create(parsedMovie);
-      await sleep(1000);
+      });
+
+      if (!currentMovie) {
+        const movieId = new mongoose.Types.ObjectId();
+        const sessions = await createMovieSessions(
+          dataTMDB.release_date,
+          status,
+          movieId,
+        );
+        const director = dataTMDB.credits.crew.find(
+          (crewMember) => crewMember.job === "Director",
+        )?.original_name;
+
+        if (!director) {
+          throw new Error("Director not found in TMDB data");
+        }
+        const youtubeId =
+          dataTMDB.videos.results.find(
+            (video) => video.type === "Trailer" || video.type === "Teaser",
+          )?.key || null;
+        const parsedMovie: IParsedMovie = {
+          _id: movieId,
+          imdb_id: dataTMDB.id,
+          title: dataTMDB.title,
+          backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
+          description: dataTMDB.overview,
+          releaseDate: new Date(dataTMDB.release_date + "T00:00:00"),
+          duration: dataTMDB.runtime,
+          genre: dataTMDB.genres.map(({ name }) => name),
+          director,
+          cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
+          language: dataTMDB.spoken_languages.map(
+            ({ english_name }) => english_name,
+          ),
+          trailer: youtubeId
+            ? `https://www.youtube.com/watch?v=${youtubeId}`
+            : "",
+          poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
+          status,
+          sessions: sessions.map((session) => session._id),
+        };
+        await Movie.create(parsedMovie);
+        await sleep(1000);
+      }
     }
+  } catch (error) {
+    console.log(error);
   }
 };
