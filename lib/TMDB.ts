@@ -1,5 +1,5 @@
 import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
-import { IParsedMovie } from "@/interfaces/movie";
+import { IMovie, IParsedMovie } from "@/interfaces/movie";
 import { IMovieDetailOMDB } from "@/interfaces/OMDB";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
 import axios from "axios";
@@ -8,7 +8,8 @@ import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
 import { progressBar } from "@/utils/progressBar";
 import { calculateDates } from "@/utils/calculateDays";
-import mongoose from "mongoose";
+import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
+import mongoose, { ObjectId } from "mongoose";
 import {
   SessionPrice,
   SessionPriceAfternoon,
@@ -22,9 +23,11 @@ import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
 
 export const getNowPlayingTMDB = async (): Promise<void> => {
+  const { startDate, endDate } = calculateDatesBillboard();
   try {
     const options = {
-      url: `${TMDB_API_URL}/now_playing?language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4`,
+
       method: "GET",
       headers: {
         accept: "application/json",
@@ -42,7 +45,8 @@ export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=co&sort_by=popularity.desc&with_original_language=en&language=es-MX`,
+      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4`,
+
       method: "GET",
       headers: {
         accept: "application/json",
@@ -55,6 +59,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
     throw new Error(error.message || "An error occurred");
   }
 };
+const isNonLatin = (text: string) => /[^\u0000-\u00ff]/.test(text);
 
 export const getMovieDetailTMDB = async (
   movie_id: number,
@@ -74,20 +79,54 @@ export const getMovieDetailTMDB = async (
     );
     let data = response.data as IMovieDetailTMDB;
 
-    if (!data.videos.results[0] || !data.overview) {
+    let Video = data.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    );
+
+    // Si no hay trailer en español, buscar en inglés
+    if (!Video || !data.overview || isNonLatin(data.title)) {
       response = await axios.get(
         `${TMDB_API_URL}/${movie_id}?append_to_response=videos&language=en-US`,
         options,
       );
       const dataEN = response.data as IMovieDetailTMDB;
 
-      if (!data.videos.results[0]) {
-        data.videos = dataEN.videos;
-      }
+      Video =
+        Video ||
+        dataEN.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        );
+
       if (!data.overview) {
         data.overview = dataEN.overview;
       }
+      if (isNonLatin(data.title)) {
+        data.title = dataEN.title;
+      }
     }
+
+    if (!Video || !data.overview) {
+      const language = data.spoken_languages
+        .map(({ iso_639_1 }) => iso_639_1)
+        .join(",");
+      response = await axios.get(
+        `${TMDB_API_URL}/${movie_id}?append_to_response=credits,videos&language=${language}`,
+        options,
+      );
+      const dataDefault = response.data as IMovieDetailTMDB;
+
+      Video =
+        Video ||
+        dataDefault.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        );
+
+      if (!data.overview) {
+        data.overview = dataDefault.overview;
+      }
+    }
+
+    data.videos.results = Video ? [Video] : [];
 
     return data;
   } catch (error: any) {
@@ -97,7 +136,7 @@ export const getMovieDetailTMDB = async (
 
 const getMovieStatus = (releaseDate: string): MovieStatus => {
   const today = new Date();
-  const release = new Date(releaseDate);
+  const release = new Date(releaseDate + "T00:00:00");
   const todayPlus8 = new Date(today);
   todayPlus8.setDate(today.getDate() + 8);
 
@@ -187,20 +226,17 @@ const createSession = (
   movieId: mongoose.Types.ObjectId,
   status: MovieStatus,
   sessions: ISession[],
-  usedRoomTimes: Set<string | unknown>, // Control de combinaciones usadas
+  usedRoomTimes: Set<string | unknown>,
 ) => {
-  const availableRooms = rooms.slice(); // Copia de las salas disponibles
+  const availableRooms = rooms.slice();
 
   while (availableRooms.length > 0) {
-    // Elegir aleatoriamente una sala
     const roomIndex = Math.floor(Math.random() * availableRooms.length);
     const room = availableRooms[roomIndex];
 
     const roomTimeKey = `${room._id}-${sessionTime.getTime()}`;
 
-    // Verificar si la combinación sala-horario ya fue usada
     if (!usedRoomTimes.has(roomTimeKey)) {
-      // Verificar conflictos en las sesiones existentes
       const conflict = existingSessions?.some((session) => {
         const sessionDateTime = new Date(session.dateTime).getTime();
         return (
@@ -234,12 +270,11 @@ const createSession = (
         });
 
         sessions.push(session);
-        usedRoomTimes.add(roomTimeKey); // Registrar la combinación de sala y horario
+        usedRoomTimes.add(roomTimeKey);
         break;
       }
     }
 
-    // Si hay conflicto o la sala ya fue usada, removerla de las opciones
     availableRooms.splice(roomIndex, 1);
   }
 };
@@ -249,7 +284,7 @@ const createMovieSessions = async (
   status: MovieStatus,
   movieId: mongoose.Types.ObjectId,
 ): Promise<ISession[]> => {
-  const release: Date = new Date(releaseDate);
+  const release: Date = new Date(releaseDate + "T00:00:00");
   const today: Date = new Date();
   const rooms: IRoom[] = await Room.find({});
 
@@ -270,13 +305,13 @@ const createMovieSessions = async (
 
   const sessions: ISession[] = [];
   const usedRoomTimes = new Set();
-  const sessionDays = 7;
+  const sessionDays = 120;
 
   if (status === MovieStatus.PRE_SALE) {
     for (let day = 2; day > 0; day--) {
       const sessionDay = new Date(today.getTime() - day * 24 * 60 * 60 * 1000);
 
-      let sessionsPerDay = 2;
+      const sessionsPerDay = 2;
 
       const shuffledSessionTimes = sessionTimes
         .slice(0, sessionsPerDay)
@@ -314,10 +349,9 @@ const createMovieSessions = async (
     } else if (daysSinceRelease > 60 && daysSinceRelease <= 120) {
       sessionsPerDay = 1;
     } else if (daysSinceRelease > 120) {
-      break; // Más de 120 días: película archivada
+      break;
     }
 
-    // Aleatorizar el orden de los horarios del día
     const shuffledSessionTimes = sessionTimes
       .slice(0, sessionsPerDay)
       .sort(() => Math.random() - 0.5);
@@ -339,8 +373,50 @@ const createMovieSessions = async (
   }
 
   await Session.insertMany(sessions);
-
   return sessions;
+};
+
+const deleteArchivedMovies = async (_id: string): Promise<void> => {
+  await Movie.findOneAndDelete({ _id });
+  await Session.deleteMany({ movieId: _id });
+};
+
+const updateMovieStatus = async (
+  _id: string,
+  release_date: string,
+  status: MovieStatus,
+): Promise<void> => {
+  await Session.deleteMany({ movieId: _id });
+  const sessions = await createMovieSessions(
+    release_date,
+    status,
+    new mongoose.Types.ObjectId(_id),
+  );
+  await Movie.findOneAndUpdate(
+    { _id },
+    { status, sessions: sessions.map((session) => session._id) },
+  );
+};
+
+const updateMoviesStatus = async (): Promise<void> => {
+  const movies: IMovie[] = await Movie.find({});
+  const totalMovies = movies.length;
+
+  for (let i = 0; i < totalMovies; i++) {
+    const currentMovie = movies[i];
+    const date = new Date(currentMovie.releaseDate);
+    const formattedDate = date.toISOString().split("T")[0];
+    const status = getMovieStatus(formattedDate);
+
+    if (status === MovieStatus.ARCHIVED) {
+      await deleteArchivedMovies(currentMovie._id);
+      continue;
+    }
+
+    if (currentMovie.status !== status) {
+      await updateMovieStatus(currentMovie._id, formattedDate, status);
+    }
+  }
 };
 
 export const parseMovie = async (
@@ -349,45 +425,62 @@ export const parseMovie = async (
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
+    progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-    const dataOMDB: IMovieDetailOMDB = await getMovieDetailOMDB(
-      dataTMDB.imdb_id,
-    );
-    const trailerVideo = dataTMDB.videos.results.find(
-      (video) => video.type === "Trailer" || video.type === "Teaser",
-    );
-    const movieId = new mongoose.Types.ObjectId();
+    dataTMDB.id === 1022789 && console.log(dataTMDB.release_date);
 
     const status = getMovieStatus(dataTMDB.release_date);
 
-    const sessions = await createMovieSessions(
-      dataTMDB.release_date,
-      status,
-      movieId,
-    );
+    if (status === MovieStatus.ARCHIVED) {
+      continue;
+    }
 
-    const parsedMovie: IParsedMovie = {
-      _id: movieId,
-      title: dataTMDB.original_title,
-      backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path}`,
-      description: dataTMDB.overview,
-      releaseDate: new Date(dataTMDB.release_date),
-      duration: dataTMDB.runtime,
-      genre: dataTMDB.genres.map(({ name }) => name),
-      director: dataOMDB.Director,
-      cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
-      language: dataTMDB.spoken_languages.map(
-        ({ english_name }) => english_name,
-      ),
-      trailer: `https://www.youtube.com/watch?v=${trailerVideo?.key || dataTMDB.videos.results[0]?.key || ""} `,
-      poster: dataOMDB.Poster,
-      status: getMovieStatus(dataTMDB.release_date),
-      sessions: sessions.map((session) => session._id),
-    };
-    await Movie.create(parsedMovie);
-    progressBar(i + 1, totalMovies);
+    const currentMovie: IMovie | null = await Movie.findOne({
+      imdb_id: dataTMDB.id,
+    });
 
-    await sleep(1000);
+    if (!currentMovie) {
+      const movieId = new mongoose.Types.ObjectId();
+      const sessions = await createMovieSessions(
+        dataTMDB.release_date,
+        status,
+        movieId,
+      );
+      const director = dataTMDB.credits.crew.find(
+        (crewMember) => crewMember.job === "Director",
+      )?.original_name;
+
+      if (!director) {
+        throw new Error("Director not found in TMDB data");
+      }
+      const youtubeId =
+        dataTMDB.videos.results.find(
+          (video) => video.type === "Trailer" || video.type === "Teaser",
+        )?.key || null;
+      const parsedMovie: IParsedMovie = {
+        _id: movieId,
+        imdb_id: dataTMDB.id,
+        title: dataTMDB.title,
+        backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
+        description: dataTMDB.overview,
+        releaseDate: new Date(dataTMDB.release_date + "T00:00:00"),
+        duration: dataTMDB.runtime,
+        genre: dataTMDB.genres.map(({ name }) => name),
+        director,
+        cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
+        language: dataTMDB.spoken_languages.map(
+          ({ english_name }) => english_name,
+        ),
+        trailer: youtubeId
+          ? `https://www.youtube.com/watch?v=${youtubeId}`
+          : "",
+        poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
+        status,
+        sessions: sessions.map((session) => session._id),
+      };
+      await Movie.create(parsedMovie);
+      await sleep(1000);
+    }
   }
 };

@@ -4,6 +4,7 @@ import { ISession } from "./session";
 
 export interface IMovieModel extends Document {
   _id: mongoose.Types.ObjectId;
+  imdb_id: number;
   title: string;
   backdrop: string;
   description: string;
@@ -24,6 +25,7 @@ export interface IMovieModel extends Document {
 
 export interface IParsedMovie {
   _id: mongoose.Types.ObjectId;
+  imdb_id: number;
   title: string;
   backdrop: string;
   description: string;
@@ -41,6 +43,7 @@ export interface IParsedMovie {
 
 export interface IMovie {
   _id: string;
+  imdb_id: number;
   title: string;
   backdrop: string;
   description: string;
@@ -58,4 +61,14 @@ export interface IMovie {
   createdAt: Date;
   updatedAt: Date;
   __v: number;
+}
+
+export interface IMovieByGenre {
+  _id: string;
+  count: number;
+}
+
+export interface IMovieByStatus {
+  _id: MovieStatus;
+  count: number;
 }

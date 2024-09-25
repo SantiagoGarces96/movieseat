@@ -19,3 +19,8 @@ export interface ITicket {
   updatedAt: Date;
   __v: number;
 }
+
+export interface IDailyTicketSales {
+  _id: string;
+  ticketsSold: number;
+}

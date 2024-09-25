@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { hashPassword } from "@/utils/bcrypt";
-import { checkAdminAuthorization } from "@/middleware/checkAdminAuthorization";
 import { IUser } from "@/interfaces/user";
 
 export async function GET(
@@ -11,9 +10,6 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
-
-  const authCheck = await checkAdminAuthorization(request);
-  if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -42,9 +38,6 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
-
-  const authCheck = await checkAdminAuthorization(request);
-  if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -76,9 +69,6 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   await dbConnect();
-
-  const authCheck = await checkAdminAuthorization(request);
-  if (!authCheck.authorized) return authCheck.response;
 
   const { id } = params;
   if (!mongoose.Types.ObjectId.isValid(id)) {

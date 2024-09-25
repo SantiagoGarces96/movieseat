@@ -1,13 +1,9 @@
 import { IUser } from "@/interfaces/user";
 import dbConnect from "@/lib/dbConnect";
-import { checkAdminAuthorization } from "@/middleware/checkAdminAuthorization";
 import User from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const authCheck = await checkAdminAuthorization(request);
-  if (!authCheck.authorized) return authCheck.response;
-
   await dbConnect();
   try {
     const users: IUser[] = await User.find({});
