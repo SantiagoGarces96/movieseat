@@ -430,7 +430,7 @@ export const updateMoviesStatus = async (): Promise<void> => {
   //     await sleep(100);
   //   }
   // }
-  await sleep(10000);
+  await sleep(9000);
   console.log("Fullfilled DB with new sessions.");
 };
 
