@@ -41,3 +41,16 @@ export interface IAvailableSeatsByRoom {
   _id: string;
   availableSeats: number;
 }
+
+export interface ISessionCustomTypes
+  extends Omit<ISession, "movieId" | "roomId"> {
+  movieId: { _id: Schema.Types.ObjectId; title: string };
+  roomId: { _id: Schema.Types.ObjectId; name: string };
+}
+
+export interface ISessionResponse {
+  results: ISessionCustomTypes[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+}
