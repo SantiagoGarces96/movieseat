@@ -24,7 +24,6 @@ export interface IMovieModel extends Document {
 }
 
 export interface IParsedMovie {
-  _id: mongoose.Types.ObjectId;
   imdb_id: number;
   title: string;
   backdrop: string;
@@ -35,10 +34,9 @@ export interface IParsedMovie {
   director: string;
   cast: string[];
   language: string[];
-  trailer: string | null;
+  trailer: string;
   poster: string;
   status: MovieStatus;
-  sessions: Schema.Types.ObjectId[];
 }
 
 export interface IMovie {

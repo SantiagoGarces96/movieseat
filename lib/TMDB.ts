@@ -34,7 +34,6 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
     };
-    console.log(options);
 
     const { data } = await axios.request(options);
     await parseMovie(data.results);
@@ -409,14 +408,26 @@ export const updateMoviesStatus = async (): Promise<void> => {
     const date = new Date(currentMovie.releaseDate);
     const formattedDate = date.toISOString().split("T")[0];
     const status = getMovieStatus(formattedDate);
+    const hasSessions = currentMovie.sessions.length === 0;
 
     if (status === MovieStatus.ARCHIVED) {
       await deleteArchivedMovies(currentMovie._id);
+      await sleep(100);
+      continue;
+    }
+
+    if (
+      hasSessions &&
+      (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
+    ) {
+      await updateMovieStatus(currentMovie._id, formattedDate, status);
+      await sleep(100);
       continue;
     }
 
     if (currentMovie.status !== status) {
       await updateMovieStatus(currentMovie._id, formattedDate, status);
+      await sleep(100);
     }
   }
 };
@@ -427,10 +438,8 @@ export const parseMovie = async (
   const totalMovies = moviesData.length;
 
   for (let i = 0; i < totalMovies; i++) {
-    progressBar(i + 1, totalMovies);
     const movie = moviesData[i];
     const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-    dataTMDB.id === 1022789 && console.log(dataTMDB.release_date);
 
     const status = getMovieStatus(dataTMDB.release_date);
 
@@ -443,25 +452,17 @@ export const parseMovie = async (
     });
 
     if (!currentMovie) {
-      const movieId = new mongoose.Types.ObjectId();
-      const sessions = await createMovieSessions(
-        dataTMDB.release_date,
-        status,
-        movieId,
-      );
-      const director = dataTMDB.credits.crew.find(
-        (crewMember) => crewMember.job === "Director",
-      )?.original_name;
+      const director =
+        dataTMDB.credits.crew.find(
+          (crewMember) => crewMember.job === "Director",
+        )?.original_name || "";
 
-      if (!director) {
-        throw new Error("Director not found in TMDB data");
-      }
       const youtubeId =
         dataTMDB.videos.results.find(
           (video) => video.type === "Trailer" || video.type === "Teaser",
-        )?.key || null;
+        )?.key || "";
+
       const parsedMovie: IParsedMovie = {
-        _id: movieId,
         imdb_id: dataTMDB.id,
         title: dataTMDB.title,
         backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
@@ -479,10 +480,9 @@ export const parseMovie = async (
           : "",
         poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
         status,
-        sessions: sessions.map((session) => session._id),
       };
       await Movie.create(parsedMovie);
-      await sleep(1000);
+      await sleep(100);
     }
   }
 };

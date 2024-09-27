@@ -3,7 +3,6 @@ import { MovieStatus } from "@/types/movie";
 import { Schema, model, models } from "mongoose";
 
 const movieSchema = new Schema<IMovieModel>({
-  _id: { type: Schema.Types.ObjectId, required: true, unique: true },
   imdb_id: { type: Number, require: true },
   title: { type: String, required: true },
   backdrop: { type: String, required: true },
@@ -15,7 +14,7 @@ const movieSchema = new Schema<IMovieModel>({
   cast: [{ type: String, required: true }],
   language: [{ type: String, required: true }],
   subtitles: { type: Boolean, default: false },
-  trailer: { type: String, default: null },
+  trailer: { type: String, default: "" },
   poster: { type: String, required: true },
   status: {
     type: String,
