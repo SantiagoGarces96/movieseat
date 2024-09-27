@@ -400,42 +400,32 @@ const updateMovieStatus = async (
 };
 
 export const updateMoviesStatus = async (): Promise<void> => {
-  // const movies: IMovie[] = await Movie.find({});
-  // const totalMovies = movies.length;
+  const movies: IMovie[] = await Movie.find({});
+  const totalMovies = movies.length;
 
-  // for (let i = 0; i < totalMovies; i++) {
-  //   const currentMovie = movies[i];
-  //   const date = new Date(currentMovie.releaseDate);
-  //   const formattedDate = date.toISOString().split("T")[0];
-  //   const status = getMovieStatus(formattedDate);
-  //   const hasSessions = currentMovie.sessions.length === 0;
+  for (let i = 0; i < totalMovies; i++) {
+    const currentMovie = movies[i];
+    const date = new Date(currentMovie.releaseDate);
+    const formattedDate = date.toISOString().split("T")[0];
+    const status = getMovieStatus(formattedDate);
+    const hasSessions = currentMovie.sessions.length === 0;
 
-  //   if (status === MovieStatus.ARCHIVED) {
-  //     await deleteArchivedMovies(currentMovie._id);
-  //     await sleep(100);
-  //     continue;
-  //   }
+    if (status === MovieStatus.ARCHIVED) {
+      await deleteArchivedMovies(currentMovie._id);
+      continue;
+    }
 
-  //   if (
-  //     hasSessions &&
-  //     (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
-  //   ) {
-  //     await updateMovieStatus(currentMovie._id, formattedDate, status);
-  //     await sleep(100);
-  //     continue;
-  //   }
+    if (
+      hasSessions &&
+      (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
+    ) {
+      await updateMovieStatus(currentMovie._id, formattedDate, status);
+      continue;
+    }
 
-  //   if (currentMovie.status !== status) {
-  //     await updateMovieStatus(currentMovie._id, formattedDate, status);
-  //     await sleep(100);
-  //   }
-  // }
-
-  const laps = [1, 2, 3, 4, 5];
-
-  for (const lap of laps) {
-    console.log(lap);
-    await sleep(3000);
+    if (currentMovie.status !== status) {
+      await updateMovieStatus(currentMovie._id, formattedDate, status);
+    }
   }
 };
 
