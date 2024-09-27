@@ -1,15 +1,12 @@
 import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
 import { IMovie, IParsedMovie } from "@/interfaces/movie";
-import { IMovieDetailOMDB } from "@/interfaces/OMDB";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
 import axios from "axios";
-import { getMovieDetailOMDB } from "./OMDB";
 import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
-import { progressBar } from "@/utils/progressBar";
 import { calculateDates } from "@/utils/calculateDays";
 import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import {
   SessionPrice,
   SessionPriceAfternoon,
