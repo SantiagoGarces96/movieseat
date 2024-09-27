@@ -24,7 +24,6 @@ const MovieCard: React.FC<MovieCardProps> = ({
   id,
   title,
   poster,
-
   status,
   duration,
   releaseDate,
@@ -38,9 +37,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const displayedGenres = genre.slice(0, 3).join(", ");
 
   return (
-    <div
-      className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4"
-    >
+    <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4">
       <Link
         href={`/movie/${id}`}
         className="block overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
@@ -52,7 +49,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           >
             {statusLabel}
           </span>
-          <figure className="xl:h-90 relative h-48 w-[300px] lg:h-60 md:h-72 sm:h-[450px] 2xl:h-[25rem]">
+          <figure className="xl:h-90 relative h-48 w-[300px] sm:h-[450px] md:h-72 lg:h-60 2xl:h-[25rem]">
             <Image
               src={poster}
               alt={title}
