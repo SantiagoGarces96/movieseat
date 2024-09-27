@@ -85,10 +85,9 @@ const Box: React.FC<BoxProps> = ({ movies }) => {
               id={movie._id}
               title={movie.title}
               poster={movie.poster}
-              backdrop={movie.backdrop}
               status={movie.status}
               duration={movie.duration}
-              releaseDate={new Date(movie.releaseDate).toLocaleDateString()}
+              releaseDate={movie.releaseDate}
               genre={movie.genre}
             />
           </div>

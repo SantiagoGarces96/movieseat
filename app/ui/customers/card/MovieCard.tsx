@@ -7,10 +7,9 @@ export interface MovieCardProps {
   id: string;
   title: string;
   poster: string;
-  backdrop: string;
   status: MovieStatus;
   duration: number;
-  releaseDate: string;
+  releaseDate: Date;
   genre: string[];
 }
 
@@ -25,7 +24,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   id,
   title,
   poster,
-  backdrop,
+
   status,
   duration,
   releaseDate,
@@ -36,20 +35,11 @@ const MovieCard: React.FC<MovieCardProps> = ({
       ? status.charAt(0).toUpperCase() + status.slice(1)
       : "Unknown";
 
-  const imageUrl =
-    poster !== "N/A"
-      ? poster
-      : backdrop !== "N/A"
-        ? backdrop
-        : "/default-poster.png";
-
   const displayedGenres = genre.slice(0, 3).join(", ");
 
   return (
     <div
       className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4"
-      data-aos="fade-up"
-      data-aos-delay="0"
     >
       <Link
         href={`/movie/${id}`}
@@ -62,12 +52,12 @@ const MovieCard: React.FC<MovieCardProps> = ({
           >
             {statusLabel}
           </span>
-          <figure className="xl:h-90 relative h-48 w-full sm:h-60 md:h-72 lg:h-80 2xl:h-[25rem]">
+          <figure className="xl:h-90 relative h-48 w-[300px] lg:h-60 md:h-72 sm:h-[450px] 2xl:h-[25rem]">
             <Image
-              src={imageUrl}
+              src={poster}
               alt={title}
-              layout="fill"
-              objectFit="fill"
+              fill
+              style={{ objectFit: "fill" }}
               className="rounded-t-lg"
             />
           </figure>
@@ -77,7 +67,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             {title}
           </h2>
           <span className="mb-1 block text-xs sm:text-sm">
-            Estreno: {releaseDate}
+            Estreno: {new Date(releaseDate).toLocaleDateString()}
           </span>
           <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs sm:text-sm">
             Género: {displayedGenres}
