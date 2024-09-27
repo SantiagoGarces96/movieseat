@@ -1,11 +1,13 @@
 import { ISessionModel } from "@/interfaces/session";
 import { Schema, model, models } from "mongoose";
+import Movie from "./Movie";
+import Room from "./Room";
 
 const sessionSchema = new Schema<ISessionModel>({
-  movieId: { type: Schema.Types.ObjectId, ref: "Movie", required: true },
+  movieId: { type: Schema.Types.ObjectId, ref: Movie, required: true },
   roomId: {
     type: Schema.Types.ObjectId,
-    ref: "Room",
+    ref: Room,
     required: true,
   },
   dateTime: { type: Date, required: true },
