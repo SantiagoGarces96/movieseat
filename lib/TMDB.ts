@@ -435,7 +435,7 @@ export const updateMoviesStatus = async (): Promise<void> => {
 
   for (const lap of laps) {
     console.log(lap);
-    await sleep(5000);
+    await sleep(3000);
   }
 };
 
