@@ -70,3 +70,10 @@ export interface IMovieByStatus {
   _id: MovieStatus;
   count: number;
 }
+
+export interface IMoviesResponse {
+  results: IMovie[];
+  page: number;
+  totalPages: number;
+  totalResults: number;
+}

@@ -1,8 +1,14 @@
 "use server";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
-import { IMovie, IMovieByGenre, IMovieByStatus } from "@/interfaces/movie";
+import {
+  IMovie,
+  IMovieByGenre,
+  IMovieByStatus,
+  IMoviesResponse,
+} from "@/interfaces/movie";
 import Movie from "@/models/Movie";
+import { MovieStatus } from "@/types/movie";
 
 export const getAllMovies = async (): Promise<IMovie[]> => {
   await dbConnect();
@@ -11,6 +17,50 @@ export const getAllMovies = async (): Promise<IMovie[]> => {
     return movies;
   } catch (error: any) {
     return [];
+  }
+};
+
+export const getUpcomingMovies = async (
+  page: string = "1",
+  limit: string = "5",
+): Promise<IMoviesResponse> => {
+  await dbConnect();
+  const pageSize = parseInt(limit);
+
+  try {
+    const totalResults = await Movie.countDocuments({
+      status: { $in: [MovieStatus.PRE_SALE, MovieStatus.UPCOMING] },
+    });
+    const totalPages = Math.ceil(totalResults / pageSize);
+
+    const pageNumber =
+      parseInt(page) < 1
+        ? 1
+        : parseInt(page) > totalPages
+          ? totalPages
+          : parseInt(page);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const results: IMovie[] = await Movie.find({
+      status: { $in: [MovieStatus.PRE_SALE, MovieStatus.UPCOMING] },
+    })
+      .sort({ releaseDate: 1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    return {
+      results,
+      page: pageNumber,
+      totalPages,
+      totalResults,
+    };
+  } catch (error: any) {
+    return {
+      results: [],
+      page: 1,
+      totalPages: 0,
+      totalResults: 0,
+    };
   }
 };
 
