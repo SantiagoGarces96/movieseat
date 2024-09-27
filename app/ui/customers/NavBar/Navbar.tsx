@@ -4,11 +4,11 @@ import { HiBars3 } from "react-icons/hi2";
 
 const Navbar = () => {
   return (
-    <div className="drawer z-50">
+    <div className="drawer sticky top-0 z-50">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
         {/* Page content here */}
-        <nav className="sticky top-0 w-full bg-white p-4 shadow-md">
+        <nav className="w-full bg-white p-4 shadow-md">
           <div className="container mx-auto flex items-center justify-between">
             <Link href="/">
               <div className="text-2xl font-bold">MovieSeat</div>
