@@ -1,8 +1,7 @@
 import React from "react";
 import MovieCard from "@/app/ui/customers/card/MovieCard";
-import MobileMovieCard from "@/app/ui/customers/card/MobileMovieCard"; // El componente móvil
+import MobileMovieCard from "@/app/ui/customers/card/MobileMovieCard";
 import { IMovie } from "@/interfaces/movie";
-import { MovieStatus } from "@/types/movie";
 import PaginationButtons from "./ButtonsContainers";
 
 interface PreSaleUpcomingBoxProps {
@@ -17,7 +16,7 @@ const PreSaleUpcomingBox: React.FC<PreSaleUpcomingBoxProps> = ({
   totalPages,
 }) => {
   return (
-    <div className="relative flex flex-col items-center overflow-hidden">
+    <div className="relative flex items-center justify-center overflow-hidden">
       {/* Grilla para pantallas grandes */}
       <div className="hidden w-full flex-wrap justify-center gap-4 px-8 py-4 sm:flex">
         {movies.map((movie) => (
@@ -62,7 +61,9 @@ const PreSaleUpcomingBox: React.FC<PreSaleUpcomingBoxProps> = ({
       </div>
 
       {/* Botones de paginación */}
-      <PaginationButtons currentPage={currentPage} totalPages={totalPages} />
+      <div className="absolute hidden w-full px-8 lg:flex">
+        <PaginationButtons currentPage={currentPage} totalPages={totalPages} />
+      </div>
     </div>
   );
 };

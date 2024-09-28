@@ -6,14 +6,18 @@ interface PaginationButtonsProps {
   totalPages: number;
 }
 
-const PaginationButtons: React.FC<PaginationButtonsProps> = ({ currentPage, totalPages }) => {
-
+const PaginationButtons: React.FC<PaginationButtonsProps> = ({
+  currentPage,
+  totalPages,
+}) => {
   return (
-    <div className="flex justify-between items-center w-full px-8 mb-4">
+    <div
+      className={`flex w-full items-center ${currentPage === 1 ? "justify-end" : currentPage === totalPages ? "justify-start" : "justify-between"}`}
+    >
       {currentPage > 1 && (
         <Link
           href={`?page=${currentPage - 1}`}
-          className="bg-gray-800 text-white rounded-full p-2"
+          className="rounded-full bg-gray-800 p-2 text-white"
         >
           &lt;
         </Link>
@@ -22,7 +26,7 @@ const PaginationButtons: React.FC<PaginationButtonsProps> = ({ currentPage, tota
       {currentPage < totalPages && (
         <Link
           href={`?page=${currentPage + 1}`}
-          className="bg-gray-800 text-white rounded-full p-2"
+          className="rounded-full bg-gray-800 p-2 text-white"
         >
           &gt;
         </Link>

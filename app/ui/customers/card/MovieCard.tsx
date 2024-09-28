@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { MovieStatus } from "@/types/movie";
 import Link from "next/link";
+import { parseReleaseDate } from "@/utils/parseDate";
 
 export interface MovieCardProps {
   id: string;
@@ -49,7 +50,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           >
             {statusLabel}
           </span>
-          <figure className="xl:h-90 relative h-48 w-[300px] sm:h-[450px] md:h-72 lg:h-60 2xl:h-[25rem]">
+          <figure className="xl:h-90 relative h-48 w-full sm:h-[450px] md:h-72 lg:h-60 2xl:h-[25rem]">
             <Image
               src={poster}
               alt={title}
@@ -64,7 +65,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             {title}
           </h2>
           <span className="mb-1 block text-xs sm:text-sm">
-            Estreno: {new Date(releaseDate).toLocaleDateString()}
+            Estreno: {parseReleaseDate(releaseDate)}
           </span>
           <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs sm:text-sm">
             Género: {displayedGenres}
