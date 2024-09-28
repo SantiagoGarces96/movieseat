@@ -1,8 +1,6 @@
 import React from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "./ui/customers/NavBar/Navbar";
-import Footer from "./ui/customers/Footer/Footer";
 
 export const metadata = {
   title: "Movieseat",
@@ -19,9 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} overflow-auto bg-primary`}>
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <main className="h-full w-full">{children}</main>
       </body>
     </html>
   );
