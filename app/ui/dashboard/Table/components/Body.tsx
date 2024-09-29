@@ -26,11 +26,23 @@ function Element({
   );
 }
 
-function Body({ body }: { body: { [key: string]: string }[] }) {
+function Body({
+  body,
+  currentPage,
+  limit,
+}: {
+  body: { [key: string]: string }[];
+  currentPage: number;
+  limit: number;
+}) {
   return (
     <tbody>
       {body.map((data, index) => (
-        <Element key={"element" + index} data={data} dataIndex={index + 1} />
+        <Element
+          key={"element" + index}
+          data={data}
+          dataIndex={(currentPage - 1) * limit + index + 1}
+        />
       ))}
     </tbody>
   );

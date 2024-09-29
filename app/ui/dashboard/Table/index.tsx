@@ -14,7 +14,7 @@ function Table({
   page,
   totalPages,
 }: {
-  headers: string[];
+  headers: { [key: string]: string }[];
   body: { [key: string]: string }[];
   limit: string;
   totalResults: number;
@@ -29,7 +29,7 @@ function Table({
       </div>
       <table className="table table-xs">
         <Header headers={headers} />
-        <Body body={body} />
+        <Body body={body} currentPage={page} limit={parseInt(limit)} />
       </table>
       <div className="flex items-center justify-between px-1 py-5">
         <Count
