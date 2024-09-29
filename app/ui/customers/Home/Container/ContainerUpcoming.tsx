@@ -8,16 +8,19 @@ interface PreSaleUpcomingBoxProps {
   movies: IMovie[];
   currentPage: number;
   totalPages: number;
+  type: string;
+  searchParams: { billboardPage?: string; upcomingPage?: string };
 }
 
 const PreSaleUpcomingBox: React.FC<PreSaleUpcomingBoxProps> = ({
   movies,
   currentPage,
   totalPages,
+  type,
+  searchParams,
 }) => {
   return (
     <div className="relative flex items-center justify-center overflow-hidden">
-      {/* Grilla para pantallas grandes */}
       <div className="hidden w-full flex-wrap justify-center gap-4 px-8 py-4 sm:flex">
         {movies.map((movie) => (
           <div
@@ -62,7 +65,12 @@ const PreSaleUpcomingBox: React.FC<PreSaleUpcomingBoxProps> = ({
 
       {/* Botones de paginación */}
       <div className="absolute hidden w-full px-8 lg:flex">
-        <PaginationButtons currentPage={currentPage} totalPages={totalPages} />
+        <PaginationButtons
+          currentPage={currentPage}
+          totalPages={totalPages}
+          type={type}
+          searchParams={searchParams}
+        />
       </div>
     </div>
   );
