@@ -1,15 +1,26 @@
-import React from 'react';
+import React from "react";
 import PaginatedMoviesGrid from "@/app/ui/customers/upcoming/moviesCards/moviesCards";
-import { getAllMovies } from "@/services/movies";
-import { IMovie } from "@/interfaces/movie";
+import { getAllUpcomingMovies } from "@/services/movies";
 
-export default async function page() {
-  const UpcomingPage: IMovie[] = await getAllMovies();
+interface PageProps {
+  searchParams: { UpcomingPage?: string };
+}
+
+export default async function UpcomingPage({ searchParams }: PageProps) {
+  const UpcomingPage = searchParams.UpcomingPage || "1";
+
+  const releasesMovies = await getAllUpcomingMovies("upcomings", UpcomingPage);
+
   return (
-    <div className="container mx-auto py-12 pt-20">
-      <h1 className="text-4xl font-bold mb-6 capitalize">Proximos Estrenos</h1>
-      <PaginatedMoviesGrid movies={UpcomingPage} />
+    <div className="container mx-auto p-4">
+      <h1 className="mb-6 text-4xl font-bold capitalize">Proximos Estrenos</h1>
+      <PaginatedMoviesGrid
+        movies={releasesMovies.results}
+        currentPage={releasesMovies.page}
+        totalPages={releasesMovies.totalPages}
+        type="upcomings"
+        searchParams={searchParams}
+      />
     </div>
   );
-};
-
+}
