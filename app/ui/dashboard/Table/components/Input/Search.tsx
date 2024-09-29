@@ -10,26 +10,40 @@ export default function TableSearchInput() {
   const { replace } = useRouter();
   const pathname = usePathname();
 
-  const handleSearch = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      const params = new URLSearchParams(searchParams);
-      if (value) {
-        params.set("tableQuery", value);
-        setValue(value);
-      } else {
-        params.delete("tableQuery");
-        setValue("");
-      }
-      replace(`${pathname}?${params.toString()}`);
-    },
-    500,
-  );
+  const params = new URLSearchParams(searchParams);
+
+  const handleSearch = useDebouncedCallback((value: string) => {
+    if (value) {
+      params.set("tableQuery", value);
+    } else {
+      params.delete("tableQuery");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, 500);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setValue(value);
+    handleSearch(value);
+  };
+
+  const handleClearInput = () => {
+    params.delete("tableQuery");
+    setValue("");
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <label className="input input-sm input-bordered flex items-center gap-2">
-      <input type="text" placeholder="Type here" onChange={handleSearch} />
-      {!!value && <HiMiniXMark className="cursor-pointer" />}
+      <input
+        type="text"
+        placeholder="Nombre de la pelicula"
+        onChange={handleChange}
+        value={value}
+      />
+      {!!value && (
+        <HiMiniXMark className="cursor-pointer" onClick={handleClearInput} />
+      )}
     </label>
   );
 }
