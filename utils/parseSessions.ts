@@ -1,13 +1,13 @@
 import { ISessionCustomTypes } from "@/interfaces/session";
 
 export const parseBodySessions = (
-  session: ISessionCustomTypes[],
+  sessions: ISessionCustomTypes[],
 ): { [key: string]: string }[] => {
-  return session.map(
+  return sessions.map(
     ({
       _id,
-      movieId,
-      roomId,
+      movie,
+      room,
       availableSeats,
       preferentialPrice,
       generalPrice,
@@ -16,8 +16,8 @@ export const parseBodySessions = (
       updatedAt,
     }) => ({
       _id: _id.toString(),
-      movie: movieId.title,
-      room: roomId.name,
+      movie,
+      room,
       availableSeats: availableSeats.toString(),
       preferentialPrice: `$ ${preferentialPrice.toLocaleString("es-ES")}`,
       generalPrice: `$ ${generalPrice.toLocaleString("es-ES")}`,

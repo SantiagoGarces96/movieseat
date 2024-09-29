@@ -1,7 +1,6 @@
 import Table from "@/app/ui/dashboard/Table";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
 import { getSessions } from "@/services/sessions";
-import { parseBodySessions } from "@/utils/parseSessions";
 import React from "react";
 
 export default async function SessionsPage({
@@ -11,12 +10,16 @@ export default async function SessionsPage({
     page?: string;
     limit?: string;
     tableQuery?: string;
+    sortBy?: string;
+    order?: string;
   };
 }) {
   const page = searchParams?.page || " 1";
   const limit = searchParams?.limit || "5";
   const query = searchParams?.tableQuery || "";
-  const sessions = await getSessions(page, limit, query);
+  const sortBy = searchParams?.sortBy || "createdAt";
+  const order = searchParams?.order || "";
+  const sessions = await getSessions(page, limit, query, sortBy, order);
 
   return (
     <section className="h-[100vh] w-full divide-y">
@@ -26,11 +29,11 @@ export default async function SessionsPage({
       <div className="p-5">
         <Table
           headers={sessionsHeaders}
-          body={parseBodySessions(sessions.results)}
+          body={sessions.results}
           limit={limit}
-          totalResults={sessions.total_results}
+          totalResults={sessions.totalResults}
           page={sessions.page || 1}
-          totalPages={sessions.total_pages}
+          totalPages={sessions.totalPages}
         />
       </div>
     </section>

@@ -1,10 +1,10 @@
 export const sessionsHeaders = [
-  "Pelicula",
-  "Sala",
-  "Asientos Disponibles",
-  "Precio Preferencial",
-  "Precio General",
-  "Fecha de la Funcion",
-  "Creada",
-  "Actualizada",
+  { label: "Pelicula", value: "movie.title" },
+  { label: "Sala", value: "room.name" },
+  { label: "Asientos Disponibles", value: "availableSeats" },
+  { label: "Precio Preferencial", value: "preferentialPrice" },
+  { label: "Precio General", value: "generalPrice" },
+  { label: "Fecha de la Funcion", value: "dateTime" },
+  { label: "Creada", value: "createdAt" },
+  { label: "Actualizada", value: "updatedAt" },
 ];
