@@ -5,7 +5,7 @@ interface PaginationControlsProps {
   currentPage: number;
   totalPages: number;
   type: string;
-  searchParams: { releasesPage?: string };
+  searchParams: { releasesPage?: string; UpcomingPage?: string };
 }
 
 const PaginationControls: React.FC<PaginationControlsProps> = ({
@@ -20,6 +20,9 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   if (type === "releases") {
     newSearchParamsPrev.releasesPage = String(currentPage - 1);
     newSearchParamsNext.releasesPage = String(currentPage + 1);
+  } else if (type === "upcomings") {
+    newSearchParamsPrev.UpcomingPage = String(currentPage - 1);
+    newSearchParamsNext.UpcomingPage = String(currentPage + 1);
   }
 
   const generateHref = (newParams: any) => {
