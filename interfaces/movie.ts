@@ -73,6 +73,7 @@ export interface IMovieByStatus {
 
 export interface IMoviesResponse {
   results: IMovie[];
+  type: string;
   page: number;
   totalPages: number;
   totalResults: number;

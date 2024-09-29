@@ -20,16 +20,24 @@ export const getAllMovies = async (): Promise<IMovie[]> => {
   }
 };
 
-export const getUpcomingMovies = async (
+export const getBillboardMovies = async (
+  type: string = "billboard",
   page: string = "1",
   limit: string = "5",
 ): Promise<IMoviesResponse> => {
   await dbConnect();
   const pageSize = parseInt(limit);
+  let movieStatus;
+
+  if (type === "billboard") {
+    movieStatus = MovieStatus.BILLBOARD;
+  } else {
+    throw new Error("Tipo de película no válido para billboard");
+  }
 
   try {
     const totalResults = await Movie.countDocuments({
-      status: { $in: [MovieStatus.PRE_SALE, MovieStatus.UPCOMING] },
+      status: { $in: [movieStatus] },
     });
     const totalPages = Math.ceil(totalResults / pageSize);
 
@@ -42,14 +50,15 @@ export const getUpcomingMovies = async (
     const skip = (pageNumber - 1) * pageSize;
 
     const results: IMovie[] = await Movie.find({
-      status: { $in: [MovieStatus.PRE_SALE, MovieStatus.UPCOMING] },
+      status: { $in: [movieStatus] },
     })
-      .sort({ releaseDate: 1 })
+      .sort({ releaseDate: -1 })
       .skip(skip)
       .limit(pageSize);
 
     return {
       results,
+      type,
       page: pageNumber,
       totalPages,
       totalResults,
@@ -57,6 +66,61 @@ export const getUpcomingMovies = async (
   } catch (error: any) {
     return {
       results: [],
+      type,
+      page: 1,
+      totalPages: 0,
+      totalResults: 0,
+    };
+  }
+};
+
+export const getUpcomingMovies = async (
+  type: string = "upcoming",
+  page: string = "1",
+  limit: string = "5",
+): Promise<IMoviesResponse> => {
+  await dbConnect();
+  const pageSize = parseInt(limit);
+  let movieStatus;
+
+  if (type === "upcoming") {
+    movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
+  } else {
+    throw new Error("Tipo de película no válido para upcoming");
+  }
+
+  try {
+    const totalResults = await Movie.countDocuments({
+      status: { $in: movieStatus },
+    });
+    const totalPages = Math.ceil(totalResults / pageSize);
+
+    const pageNumber =
+      parseInt(page) < 1
+        ? 1
+        : parseInt(page) > totalPages
+          ? totalPages
+          : parseInt(page);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const results: IMovie[] = await Movie.find({
+      status: { $in: movieStatus },
+    })
+      .sort({ releaseDate: 1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    return {
+      results,
+      type,
+      page: pageNumber,
+      totalPages,
+      totalResults,
+    };
+  } catch (error: any) {
+    return {
+      results: [],
+      type,
       page: 1,
       totalPages: 0,
       totalResults: 0,
