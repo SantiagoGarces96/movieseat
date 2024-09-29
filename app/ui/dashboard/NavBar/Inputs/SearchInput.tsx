@@ -85,7 +85,7 @@ function Input({
         ref={inputRef}
         type="text"
         className="grow"
-        placeholder="Search"
+        placeholder="Buscar"
         onChange={(e) => {
           handleSearch(e.target.value);
         }}
