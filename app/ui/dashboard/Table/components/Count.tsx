@@ -9,9 +9,12 @@ function Count({
   currentPage: number;
   totalResults: number;
 }) {
+  const current = limit * currentPage;
   return (
     <span className="text-base text-gray-400">
-      {limit * currentPage + " of " + totalResults}
+      {(current > totalResults ? totalResults : current) +
+        " of " +
+        totalResults}
     </span>
   );
 }

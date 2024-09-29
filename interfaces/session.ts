@@ -44,13 +44,13 @@ export interface IAvailableSeatsByRoom {
 
 export interface ISessionCustomTypes
   extends Omit<ISession, "movieId" | "roomId"> {
-  movieId: { _id: Schema.Types.ObjectId; title: string };
-  roomId: { _id: Schema.Types.ObjectId; name: string };
+  movie: string;
+  room: string;
 }
 
 export interface ISessionResponse {
-  results: ISessionCustomTypes[];
+  results: { [key: string]: string }[];
   page: number;
-  total_pages: number;
-  total_results: number;
+  totalPages: number;
+  totalResults: number;
 }
