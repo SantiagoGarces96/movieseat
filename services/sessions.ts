@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import Session from "@/models/Session";
 import { SortOrder } from "mongoose";
+import { revalidatePath } from "next/cache";
 
 const options = [5, 10, 15, 20];
 
@@ -40,20 +41,6 @@ export const getSessions = async (
           ? totalPages
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
-
-    // const results: ISessionCustomTypes[] = await Session.find({
-    //   movieId: {
-    //     $in: await Movie.find({
-    //       title: { $regex: query, $options: "i" },
-    //     }).select("_id"),
-    //   },
-    // })
-    //   .populate("movieId", "title")
-    //   .populate("roomId", "name")
-    //   .sort({ [sortBy]: orderType })
-    //   .skip(skip < 0 ? 0 : skip)
-    //   .limit(pageSize)
-    //   .lean();
 
     const results = await Session.aggregate([
       {
@@ -96,6 +83,7 @@ export const getSessions = async (
       },
       {
         $project: {
+          _id: { $toString: "$_id" },
           movie: { $toString: "$movie.title" },
           room: { $toString: "$room.name" },
           availableSeats: { $toString: "$availableSeats" },
@@ -128,6 +116,20 @@ export const getSessions = async (
       totalPages: 0,
       totalResults: 0,
     };
+  }
+};
+
+export const deleteSession = async (
+  _id: string,
+): Promise<{
+  message: string;
+}> => {
+  try {
+    await Session.findByIdAndDelete(_id);
+    revalidatePath("/dashboard/invoices");
+    return { message: "Deleted Session" };
+  } catch (error) {
+    return { message: "Database Error: Failed to Delete Session." };
   }
 };
 

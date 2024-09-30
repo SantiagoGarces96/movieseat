@@ -1,7 +1,6 @@
 import Table from "@/app/ui/dashboard/Table";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
-import { getSessions } from "@/services/sessions";
-import React from "react";
+import { deleteSession, getSessions } from "@/services/sessions";
 
 export default async function SessionsPage({
   searchParams,
@@ -34,6 +33,7 @@ export default async function SessionsPage({
           totalResults={sessions.totalResults}
           page={sessions.page || 1}
           totalPages={sessions.totalPages}
+          handleDelete={deleteSession}
         />
       </div>
     </section>

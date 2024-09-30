@@ -4,9 +4,11 @@ import Edit from "./Buttons/Edit";
 function Element({
   data,
   dataIndex,
+  deleteAction,
 }: {
   data: { [key: string]: string };
   dataIndex: number;
+  deleteAction: (id: string) => Promise<{ message: string }>;
 }) {
   const id = data._id;
   return (
@@ -19,7 +21,7 @@ function Element({
         );
       })}
       <th className="flex items-center justify-center">
-        <Delete id={id} />
+        <Delete id={id} action={deleteAction} />
         <Edit id={id} />
       </th>
     </tr>
@@ -30,10 +32,12 @@ function Body({
   body,
   currentPage,
   limit,
+  handle,
 }: {
   body: { [key: string]: string }[];
   currentPage: number;
   limit: number;
+  handle: (id: string) => Promise<{ message: string }>;
 }) {
   return (
     <tbody>
@@ -42,6 +46,7 @@ function Body({
           key={"element" + index}
           data={data}
           dataIndex={(currentPage - 1) * limit + index + 1}
+          deleteAction={handle}
         />
       ))}
     </tbody>
