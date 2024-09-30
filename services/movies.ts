@@ -20,8 +20,8 @@ export const getAllMovies = async (): Promise<IMovie[]> => {
   }
 };
 
-export const getBillboardMovies = async (
-  type: string = "billboard",
+export const getMovies = async (
+  type: string,
   page: string = "1",
   limit: string = "5",
 ): Promise<IMoviesResponse> => {
@@ -29,15 +29,20 @@ export const getBillboardMovies = async (
   const pageSize = parseInt(limit);
   let movieStatus;
 
-  if (type === "billboard") {
-    movieStatus = MovieStatus.BILLBOARD;
-  } else {
-    throw new Error("Tipo de película no válido para billboard");
+  switch (type) {
+    case "billboard":
+      movieStatus = [MovieStatus.BILLBOARD];
+      break;
+    case "upcoming":
+      movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
+      break;
+    default:
+      throw new Error("Tipo de película no válido");
   }
 
   try {
     const totalResults = await Movie.countDocuments({
-      status: { $in: [movieStatus] },
+      status: { $in: movieStatus },
     });
     const totalPages = Math.ceil(totalResults / pageSize);
 
@@ -49,10 +54,13 @@ export const getBillboardMovies = async (
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
 
+    const sortOption: { [key: string]: 1 | -1 } =
+      type === "billboard" ? { releaseDate: -1 } : { releaseDate: 1 };
+
     const results: IMovie[] = await Movie.find({
-      status: { $in: [movieStatus] },
+      status: { $in: movieStatus },
     })
-      .sort({ releaseDate: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
 
@@ -74,128 +82,27 @@ export const getBillboardMovies = async (
   }
 };
 
-export const getUpcomingMovies = async (
-  type: string = "upcoming",
-  page: string = "1",
-  limit: string = "5",
-): Promise<IMoviesResponse> => {
-  await dbConnect();
-  const pageSize = parseInt(limit);
-  let movieStatus;
-
-  if (type === "upcoming") {
-    movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
-  } else {
-    throw new Error("Tipo de película no válido para upcoming");
-  }
-
-  try {
-    const totalResults = await Movie.countDocuments({
-      status: { $in: movieStatus },
-    });
-    const totalPages = Math.ceil(totalResults / pageSize);
-
-    const pageNumber =
-      parseInt(page) < 1
-        ? 1
-        : parseInt(page) > totalPages
-          ? totalPages
-          : parseInt(page);
-    const skip = (pageNumber - 1) * pageSize;
-
-    const results: IMovie[] = await Movie.find({
-      status: { $in: movieStatus },
-    })
-      .sort({ releaseDate: 1 })
-      .skip(skip)
-      .limit(pageSize);
-
-    return {
-      results,
-      type,
-      page: pageNumber,
-      totalPages,
-      totalResults,
-    };
-  } catch (error: any) {
-    return {
-      results: [],
-      type,
-      page: 1,
-      totalPages: 0,
-      totalResults: 0,
-    };
-  }
-};
-
-export const getReleasesMovies = async (
-  type: string = "releases",
+export const getAllMovie = async (
+  type: string,
   page: string = "1",
   limit: string = "12",
 ): Promise<IMoviesResponse> => {
   await dbConnect();
   const pageSize = parseInt(limit);
   let movieStatus;
+  let sortOption: { [key: string]: 1 | -1 };
 
-  if (type === "releases") {
-    movieStatus = MovieStatus.BILLBOARD;
-  } else {
-    throw new Error("Tipo de película no válido para releases");
-  }
-
-  try {
-    const totalResults = await Movie.countDocuments({
-      status: { $in: [movieStatus] },
-    });
-    const totalPages = Math.ceil(totalResults / pageSize);
-
-    const pageNumber =
-      parseInt(page) < 1
-        ? 1
-        : parseInt(page) > totalPages
-          ? totalPages
-          : parseInt(page);
-    const skip = (pageNumber - 1) * pageSize;
-
-    const results: IMovie[] = await Movie.find({
-      status: { $in: [movieStatus] },
-    })
-      .sort({ releaseDate: -1 })
-      .skip(skip)
-      .limit(pageSize);
-
-    return {
-      results,
-      type,
-      page: pageNumber,
-      totalPages,
-      totalResults,
-    };
-  } catch (error: any) {
-    console.error("Error obteniendo películas de releases:", error);
-    return {
-      results: [],
-      type,
-      page: 1,
-      totalPages: 0,
-      totalResults: 0,
-    };
-  }
-};
-
-export const getAllUpcomingMovies = async (
-  type: string = "upcomings",
-  page: string = "1",
-  limit: string = "12",
-): Promise<IMoviesResponse> => {
-  await dbConnect();
-  const pageSize = parseInt(limit);
-  let movieStatus;
-
-  if (type === "upcomings") {
-    movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
-  } else {
-    throw new Error("Tipo de película no válido para upcomings");
+  switch (type) {
+    case "billboard":
+      movieStatus = [MovieStatus.BILLBOARD];
+      sortOption = { releaseDate: -1 };
+      break;
+    case "upcoming":
+      movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
+      sortOption = { releaseDate: 1 };
+      break;
+    default:
+      throw new Error("Tipo de película no válido");
   }
 
   try {
@@ -215,7 +122,7 @@ export const getAllUpcomingMovies = async (
     const results: IMovie[] = await Movie.find({
       status: { $in: movieStatus },
     })
-      .sort({ releaseDate: 1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
 
@@ -227,6 +134,7 @@ export const getAllUpcomingMovies = async (
       totalResults,
     };
   } catch (error: any) {
+    console.error("Error obteniendo películas:", error);
     return {
       results: [],
       type,
