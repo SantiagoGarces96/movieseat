@@ -5,7 +5,6 @@ import PieChartOverview from "@/app/ui/dashboard/Chart/PieChart";
 import SearchModal from "@/app/ui/dashboard/NavBar/Modals/SearchModal";
 import SideNavBarModal from "@/app/ui/dashboard/NavBar/Modals/SideNavBarModal";
 import OverviewCard from "@/app/ui/dashboard/OverviewCard";
-import PieChartOverviewSkeleton from "@/app/ui/dashboard/Skeleton/PieChart";
 import StatOverview from "@/app/ui/dashboard/Stat";
 import { getMoviesByGenre, getMoviesByStatus } from "@/services/movies";
 import { getAvailableSeatsByRoom } from "@/services/sessions";

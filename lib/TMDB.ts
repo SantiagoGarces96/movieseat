@@ -23,8 +23,7 @@ export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=CO&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4, 127541, 7764, 202798, 167711`,
-
+      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=CO&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -43,8 +42,7 @@ export const getUpcomingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDates();
   try {
     const options = {
-      url: `${TMDB_API_URL_2}/movie?page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=CO&sort_by=popularity.desc&language=es-MX&without_companies=52270%2C210099%2C149142%2C2073%2C1976%2C4, 127541, 7764, 202798, 167711`,
-
+      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=CO&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
       method: "GET",
       headers: {
         accept: "application/json",
@@ -460,8 +458,8 @@ export const parseMovie = async (
         imdb_id: dataTMDB.id,
         title: dataTMDB.title,
         backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
-        description: dataTMDB.overview,
-        releaseDate: new Date(dataTMDB.release_date + "T00:00:00"),
+        description: dataTMDB.overview || "",
+        releaseDate: new Date(moviesData[i].release_date + "T00:00:00"),
         duration: dataTMDB.runtime,
         genre: dataTMDB.genres.map(({ name }) => name),
         director,
