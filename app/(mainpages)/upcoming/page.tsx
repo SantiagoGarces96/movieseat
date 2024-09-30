@@ -1,6 +1,6 @@
 import React from "react";
 import PaginatedMoviesGrid from "@/app/ui/customers/upcoming/moviesCards/moviesCards";
-import { getAllUpcomingMovies } from "@/services/movies";
+import { getAllMovies } from "@/services/movies";
 
 interface PageProps {
   searchParams: { UpcomingPage?: string };
@@ -9,7 +9,7 @@ interface PageProps {
 export default async function UpcomingPage({ searchParams }: PageProps) {
   const UpcomingPage = searchParams.UpcomingPage || "1";
 
-  const releasesMovies = await getAllUpcomingMovies("upcomings", UpcomingPage);
+  const releasesMovies = await getAllMovies("upcoming", UpcomingPage);
 
   return (
     <div className="container mx-auto p-4">
@@ -18,7 +18,7 @@ export default async function UpcomingPage({ searchParams }: PageProps) {
         movies={releasesMovies.results}
         currentPage={releasesMovies.page}
         totalPages={releasesMovies.totalPages}
-        type="upcomings"
+        type="upcoming"
         searchParams={searchParams}
       />
     </div>
