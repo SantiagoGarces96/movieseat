@@ -10,16 +10,6 @@ import {
 import Movie from "@/models/Movie";
 import { MovieStatus } from "@/types/movie";
 
-export const getAllMovies = async (): Promise<IMovie[]> => {
-  await dbConnect();
-  try {
-    const movies: IMovie[] = await Movie.find({});
-    return movies;
-  } catch (error: any) {
-    return [];
-  }
-};
-
 export const getMovies = async (
   type: string,
   page: string = "1",
@@ -82,7 +72,7 @@ export const getMovies = async (
   }
 };
 
-export const getAllMovie = async (
+export const getAllMovies = async (
   type: string,
   page: string = "1",
   limit: string = "12",
