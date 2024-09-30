@@ -1,5 +1,5 @@
 import PreSaleUpcomingBox from "@/app/ui/customers/Home/Container/ContainerUpcoming";
-import { getUpcomingMovies, getBillboardMovies } from "@/services/movies";
+import { getMovies } from "@/services/movies";
 import Box from "../ui/customers/Home/Container/ContainerBillboard";
 
 interface PageProps {
@@ -10,8 +10,8 @@ export default async function Page({ searchParams }: PageProps) {
   const billboardPage = searchParams.billboardPage || "1";
   const upcomingPage = searchParams.upcomingPage || "1";
 
-  const billboardMovies = await getBillboardMovies("billboard", billboardPage);
-  const upcomingMovies = await getUpcomingMovies("upcoming", upcomingPage);
+  const billboardMovies = await getMovies("billboard", billboardPage);
+  const upcomingMovies = await getMovies("upcoming", upcomingPage);
 
   return (
     <div className="p-4">
