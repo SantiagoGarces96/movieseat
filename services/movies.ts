@@ -18,16 +18,24 @@ export const getMovies = async (
   await dbConnect();
   const pageSize = parseInt(limit);
   let movieStatus;
-
+  let sortOption: { [key: string]: 1 | -1 };
   switch (type) {
     case "billboard":
       movieStatus = [MovieStatus.BILLBOARD];
+      sortOption = { releaseDate: -1 };
       break;
     case "upcoming":
       movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
+      sortOption = { releaseDate: 1 };
       break;
     default:
-      throw new Error("Tipo de película no válido");
+      return {
+        results: [],
+        type,
+        page: 1,
+        totalPages: 0,
+        totalResults: 0,
+      };
   }
 
   try {
@@ -43,9 +51,6 @@ export const getMovies = async (
           ? totalPages
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
-
-    const sortOption: { [key: string]: 1 | -1 } =
-      type === "billboard" ? { releaseDate: -1 } : { releaseDate: 1 };
 
     const results: IMovie[] = await Movie.find({
       status: { $in: movieStatus },
@@ -81,7 +86,6 @@ export const getAllMovies = async (
   const pageSize = parseInt(limit);
   let movieStatus;
   let sortOption: { [key: string]: 1 | -1 };
-
   switch (type) {
     case "billboard":
       movieStatus = [MovieStatus.BILLBOARD];
@@ -92,15 +96,19 @@ export const getAllMovies = async (
       sortOption = { releaseDate: 1 };
       break;
     default:
-      throw new Error("Tipo de película no válido");
+      return {
+        results: [],
+        type,
+        page: 1,
+        totalPages: 0,
+        totalResults: 0,
+      };
   }
-
   try {
     const totalResults = await Movie.countDocuments({
       status: { $in: movieStatus },
     });
     const totalPages = Math.ceil(totalResults / pageSize);
-
     const pageNumber =
       parseInt(page) < 1
         ? 1
@@ -108,14 +116,12 @@ export const getAllMovies = async (
           ? totalPages
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
-
     const results: IMovie[] = await Movie.find({
       status: { $in: movieStatus },
     })
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
-
     return {
       results,
       type,
