@@ -18,6 +18,7 @@ import { IRoom } from "@/interfaces/room";
 import { ISeats, ISession } from "@/interfaces/session";
 import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
+import { getSeatsNumber } from "@/utils/getSeatsNumber";
 
 export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
@@ -193,26 +194,6 @@ const calculatePrice = (
     seatType,
     SessionPriceAfternoon.BILLBOARD,
   );
-};
-
-const getLetterByPosition = (position: number): string | null => {
-  if (position < 1 || position > 26) {
-    return null;
-  }
-
-  return String.fromCharCode(96 + position).toUpperCase();
-};
-
-const getSeatsNumber = (availableSeats: number): ISeats => {
-  const response: ISeats = {};
-  const rows = availableSeats / 10;
-  for (let index = 1; index <= rows; index++) {
-    const row = getLetterByPosition(index) || "A";
-    for (let index = 1; index <= 10; index++) {
-      response[row + index] = true;
-    }
-  }
-  return response;
 };
 
 const createSession = (

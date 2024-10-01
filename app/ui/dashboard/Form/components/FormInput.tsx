@@ -1,13 +1,40 @@
+"use client";
+import { ChangeEvent, useEffect, useState } from "react";
 import { ISessionFormInput } from "@/interfaces/session";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function FormInput({
   label,
-  type,
+  name = "",
+  type = "text",
   options,
-  disabled,
+  disabled = false,
   colSpan = 12,
-  autofocus,
+  autofocus = false,
+  currentValue = "",
+  required = false,
 }: ISessionFormInput) {
+  const searchParams = useSearchParams();
+  const { replace } = useRouter();
+  const pathname = usePathname();
+  const params = new URLSearchParams(searchParams);
+  const [value, setValue] = useState<string>(currentValue?.toString() || "");
+
+  const handleChange = (
+    event: ChangeEvent<HTMLSelectElement | HTMLInputElement>,
+  ) => {
+    const value = event.target.value;
+    setValue(value);
+    if (type === "select") {
+      params.set(name, value);
+      replace(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  useEffect(() => {
+    setValue(currentValue?.toString() || "");
+  }, [currentValue]);
+
   return (
     <label
       className={`form-control col-span-12 grid w-full lg:col-span-${colSpan}`}
@@ -20,8 +47,12 @@ export default function FormInput({
           className="select select-bordered select-sm w-full"
           disabled={disabled}
           autoFocus={autofocus}
+          value={value}
+          onChange={handleChange}
+          name={name}
+          required={disabled ? false : required}
         >
-          <option>Seleccione uno</option>
+          <option></option>
           {options?.map(({ opt, value }, index) => (
             <option key={opt + index} value={value}>
               {opt}
@@ -34,6 +65,10 @@ export default function FormInput({
           className="input input-sm input-bordered w-full"
           disabled={disabled}
           autoFocus={autofocus}
+          value={value || ""}
+          onChange={handleChange}
+          name={name}
+          required={disabled ? false : required}
         />
       )}
     </label>

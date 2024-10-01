@@ -58,9 +58,12 @@ export interface ISessionResponse {
 
 export interface ISessionFormInput {
   label: string;
+  name?: string;
   type?: HTMLInputTypeAttribute | "select";
   options?: ReadonlyArray<{ opt: string; value: string }>;
   disabled?: boolean;
   colSpan?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   autofocus?: boolean;
+  currentValue?: number | string;
+  required?: boolean;
 }
