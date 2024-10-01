@@ -26,6 +26,7 @@ export const getFoodByQuery = async (
     );
     return parsedFood;
   } catch (error: any) {
+    console.error(`Error in getFoodByQuery function: ${error.message}`);
     return [];
   }
 };

@@ -27,6 +27,7 @@ export const getUsersByQuery = async (
     });
     return parsedUsers;
   } catch (error: any) {
+    console.error(`Error in getUsersByQuery function: ${error.message}`);
     return [];
   }
 };

@@ -77,7 +77,7 @@ export const getMovieById = async (id: string): Promise<IMovie | null> => {
     const movie: IMovie | null = await Movie.findById(id);
     return movie;
   } catch (error: any) {
-    console.error("Error fetching movie by ID:", error);
+    console.error(`Error in getMovieById function: ${error.message}`);
     return null;
   }
 };
@@ -107,6 +107,7 @@ export const getMoviesByQuery = async (
     );
     return parsedMovies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByQuery function: ${error.message}`);
     return [];
   }
 };
@@ -121,6 +122,7 @@ export const getMoviesByGenre = async (): Promise<IMovieByGenre[]> => {
     ]);
     return movies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByGenre function: ${error.message}`);
     return [];
   }
 };
@@ -139,6 +141,7 @@ export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
     ]);
     return movies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByStatus function: ${error.message}`);
     return [];
   }
 };
