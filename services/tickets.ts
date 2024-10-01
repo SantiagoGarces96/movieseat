@@ -17,6 +17,7 @@ export const getDailyTicketSales = async (): Promise<IDailyTicketSales[]> => {
     ]);
     return dailyTicketSales;
   } catch (error: any) {
+    console.error(`Error in getDailyTicketSales function: ${error.message}`);
     return [];
   }
 };

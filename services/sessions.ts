@@ -109,7 +109,7 @@ export const getSessions = async (
       totalResults,
     };
   } catch (error: any) {
-    console.error(error.message);
+    console.error(`Error in getSessions function: ${error.message}`);
     return {
       results: [],
       page: 1,
@@ -128,7 +128,8 @@ export const deleteSession = async (
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
     return { message: "Deleted Session" };
-  } catch (error) {
+  } catch (error: any) {
+    console.error(`Error in deleteSession function: ${error.message}`);
     return { message: "Database Error: Failed to Delete Session." };
   }
 };
@@ -158,7 +159,9 @@ export const getAvailableSeatsByRoom = async (): Promise<
     ]);
     return availableSeats;
   } catch (error: any) {
-    console.error(error.message);
+    console.error(
+      `Error in getAvailableSeatsByRoom function: ${error.message}`,
+    );
     return [];
   }
 };

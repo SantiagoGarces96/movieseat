@@ -10,6 +10,7 @@ export const getAllRooms = async (): Promise<IRoom[]> => {
     const movies: IRoom[] = await Room.find({}).sort({ name: 1 });
     return movies;
   } catch (error: any) {
+    console.error(`Error in getAllRooms function: ${error.message}`);
     return [];
   }
 };
@@ -34,6 +35,7 @@ export const getRoomsByQuery = async (
     });
     return parsedRooms;
   } catch (error: any) {
+    console.error(`Error in getRoomsByQuery function: ${error.message}`);
     return [];
   }
 };

@@ -11,37 +11,31 @@ import Movie from "@/models/Movie";
 import { MovieStatus } from "@/types/movie";
 
 export const getMovies = async (
-  type: string,
+  type?: MovieStatus,
   page: string = "1",
   limit: string = "5",
 ): Promise<IMoviesResponse> => {
   await dbConnect();
   const pageSize = parseInt(limit);
-  let movieStatus;
-  let sortOption: { [key: string]: 1 | -1 };
+  let query: {
+    status?: { $in?: MovieStatus[]; $exists?: boolean };
+  };
   switch (type) {
-    case "billboard":
-      movieStatus = [MovieStatus.BILLBOARD];
-      sortOption = { releaseDate: -1 };
+    case MovieStatus.BILLBOARD:
+      query = { status: { $in: [MovieStatus.BILLBOARD] } };
       break;
-    case "upcoming":
-      movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
-      sortOption = { releaseDate: 1 };
+    case MovieStatus.UPCOMING:
+      query = {
+        status: { $in: [MovieStatus.PRE_SALE, MovieStatus.UPCOMING] },
+      };
       break;
     default:
-      return {
-        results: [],
-        type,
-        page: 1,
-        totalPages: 0,
-        totalResults: 0,
-      };
+      query = {};
+      break;
   }
 
   try {
-    const totalResults = await Movie.countDocuments({
-      status: { $in: movieStatus },
-    });
+    const totalResults = await Movie.countDocuments(query);
     const totalPages = Math.ceil(totalResults / pageSize);
 
     const pageNumber =
@@ -52,24 +46,21 @@ export const getMovies = async (
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
 
-    const results: IMovie[] = await Movie.find({
-      status: { $in: movieStatus },
-    })
-      .sort(sortOption)
-      .skip(skip)
+    const results: IMovie[] = await Movie.find(query)
+      .sort({ releaseDate: type === MovieStatus.BILLBOARD ? -1 : 1 })
+      .skip(skip < 0 ? 0 : skip)
       .limit(pageSize);
 
     return {
       results,
-      type,
       page: pageNumber,
       totalPages,
       totalResults,
     };
   } catch (error: any) {
+    console.error(`Error in getMovies function: ${error.message}`);
     return {
       results: [],
-      type,
       page: 1,
       totalPages: 0,
       totalResults: 0,
@@ -77,67 +68,14 @@ export const getMovies = async (
   }
 };
 
-export const getAllMovies = async (
-  type: string,
-  page: string = "1",
-  limit: string = "12",
-): Promise<IMoviesResponse> => {
+export const getAllMovies = async (): Promise<IMovie[]> => {
   await dbConnect();
-  const pageSize = parseInt(limit);
-  let movieStatus;
-  let sortOption: { [key: string]: 1 | -1 };
-  switch (type) {
-    case "billboard":
-      movieStatus = [MovieStatus.BILLBOARD];
-      sortOption = { releaseDate: -1 };
-      break;
-    case "upcoming":
-      movieStatus = [MovieStatus.PRE_SALE, MovieStatus.UPCOMING];
-      sortOption = { releaseDate: 1 };
-      break;
-    default:
-      return {
-        results: [],
-        type,
-        page: 1,
-        totalPages: 0,
-        totalResults: 0,
-      };
-  }
   try {
-    const totalResults = await Movie.countDocuments({
-      status: { $in: movieStatus },
-    });
-    const totalPages = Math.ceil(totalResults / pageSize);
-    const pageNumber =
-      parseInt(page) < 1
-        ? 1
-        : parseInt(page) > totalPages
-          ? totalPages
-          : parseInt(page);
-    const skip = (pageNumber - 1) * pageSize;
-    const results: IMovie[] = await Movie.find({
-      status: { $in: movieStatus },
-    })
-      .sort(sortOption)
-      .skip(skip)
-      .limit(pageSize);
-    return {
-      results,
-      type,
-      page: pageNumber,
-      totalPages,
-      totalResults,
-    };
+    const movie: IMovie[] = await Movie.find().sort({ title: 1 });
+    return movie;
   } catch (error: any) {
-    console.error("Error obteniendo películas:", error);
-    return {
-      results: [],
-      type,
-      page: 1,
-      totalPages: 0,
-      totalResults: 0,
-    };
+    console.error(`Error in getAllMovies function: ${error.message}`);
+    return [];
   }
 };
 
@@ -150,7 +88,7 @@ export const getMovieById = async (id: string): Promise<IMovie | null> => {
     const movie: IMovie | null = await Movie.findById(id);
     return movie;
   } catch (error: any) {
-    console.error("Error fetching movie by ID:", error);
+    console.error(`Error in getMovieById function: ${error.message}`);
     return null;
   }
 };
@@ -180,6 +118,7 @@ export const getMoviesByQuery = async (
     );
     return parsedMovies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByQuery function: ${error.message}`);
     return [];
   }
 };
@@ -194,6 +133,7 @@ export const getMoviesByGenre = async (): Promise<IMovieByGenre[]> => {
     ]);
     return movies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByGenre function: ${error.message}`);
     return [];
   }
 };
@@ -212,6 +152,7 @@ export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
     ]);
     return movies;
   } catch (error: any) {
+    console.error(`Error in getMoviesByStatus function: ${error.message}`);
     return [];
   }
 };
