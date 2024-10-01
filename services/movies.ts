@@ -68,6 +68,17 @@ export const getMovies = async (
   }
 };
 
+export const getAllMovies = async (): Promise<IMovie[]> => {
+  await dbConnect();
+  try {
+    const movie: IMovie[] = await Movie.find().sort({ title: 1 });
+    return movie;
+  } catch (error: any) {
+    console.error(`Error in getAllMovies function: ${error.message}`);
+    return [];
+  }
+};
+
 export const getMovieById = async (id: string): Promise<IMovie | null> => {
   if (!id) {
     return null;
