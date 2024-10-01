@@ -1,8 +1,11 @@
 "use server";
+import { IRoom } from "@/interfaces/room";
 import { IAvailableSeatsByRoom, ISessionResponse } from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
+import Room from "@/models/Room";
 import Session from "@/models/Session";
+import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 
@@ -116,6 +119,59 @@ export const getSessions = async (
       totalPages: 0,
       totalResults: 0,
     };
+  }
+};
+
+export const createSession = async (
+  prevState: any,
+  formData: FormData,
+): Promise<any> => {
+  try {
+    const movieId = formData.get("movieId");
+    const roomId = formData.get("roomId");
+    const dateTime = formData.get("dateTime");
+    const preferentialPrice = formData.get("preferentialPrice");
+    const generalPrice = formData.get("generalPrice");
+
+    if (
+      !movieId ||
+      !roomId ||
+      !dateTime ||
+      !preferentialPrice ||
+      !generalPrice
+    ) {
+      return { success: false, message: "Todos lo campos son requeridos." };
+    }
+
+    const room: IRoom | null = await Room.findById(roomId);
+
+    if (!room) {
+      return { success: false, message: "Sala no encontrada." };
+    }
+
+    const seatsPreferential = room.totalSeatsPreferential;
+    const seatsGeneral = room.totalSeatsGeneral;
+    const availableSeats = room.totalSeats;
+
+    const fields = {
+      movieId,
+      roomId,
+      dateTime: dateTime,
+      seatsPreferential: getSeatsNumber(seatsPreferential),
+      availableSeatsPreferential: seatsPreferential,
+      preferentialPrice,
+      seatsGeneral: getSeatsNumber(seatsGeneral),
+      availableSeatsGeneral: seatsGeneral,
+      generalPrice,
+      availableSeats,
+    };
+
+    await Session.create(fields);
+    revalidatePath("/dashboard/sessions");
+    return { success: true, message: "Sesion creada con exito." };
+  } catch (error: any) {
+    console.error(`Error in createSession function: ${error.message}`);
+    return { success: false, message: "Error al crear la sesion" };
   }
 };
 
