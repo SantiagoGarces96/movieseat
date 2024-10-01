@@ -1,6 +1,7 @@
 import React from "react";
 import PaginatedMoviesGrid from "@/app/ui/customers/releases/moviesCards/moviescards";
-import { getAllMovies } from "@/services/movies";
+import { getMovies } from "@/services/movies";
+import { MovieStatus } from "@/types/movie";
 
 interface PageProps {
   searchParams: { releasesPage?: string };
@@ -9,7 +10,11 @@ interface PageProps {
 export default async function ReleasesPage({ searchParams }: PageProps) {
   const releasesPage = searchParams.releasesPage || "1";
 
-  const releasesMovies = await getAllMovies("billboard", releasesPage);
+  const releasesMovies = await getMovies(
+    MovieStatus.BILLBOARD,
+    releasesPage,
+    "12",
+  );
 
   return (
     <div className="container mx-auto p-4">
