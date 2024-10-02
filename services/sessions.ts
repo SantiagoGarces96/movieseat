@@ -93,13 +93,13 @@ export const getSessions = async (
           preferentialPrice: { $toString: "$preferentialPrice" },
           generalPrice: { $toString: "$generalPrice" },
           dateTime: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
           },
           createdAt: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
           updatedAt: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
           },
         },
       },
