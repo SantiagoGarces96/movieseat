@@ -21,11 +21,11 @@ const Box: React.FC<BoxProps> = ({
 }) => {
   return (
     <div className="relative flex items-center justify-center overflow-hidden">
-      <div className="hidden w-full flex-wrap justify-center gap-4 px-8 py-4 sm:flex">
+      <div className="hidden w-full flex-wrap justify-center gap-4 px-8 py-4 md:flex">
         {movies.map((movie) => (
           <div
             key={movie._id}
-            className="hd:w-1/3 fhd:w-1/6 2k:w-1/8 w-full max-w-xs transform transition-transform hover:scale-105 sm:w-1/2"
+            className="w-1/6 transform transition-transform hover:scale-105"
           >
             <MovieCard
               id={movie._id}
@@ -41,7 +41,7 @@ const Box: React.FC<BoxProps> = ({
       </div>
 
       {/* Vista para móviles */}
-      <div className="block w-full px-4 sm:hidden">
+      <div className="block w-full px-4 md:hidden">
         {movies.map((movie) => (
           <div key={movie._id} className="mb-4">
             <MobileMovieCard
@@ -64,7 +64,7 @@ const Box: React.FC<BoxProps> = ({
       </div>
 
       {/* Botones de paginación */}
-      <div className="absolute hidden w-full px-8 lg:flex">
+      <div className="absolute hidden w-full px-8 md:flex">
         <PaginationButtons
           currentPage={currentPage}
           totalPages={totalPages}
