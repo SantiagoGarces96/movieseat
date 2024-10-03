@@ -38,7 +38,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const displayedGenres = genre.slice(0, 3).join(", ");
 
   return (
-    <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4">
+    <div className="">
       <Link
         href={`/movie/${id}`}
         className="block overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
@@ -50,7 +50,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           >
             {statusLabel}
           </span>
-          <figure className="xl:h-90 relative h-48 w-full sm:h-[450px] md:h-72 lg:h-60 2xl:h-[25rem]">
+          <figure className="relative w-full md:h-[15rem] hd:h-[20rem] fhd:h-[25rem]">
             <Image
               src={poster}
               alt={title}
@@ -61,13 +61,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </figure>
         </div>
         <div className="p-4">
-          <h2 className="mb-1 overflow-hidden truncate whitespace-nowrap text-lg font-semibold sm:text-xl">
+          <h2 className="mb-1 overflow-hidden truncate whitespace-nowrap text-lg font-semibold">
             {title}
           </h2>
           <span className="mb-1 block text-xs sm:text-sm">
             Estreno: {parseReleaseDate(releaseDate)}
           </span>
-          <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs sm:text-sm">
+          <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs">
             Género: {displayedGenres}
           </span>
           <div className="flex flex-wrap gap-2">
@@ -77,7 +77,11 @@ const MovieCard: React.FC<MovieCardProps> = ({
             <span
               className={`inline-block rounded px-2 py-1 text-xs font-medium text-white ${statusColors[status]}`}
             >
-              {statusLabel}
+              {status === MovieStatus.PRE_SALE
+                ? "Preventa"
+                : status === MovieStatus.UPCOMING
+                  ? "Próximamente"
+                  : statusLabel}
             </span>
           </div>
         </div>
