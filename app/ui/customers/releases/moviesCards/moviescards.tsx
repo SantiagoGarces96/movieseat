@@ -3,8 +3,9 @@ import MovieCard from "@/app/ui/customers/card/MovieCard";
 import MobileMovieCard from "@/app/ui/customers/card/MobileMovieCard";
 import Button from "@/app/ui/customers/pagination/pagination";
 import { IMovie } from "@/interfaces/movie";
+import Link from "next/link";
 
-interface PaginatedMoviesGridProps {
+interface PaginatedMoviesProps {
   movies: IMovie[];
   currentPage: number;
   totalPages: number;
@@ -12,7 +13,7 @@ interface PaginatedMoviesGridProps {
   searchParams: { releasesPage?: string };
 }
 
-const PaginatedMoviesGrid: React.FC<PaginatedMoviesGridProps> = ({
+const PaginatedMovies: React.FC<PaginatedMoviesProps> = ({
   movies,
   currentPage,
   totalPages,
@@ -20,13 +21,16 @@ const PaginatedMoviesGrid: React.FC<PaginatedMoviesGridProps> = ({
   searchParams,
 }) => {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="flex w-full flex-col overflow-hidden">
+      <h1 className="mb-6 flex justify-center text-4xl font-bold capitalize">
+        Cartelera
+      </h1>
       {/* Versión para pantallas grandes (HD, FHD, 2K) */}
-      <div className="hidden grid-cols-1 gap-6 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="hidden flex-wrap justify-center gap-6 p-8 md:flex">
         {movies.map((movie) => (
           <div
             key={movie._id}
-            className="transform transition-transform hover:scale-105"
+            className="w-[350px] transform transition-transform hover:scale-105"
           >
             <MovieCard
               id={movie._id}
@@ -41,8 +45,8 @@ const PaginatedMoviesGrid: React.FC<PaginatedMoviesGridProps> = ({
         ))}
       </div>
 
-      {/* Versión para pantallas móviles y tablets */}
-      <div className="block sm:hidden">
+      {/* Versión para pantallas pequeñas y medianas (SM y XS) */}
+      <div className="block w-full md:hidden md:p-0">
         {movies.map((movie) => (
           <div key={movie._id} className="mb-4">
             <MobileMovieCard
@@ -70,4 +74,4 @@ const PaginatedMoviesGrid: React.FC<PaginatedMoviesGridProps> = ({
   );
 };
 
-export default PaginatedMoviesGrid;
+export default PaginatedMovies;
