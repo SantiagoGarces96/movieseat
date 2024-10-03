@@ -18,7 +18,6 @@ export default async function UpcomingPage({ searchParams }: PageProps) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-4xl font-bold capitalize">Proximos Estrenos</h1>
       <PaginatedMoviesGrid
         movies={releasesMovies.results}
         currentPage={releasesMovies.page}

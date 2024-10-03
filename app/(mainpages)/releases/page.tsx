@@ -17,8 +17,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-4xl font-bold capitalize">Cartelera</h1>
+    <div className="container mx-auto w-full p-4">
       <PaginatedMoviesGrid
         movies={releasesMovies.results}
         currentPage={releasesMovies.page}

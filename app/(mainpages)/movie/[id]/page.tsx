@@ -1,8 +1,8 @@
-import React from 'react';
-import { IMovie } from '@/interfaces/movie';
-import MovieBanner from '@/app/ui/customers/movie/MovieBanner/MovieBanner';
-import DetailsMovie from '@/app/ui/customers/movie/DetailsMovie/DetailsMovie';
-import { getMovieById } from '@/services/movies';
+import React from "react";
+import { IMovie } from "@/interfaces/movie";
+import MovieBanner from "@/app/ui/customers/movie/MovieBanner/MovieBanner";
+import DetailsMovie from "@/app/ui/customers/movie/DetailsMovie/DetailsMovie";
+import { getMovieById } from "@/services/movies";
 
 interface MoviePageProps {
   params: { id: string };
@@ -17,7 +17,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
 
   return (
-    <div className="pt-16">
+    <div>
       <MovieBanner
         backdrop={movie.backdrop}
         poster={movie.poster}
@@ -28,13 +28,14 @@ export default async function MoviePage({ params }: MoviePageProps) {
         trailer={movie.trailer}
         status={movie.status}
       />
-
-      <DetailsMovie
-        description={movie.description}
-        director={movie.director}
-        cast={movie.cast}
-        language={movie.language}
-      />
+      <div className="py-8">
+        <DetailsMovie
+          description={movie.description}
+          director={movie.director}
+          cast={movie.cast}
+          language={movie.language}
+        />
+      </div>
     </div>
   );
 }
