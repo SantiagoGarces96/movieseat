@@ -17,10 +17,10 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   const newSearchParamsPrev = { ...searchParams };
   const newSearchParamsNext = { ...searchParams };
 
-  if (type === "releases") {
+  if (type === "billboard") {
     newSearchParamsPrev.releasesPage = String(currentPage - 1);
     newSearchParamsNext.releasesPage = String(currentPage + 1);
-  } else if (type === "upcomings") {
+  } else if (type === "upcoming") {
     newSearchParamsPrev.UpcomingPage = String(currentPage - 1);
     newSearchParamsNext.UpcomingPage = String(currentPage + 1);
   }
