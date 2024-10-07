@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { HiOutlinePlay } from "react-icons/hi2";
-import TrailerPopup from './TrailerPopup';
+import TrailerPopup from "./TrailerPopup";
 
 interface TrailerButtonProps {
   trailerUrl: string;
@@ -17,13 +17,15 @@ const TrailerButton: React.FC<TrailerButtonProps> = ({ trailerUrl }) => {
     <>
       <button
         onClick={handleOpenTrailer}
-        className="mt-4 flex items-center bg-red-500 px-4 py-2 rounded text-white hover:bg-red-600 transition"
+        className="mt-4 flex items-center rounded bg-red-500 px-4 py-2 text-white transition hover:bg-red-600 md:text-sm hd:text-base"
       >
         <HiOutlinePlay />
         Ver tráiler
       </button>
 
-      {showTrailer && <TrailerPopup url={trailerUrl} onClose={handleCloseTrailer} />}
+      {showTrailer && (
+        <TrailerPopup url={trailerUrl} onClose={handleCloseTrailer} />
+      )}
     </>
   );
 };
