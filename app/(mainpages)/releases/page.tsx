@@ -22,7 +22,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
         movies={releasesMovies.results}
         currentPage={releasesMovies.page}
         totalPages={releasesMovies.totalPages}
-        type="billboard"
+        type={MovieStatus.BILLBOARD}
         searchParams={searchParams}
       />
     </div>
