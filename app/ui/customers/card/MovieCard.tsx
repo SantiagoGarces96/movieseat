@@ -48,7 +48,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
             className={`absolute left-2 top-2 rounded px-2 py-1 text-xs font-semibold text-white ${statusColors[status]}`}
             style={{ zIndex: 10 }}
           >
-            {statusLabel}
+            {status === MovieStatus.PRE_SALE
+              ? "Preventa"
+              : status === MovieStatus.UPCOMING
+                ? "Próximamente"
+                : status === MovieStatus.BILLBOARD
+                  ? "Cartelera"
+                  : status}
           </span>
           <figure className="relative w-full md:h-[15rem] hd:h-[20rem] fhd:h-[25rem]">
             <Image
@@ -81,7 +87,9 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 ? "Preventa"
                 : status === MovieStatus.UPCOMING
                   ? "Próximamente"
-                  : statusLabel}
+                  : status === MovieStatus.BILLBOARD
+                    ? "Cartelera"
+                    : statusLabel}
             </span>
           </div>
         </div>

@@ -33,13 +33,13 @@ const MobileMovieCard: React.FC<MobileMovieCardProps> = ({
   return (
     <div className="col-span-1">
       <Link href={`/movie/${id}`}>
-        <div className="flex w-full items-start overflow-hidden rounded-lg bg-white shadow-lg sm:flex-row">
+        <div className="flex w-full items-start overflow-hidden rounded-lg bg-white shadow-lg">
           {/* Imagen del poster usando Next Image */}
-          <div className="relative w-[250px] min-w-[100px]">
+          <div className="relative h-[300px] w-[200px] min-w-[100px]">
             <Image
               src={poster}
               alt={title}
-              width={600}
+              width={400}
               height={800}
               className="h-full w-full object-cover"
               priority={true}
@@ -47,7 +47,7 @@ const MobileMovieCard: React.FC<MobileMovieCardProps> = ({
           </div>
 
           {/* Información de la película */}
-          <div className="flex w-2/3 flex-col justify-between p-4 sm:w-2/3">
+          <div className="flex w-2/3 flex-col justify-between p-4">
             <div>
               <h3 className="mb-1 text-sm font-bold leading-snug">{title}</h3>
               <p className="mb-1 text-sm text-gray-600">
@@ -70,7 +70,9 @@ const MobileMovieCard: React.FC<MobileMovieCardProps> = ({
                   ? "Preventa"
                   : status === MovieStatus.UPCOMING
                     ? "Próximamente"
-                    : status}
+                    : status === MovieStatus.BILLBOARD
+                      ? "Cartelera"
+                      : status}
               </span>
             </div>
           </div>
