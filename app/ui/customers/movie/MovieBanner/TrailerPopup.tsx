@@ -1,5 +1,6 @@
-import React from 'react';
-import ReactPlayer from 'react-player';
+import React from "react";
+import ReactPlayer from "react-player";
+import { HiOutlineXMark } from "react-icons/hi2";
 
 interface TrailerPopupProps {
   url: string;
@@ -8,23 +9,21 @@ interface TrailerPopupProps {
 
 const TrailerPopup: React.FC<TrailerPopupProps> = ({ url, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <div className="relative bg-black rounded-lg max-w-4xl w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+      <div className="relative w-full max-w-4xl rounded-lg bg-black">
         {/* Close button*/}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-80 focus:outline-none"
+          className="absolute right-4 top-4 rounded-full bg-black bg-opacity-50 p-2 text-white hover:bg-opacity-80 focus:outline-none"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
+          <HiOutlineXMark className="h-8 w-8" />
         </button>
 
-        <ReactPlayer 
-          url={url} 
-          controls 
-          width="100%" 
-          height="70vh" 
+        <ReactPlayer
+          url={url}
+          controls
+          width="100%"
+          height="70vh"
           playing={true}
         />
       </div>
@@ -33,4 +32,3 @@ const TrailerPopup: React.FC<TrailerPopupProps> = ({ url, onClose }) => {
 };
 
 export default TrailerPopup;
-
