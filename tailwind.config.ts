@@ -15,7 +15,7 @@ const config: Config = {
       },
       screens: {
         sm: "460px", // Minimum width for mobile devices
-        md: "768px", // Minimum width for tablets
+        md: "830px", // Minimum width for tablets
         hd: "1280px", // Minimum width for HD screens (720p)
         fhd: "1920px", // Minimum width for Full HD screens (1080p)
         "2k": "2400px", // Minimum width for 2K screens
