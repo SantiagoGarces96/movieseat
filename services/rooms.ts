@@ -4,6 +4,17 @@ import dbConnect from "../lib/dbConnect";
 import { IRoom } from "@/interfaces/room";
 import Room from "@/models/Room";
 
+export const getAllRooms = async (): Promise<IRoom[]> => {
+  await dbConnect();
+  try {
+    const movies: IRoom[] = await Room.find({}).sort({ name: 1 });
+    return movies;
+  } catch (error: any) {
+    console.error(`Error in getAllRooms function: ${error.message}`);
+    return [];
+  }
+};
+
 export const getRoomsByQuery = async (
   query: string,
 ): Promise<IResultDataDashboard[]> => {
@@ -24,6 +35,7 @@ export const getRoomsByQuery = async (
     });
     return parsedRooms;
   } catch (error: any) {
+    console.error(`Error in getRoomsByQuery function: ${error.message}`);
     return [];
   }
 };

@@ -13,13 +13,15 @@ function Table({
   totalResults,
   page,
   totalPages,
+  handleDelete,
 }: {
-  headers: string[];
+  headers: { [key: string]: string }[];
   body: { [key: string]: string }[];
   limit: string;
   totalResults: number;
   page: number;
   totalPages: number;
+  handleDelete: (id: string) => Promise<{ message: string }>;
 }) {
   return (
     <div className="h-full overflow-x-auto">
@@ -29,7 +31,12 @@ function Table({
       </div>
       <table className="table table-xs">
         <Header headers={headers} />
-        <Body body={body} />
+        <Body
+          body={body}
+          currentPage={page}
+          limit={parseInt(limit)}
+          handle={handleDelete}
+        />
       </table>
       <div className="flex items-center justify-between px-1 py-5">
         <Count

@@ -17,7 +17,9 @@ export default function NavLinks() {
               <Link
                 href={link.href}
                 className={clsx("", {
-                  "bg-accent/10 text-accent": pathname === link.href,
+                  "bg-accent/10 text-accent": pathname.includes(
+                    link.name.toLowerCase(),
+                  ),
                 })}
               >
                 <LinkIcon className="h-5 w-5" />

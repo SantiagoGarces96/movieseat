@@ -1,5 +1,6 @@
 import { Schema, Document } from "mongoose";
 import { IRoom } from "./room";
+import { HTMLInputTypeAttribute } from "react";
 
 export interface ISeats {
   [key: string]: boolean;
@@ -44,13 +45,25 @@ export interface IAvailableSeatsByRoom {
 
 export interface ISessionCustomTypes
   extends Omit<ISession, "movieId" | "roomId"> {
-  movieId: { _id: Schema.Types.ObjectId; title: string };
-  roomId: { _id: Schema.Types.ObjectId; name: string };
+  movie: string;
+  room: string;
 }
 
 export interface ISessionResponse {
-  results: ISessionCustomTypes[];
+  results: { [key: string]: string }[];
   page: number;
-  total_pages: number;
-  total_results: number;
+  totalPages: number;
+  totalResults: number;
+}
+
+export interface ISessionFormInput {
+  label: string;
+  name?: string;
+  type?: HTMLInputTypeAttribute | "select";
+  options?: ReadonlyArray<{ opt: string; value: string }>;
+  disabled?: boolean;
+  colSpan?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  autofocus?: boolean;
+  currentValue?: number | string;
+  required?: boolean;
 }

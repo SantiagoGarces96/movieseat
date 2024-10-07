@@ -1,8 +1,12 @@
+import CreateForm from "@/app/ui/dashboard/Form/Create";
+import OpenModal from "@/app/ui/dashboard/Form/Create/components/Button/OpenModal";
 import Table from "@/app/ui/dashboard/Table";
+import { createSessionData } from "@/constants/dashboard/formData";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
-import { getSessions } from "@/services/sessions";
-import { parseBodySessions } from "@/utils/parseSessions";
-import React from "react";
+import { getAllMovies } from "@/services/movies";
+import { getAllRooms } from "@/services/rooms";
+import { createSession, deleteSession, getSessions } from "@/services/sessions";
+import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 
 export default async function SessionsPage({
   searchParams,
@@ -11,26 +15,41 @@ export default async function SessionsPage({
     page?: string;
     limit?: string;
     tableQuery?: string;
+    sortBy?: string;
+    order?: string;
+    roomId?: string;
   };
 }) {
   const page = searchParams?.page || " 1";
   const limit = searchParams?.limit || "5";
   const query = searchParams?.tableQuery || "";
-  const sessions = await getSessions(page, limit, query);
+  const sortBy = searchParams?.sortBy || "createdAt";
+  const order = searchParams?.order || "";
+  const roomId = searchParams?.roomId || "";
+  const sessions = await getSessions(page, limit, query, sortBy, order);
+  const movies = await getAllMovies();
+  const rooms = await getAllRooms();
 
   return (
     <section className="h-[100vh] w-full divide-y">
-      <div className="p-5">
+      <CreateForm
+        title="Crear nueva sesion"
+        inputData={createSessionData(movies, rooms, roomId)}
+        handle={createSession}
+      />
+      <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">Sesiones</h2>
+        <OpenModal label="Crear sesion" />
       </div>
       <div className="p-5">
         <Table
           headers={sessionsHeaders}
-          body={parseBodySessions(sessions.results)}
+          body={sessions.results}
           limit={limit}
-          totalResults={sessions.total_results}
+          totalResults={sessions.totalResults}
           page={sessions.page || 1}
-          totalPages={sessions.total_pages}
+          totalPages={sessions.totalPages}
+          handleDelete={deleteSession}
         />
       </div>
     </section>

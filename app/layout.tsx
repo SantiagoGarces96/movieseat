@@ -1,5 +1,12 @@
+import React from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+export const metadata = {
+  title: "Movieseat",
+  description: "cine.",
+};
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -9,8 +16,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-primary`}>
-        <main>{children}</main>
+      <body className={`${inter.className} overflow-auto bg-primary`}>
+        <main className="h-full w-full">{children}</main>
       </body>
     </html>
   );

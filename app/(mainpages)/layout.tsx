@@ -1,22 +1,16 @@
-import Navbar from '@/app/ui/customers/NavBar/Navbar';
-import Footer from '@/app/ui/customers/Footer/Footer';
-import { Inter } from "next/font/google";
-import { ReactNode } from 'react';
+import Footer from "../ui/customers/Footer/Footer";
+import Navbar from "../ui/customers/NavBar/Navbar";
 
-export const metadata = {
-  title: "Movieseat",
-  description: "cine.",
-};
-
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Layout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className={`${inter.className} bg-primary`}>
-      <Navbar/>
-      <main>{children}</main>
+    <div className="h-full w-full">
+      <Navbar />
+      <div className="h-full min-h-screen w-full">{children}</div>
       <Footer />
     </div>
-      
   );
 }

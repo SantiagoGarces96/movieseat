@@ -21,6 +21,7 @@ export const getFoodSells = async (): Promise<IFoodSells[]> => {
     ]);
     return sells;
   } catch (error: any) {
+    console.error(`Error in getFoodSells function: ${error.message}`);
     return [];
   }
 };
@@ -39,6 +40,7 @@ export const getMonthlyRevenue = async (): Promise<IMonthlyRevenue[]> => {
     ]);
     return monthlyRevenue;
   } catch (error: any) {
+    console.error(`Error in getMonthlyRevenue function: ${error.message}`);
     return [];
   }
 };
