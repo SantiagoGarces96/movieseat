@@ -1,61 +1,69 @@
 import Link from "next/link";
-import MobileMenu from "./MobileMenu";
 import { HiBars3 } from "react-icons/hi2";
+import MobileMenu from "./MobileMenu";
 
 const Navbar = () => {
   return (
-    <div className="drawer sticky top-0 z-50">
-      <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
-        {/* Page content here */}
-        <nav className="w-full bg-white p-4 shadow-md">
-          <div className="container mx-auto flex items-center justify-between">
-            <Link href="/">
-              <div className="text-2xl font-bold">MovieSeat</div>
-            </Link>
-            <div className="hidden gap-6 md:flex">
-              <Link
-                href="/releases"
-                className="capitalize hover:text-[#0072BB]"
-              >
-                Cartelera
+    <div className="navbar sticky top-0 z-50 bg-base-100 shadow-md">
+      <div className="navbar-start">
+        {/* Menú para móvil */}
+        <div className="dropdown">
+          <label tabIndex={0} className="btn btn-ghost lg:hidden">
+            <HiBars3 className="h-6 w-6" />
+          </label>
+          <ul
+            tabIndex={0}
+            className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
+          >
+            <li>
+              <Link href="/releases">Cartelera</Link>
+            </li>
+            <li>
+              <Link href="/upcoming">Próximos Estrenos</Link>
+            </li>
+            <li>
+              <Link href="/foods">Comidas</Link>
+            </li>
+            <li>
+              <Link href="/about">Nosotros</Link>
+            </li>
+            <li>
+              <Link href="/login">
+                <button className="btn btn-primary w-full">Login</button>
               </Link>
-              <Link
-                href="/upcoming"
-                className="capitalize hover:text-[#0072BB]"
-              >
-                Proximos Estrenos
-              </Link>
-              <Link href="/foods" className="capitalize hover:text-[#0072BB]">
-                Comidas
-              </Link>
-              <Link href="/about" className="capitalize hover:text-[#0072BB]">
-                Nosotros
-              </Link>
-            </div>
-            <div className="hidden md:block">
-              <button className="rounded bg-[#0072BB] px-4 py-2 capitalize text-[#FFFDF6]">
-                Login
-              </button>
-            </div>
-            <div className="md:hidden">
-              <label htmlFor="my-drawer" className="btn bg-transparent">
-                <HiBars3 className="h-6 w-6" />
-              </label>
-            </div>
-          </div>
-        </nav>
-      </div>
-      <div className="drawer-side">
-        <label
-          htmlFor="my-drawer"
-          aria-label="close sidebar"
-          className="drawer-overlay"
-        ></label>
-        <div className="menu min-h-full w-80 bg-white p-4 text-base-content">
-          {/* Sidebar content here */}
-          <MobileMenu />
+            </li>
+          </ul>
         </div>
+
+        {/* Logo */}
+        <Link href="/" className="btn btn-ghost text-xl normal-case">
+          MovieSeat
+        </Link>
+      </div>
+
+      {/* Menú para escritorio */}
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <Link href="/releases">Cartelera</Link>
+          </li>
+          <li>
+            <Link href="/upcoming">Próximos Estrenos</Link>
+          </li>
+          <li>
+            <Link href="/foods">Comidas</Link>
+          </li>
+          <li>
+            <Link href="/about">Nosotros</Link>
+          </li>
+        </ul>
+      </div>
+
+      {/* Botón de Login */}
+      <div className="navbar-end hidden lg:flex">
+        <Link href="/login">
+          <button className="btn btn-primary">Login</button>
+        </Link>
       </div>
     </div>
   );
