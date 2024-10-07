@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { MovieStatus } from "@/types/movie";
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -16,13 +17,18 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
 }) => {
   const newSearchParamsPrev = { ...searchParams };
   const newSearchParamsNext = { ...searchParams };
+  type PageParamKey = "releasesPage" | "UpcomingPage";
+  let pageParamKey: PageParamKey | undefined;
 
-  if (type === "billboard") {
-    newSearchParamsPrev.releasesPage = String(currentPage - 1);
-    newSearchParamsNext.releasesPage = String(currentPage + 1);
-  } else if (type === "upcoming") {
-    newSearchParamsPrev.UpcomingPage = String(currentPage - 1);
-    newSearchParamsNext.UpcomingPage = String(currentPage + 1);
+  if (type === MovieStatus.BILLBOARD) {
+    pageParamKey = "releasesPage";
+  } else if (type === MovieStatus.UPCOMING) {
+    pageParamKey = "UpcomingPage";
+  }
+
+  if (pageParamKey) {
+    newSearchParamsPrev[pageParamKey] = String(currentPage - 1);
+    newSearchParamsNext[pageParamKey] = String(currentPage + 1);
   }
 
   const generateHref = (newParams: any) => {
@@ -48,7 +54,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
             key={pageNumber}
             href={generateHref({
               ...searchParams,
-              releasesPage: String(pageNumber),
+              ...(pageParamKey && { [pageParamKey]: String(pageNumber) }),
             })}
             className={`mt-1 px-3 py-1 transition ${
               pageNumber === currentPage
