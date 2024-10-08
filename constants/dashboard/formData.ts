@@ -15,7 +15,6 @@ export const createSessionData = (
       opt: title,
       value: _id.toString(),
     })),
-    colSpan: 6,
     required: true,
   };
 
@@ -27,7 +26,6 @@ export const createSessionData = (
       opt: name,
       value: _id.toString(),
     })),
-    colSpan: 6,
     required: true,
   };
 
@@ -40,7 +38,6 @@ export const createSessionData = (
       label: "Fecha de la funcion",
       name: "dateTime",
       type: "date",
-      colSpan: 6,
       required: true,
     },
     {
@@ -48,7 +45,6 @@ export const createSessionData = (
       name: "availableSeats",
       type: "number",
       disabled: true,
-      colSpan: 6,
       currentValue: currentRoom?.totalSeats,
       required: false,
     },
@@ -57,7 +53,6 @@ export const createSessionData = (
       name: "seatsPreferential",
       type: "number",
       disabled: true,
-      colSpan: 6,
       currentValue: currentRoom?.totalSeatsPreferential,
       required: false,
     },
@@ -66,7 +61,6 @@ export const createSessionData = (
       name: "seatsGeneral",
       type: "number",
       disabled: true,
-      colSpan: 6,
       currentValue: currentRoom?.totalSeatsGeneral,
       required: false,
     },
@@ -74,14 +68,12 @@ export const createSessionData = (
       label: "Precio asientos preferenciales",
       name: "preferentialPrice",
       type: "number",
-      colSpan: 6,
       required: true,
     },
     {
       label: "Precio asientos generales",
       name: "generalPrice",
       type: "number",
-      colSpan: 6,
       required: true,
     },
   ];
