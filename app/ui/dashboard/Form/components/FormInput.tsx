@@ -1,7 +1,7 @@
 "use client";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { ISessionFormInput } from "@/interfaces/session";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useParams from "@/app/hooks/useParams";
 
 export default function FormInput({
   label,
@@ -13,13 +13,7 @@ export default function FormInput({
   currentValue = "",
   required = false,
 }: ISessionFormInput) {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const params = useMemo(
-    () => new URLSearchParams(searchParams),
-    [searchParams],
-  );
+  const { updateParam, deleteParam } = useParams();
   const [value, setValue] = useState<string>(currentValue?.toString() || "");
 
   const handleChange = (
@@ -29,11 +23,10 @@ export default function FormInput({
     setValue(value);
     if (type === "select") {
       if (value) {
-        params.set(name, value);
+        updateParam(name, value);
       } else {
-        params.delete(name);
+        deleteParam(name);
       }
-      replace(`${pathname}?${params.toString()}`);
     }
   };
 

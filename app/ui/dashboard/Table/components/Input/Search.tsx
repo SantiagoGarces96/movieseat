@@ -1,24 +1,19 @@
 "use client";
 import { ChangeEvent, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HiMiniXMark } from "react-icons/hi2";
 import { useDebouncedCallback } from "use-debounce";
+import useParams from "@/app/hooks/useParams";
 
 export default function TableSearchInput() {
+  const { updateParam, deleteParam } = useParams();
   const [value, setValue] = useState("");
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-
-  const params = new URLSearchParams(searchParams);
 
   const handleSearch = useDebouncedCallback((value: string) => {
     if (value) {
-      params.set("tableQuery", value);
+      updateParam("tableQuery", value);
     } else {
-      params.delete("tableQuery");
+      deleteParam("tableQuery");
     }
-    replace(`${pathname}?${params.toString()}`);
   }, 500);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -28,9 +23,8 @@ export default function TableSearchInput() {
   };
 
   const handleClearInput = () => {
-    params.delete("tableQuery");
+    deleteParam("tableQuery");
     setValue("");
-    replace(`${pathname}?${params.toString()}`);
   };
 
   return (

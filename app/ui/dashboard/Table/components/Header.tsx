@@ -1,28 +1,20 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   HiArrowsUpDown,
   HiBarsArrowDown,
   HiBarsArrowUp,
 } from "react-icons/hi2";
+import useParams from "@/app/hooks/useParams";
 
 function SortableHeader({ title, value }: { title: string; value: string }) {
+  const { getParam, updateParam } = useParams();
   const [sort, setSort] = useState("");
   const [icon, setIcon] = useState(<HiArrowsUpDown />);
 
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const params = useMemo(
-    () => new URLSearchParams(searchParams),
-    [searchParams],
-  );
-
   const handleSort = (order: string) => {
-    params.set("sortBy", value);
-    params.set("order", order);
-    replace(`${pathname}?${params.toString()}`);
+    updateParam("sortBy", value);
+    updateParam("order", order);
   };
 
   const handleClick = () => {
@@ -48,12 +40,12 @@ function SortableHeader({ title, value }: { title: string; value: string }) {
   };
 
   useEffect(() => {
-    const currentSort = params.get("sortBy");
-    const currentOrder = params.get("order");
+    const currentSort = getParam("sortBy");
+    const currentOrder = getParam("order");
     if (currentSort && currentOrder) {
       setSort(currentSort !== value ? "" : currentOrder);
     }
-  }, [params, value]);
+  }, [getParam, value]);
 
   return (
     <th

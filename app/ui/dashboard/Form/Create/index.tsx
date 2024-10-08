@@ -2,9 +2,9 @@
 import { ISessionFormInput } from "@/interfaces/session";
 import FormInput from "../components/FormInput";
 import { useFormState } from "react-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Submit from "./components/Button/Submit";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useParams from "@/app/hooks/useParams";
 
 export default function CreateForm({
   title,
@@ -15,25 +15,18 @@ export default function CreateForm({
   inputData: ISessionFormInput[];
   handle: (prevState: any, formData: FormData) => Promise<any>;
 }) {
+  const { updateParam, deleteParam } = useParams();
   const [state, formAction] = useFormState(handle, {
     status: "pending",
     success: false,
   });
-
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const params = useMemo(
-    () => new URLSearchParams(searchParams),
-    [searchParams],
-  );
 
   const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
     if (state.status === "completed") {
       if (state.success) {
-        params.set("formState", "true");
+        updateParam("formState", "true");
         const modal = document.getElementById(
           "modal_create",
         ) as HTMLDialogElement | null;
@@ -42,14 +35,11 @@ export default function CreateForm({
           modal.close();
         }
       } else {
-        params.set("formState", "false");
+        updateParam("formState", "false");
       }
-      replace(`${pathname}?${params.toString()}`);
 
       const timer = setTimeout(() => {
-        params.delete("formState");
-        replace(`${pathname}?${params.toString()}`);
-        console.log("hello");
+        deleteParam("formState");
       }, 5000);
 
       return () => clearTimeout(timer);
