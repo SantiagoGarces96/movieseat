@@ -1,6 +1,5 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import useParams from "@/app/hooks/useParams";
 
 function Pagination({
   currentPage,
@@ -9,28 +8,20 @@ function Pagination({
   currentPage: number;
   totalPages: number;
 }) {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const params = useMemo(
-    () => new URLSearchParams(searchParams),
-    [searchParams],
-  );
+  const { updateParam } = useParams();
 
   const handleBack = () => {
     if (currentPage > 1) {
       const backPage = (currentPage - 1).toString();
-      params.set("page", backPage);
+      updateParam("page", backPage);
     }
-    replace(`${pathname}?${params.toString()}`);
   };
 
   const handleNext = () => {
     if (currentPage < totalPages) {
       const backPage = (currentPage + 1).toString();
-      params.set("page", backPage);
+      updateParam("page", backPage);
     }
-    replace(`${pathname}?${params.toString()}`);
   };
 
   return (

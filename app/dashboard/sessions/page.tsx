@@ -1,3 +1,4 @@
+import Alert from "@/app/ui/dashboard/Alert";
 import CreateForm from "@/app/ui/dashboard/Form/Create";
 import OpenModal from "@/app/ui/dashboard/Form/Create/components/Button/OpenModal";
 import Table from "@/app/ui/dashboard/Table";
@@ -17,6 +18,7 @@ export default async function SessionsPage({
     sortBy?: string;
     order?: string;
     roomId?: string;
+    formState?: string;
   };
 }) {
   const page = searchParams?.page || " 1";
@@ -25,12 +27,14 @@ export default async function SessionsPage({
   const sortBy = searchParams?.sortBy || "createdAt";
   const order = searchParams?.order || "";
   const roomId = searchParams?.roomId || "";
+  const formState = searchParams?.formState || null;
   const sessions = await getSessions(page, limit, query, sortBy, order);
   const movies = await getAllMovies();
   const rooms = await getAllRooms();
 
   return (
     <section className="h-[100vh] w-full divide-y">
+      {formState && <Alert success={formState === "true"} />}
       <CreateForm
         title="Crear nueva sesion"
         inputData={createSessionData(movies, rooms, roomId)}

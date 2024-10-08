@@ -8,9 +8,9 @@ import { getUsersByQuery } from "@/services/users";
 import { getMoviesByQuery } from "@/services/movies";
 import { getFoodByQuery } from "@/services/food";
 import { getRoomsByQuery } from "@/services/rooms";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ResultSearchSkeleton from "../../Skeleton/ResultSearch";
+import useParams from "@/app/hooks/useParams";
 
 function ContainResults({ title, resultData }: IResultsSearchsDashboard) {
   if (!resultData.length) {
@@ -30,13 +30,13 @@ function ContainResults({ title, resultData }: IResultsSearchsDashboard) {
 }
 
 export default function ResultsSearchs() {
+  const { getParam } = useParams();
   const [users, setUsers] = useState<IResultDataDashboard[]>([]);
   const [movies, setMovies] = useState<IResultDataDashboard[]>([]);
   const [food, setFood] = useState<IResultDataDashboard[]>([]);
   const [rooms, setRooms] = useState<IResultDataDashboard[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
+  const query = getParam("query");
   const clearStates = (): void => {
     setUsers([]);
     setMovies([]);

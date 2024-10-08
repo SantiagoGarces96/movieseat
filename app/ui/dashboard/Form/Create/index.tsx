@@ -1,8 +1,10 @@
 "use client";
 import { ISessionFormInput } from "@/interfaces/session";
 import FormInput from "../components/FormInput";
-import { useFormState, useFormStatus } from "react-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useFormState } from "react-dom";
+import { useEffect, useState } from "react";
+import Submit from "./components/Button/Submit";
+import useParams from "@/app/hooks/useParams";
 
 export default function CreateForm({
   title,
@@ -13,24 +15,34 @@ export default function CreateForm({
   inputData: ISessionFormInput[];
   handle: (prevState: any, formData: FormData) => Promise<any>;
 }) {
-  const { pending } = useFormStatus();
-
+  const { updateParam, deleteParam } = useParams();
   const [state, formAction] = useFormState(handle, {
+    status: "pending",
     success: false,
-    message: "",
   });
 
   const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
-    if (state.success) {
-      const modal = document.getElementById(
-        "modal_create",
-      ) as HTMLDialogElement | null;
-      if (modal) {
-        setResetKey((prev) => prev + 1);
-        modal.close();
+    if (state.status === "completed") {
+      if (state.success) {
+        updateParam("formState", "true");
+        const modal = document.getElementById(
+          "modal_create",
+        ) as HTMLDialogElement | null;
+        if (modal) {
+          setResetKey((prev) => prev + 1);
+          modal.close();
+        }
+      } else {
+        updateParam("formState", "false");
       }
+
+      const timer = setTimeout(() => {
+        deleteParam("formState");
+      }, 5000);
+
+      return () => clearTimeout(timer);
     }
   }, [state]);
 
@@ -57,26 +69,11 @@ export default function CreateForm({
           ))}
           <div className="col-span-12 grid">
             <div className="flex w-full items-center justify-center gap-4 lg:justify-end">
-              <button
-                className="btn btn-secondary btn-sm text-primary"
-                type="submit"
-                disabled={pending}
-              >
-                {pending ? "Submitting..." : "Submit"}
-              </button>
+              <Submit />
             </div>
           </div>
         </form>
       </div>
-      {state?.message && (
-        <div className="toast toast-center toast-top">
-          <div
-            className={`alert ${state.success ? "alert-success" : "alert-error"}`}
-          >
-            <span>{state.message}</span>
-          </div>
-        </div>
-      )}
     </dialog>
   );
 }

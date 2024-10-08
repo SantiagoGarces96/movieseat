@@ -140,13 +140,13 @@ export const createSession = async (
       !preferentialPrice ||
       !generalPrice
     ) {
-      return { success: false, message: "Todos lo campos son requeridos." };
+      throw new Error("Fields are required.");
     }
 
     const room: IRoom | null = await Room.findById(roomId);
 
     if (!room) {
-      return { success: false, message: "Sala no encontrada." };
+      throw new Error("Room not found.");
     }
 
     const seatsPreferential = room.totalSeatsPreferential;
@@ -165,13 +165,12 @@ export const createSession = async (
       generalPrice,
       availableSeats,
     };
-
     await Session.create(fields);
     revalidatePath("/dashboard/sessions");
-    return { success: true, message: "Sesion creada con exito." };
+    return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
-    return { success: false, message: "Error al crear la sesion" };
+    return { status: "completed", success: false };
   }
 };
 
