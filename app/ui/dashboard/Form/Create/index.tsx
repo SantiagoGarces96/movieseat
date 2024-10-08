@@ -2,7 +2,7 @@
 import { ISessionFormInput } from "@/interfaces/session";
 import FormInput from "../components/FormInput";
 import { useFormState, useFormStatus } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function CreateForm({
   title,
@@ -59,7 +59,7 @@ export default function CreateForm({
             <div className="flex w-full items-center justify-center gap-4 lg:justify-end">
               <button
                 className="btn btn-secondary btn-sm text-primary"
-                // type="submit"
+                type="submit"
                 disabled={pending}
               >
                 {pending ? "Submitting..." : "Submit"}

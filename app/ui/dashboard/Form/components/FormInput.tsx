@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { ISessionFormInput } from "@/interfaces/session";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -9,7 +9,6 @@ export default function FormInput({
   type = "text",
   options,
   disabled = false,
-  colSpan = 12,
   autofocus = false,
   currentValue = "",
   required = false,
@@ -17,7 +16,10 @@ export default function FormInput({
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
-  const params = new URLSearchParams(searchParams);
+  const params = useMemo(
+    () => new URLSearchParams(searchParams),
+    [searchParams],
+  );
   const [value, setValue] = useState<string>(currentValue?.toString() || "");
 
   const handleChange = (
@@ -26,7 +28,11 @@ export default function FormInput({
     const value = event.target.value;
     setValue(value);
     if (type === "select") {
-      params.set(name, value);
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
       replace(`${pathname}?${params.toString()}`);
     }
   };
@@ -36,9 +42,7 @@ export default function FormInput({
   }, [currentValue]);
 
   return (
-    <label
-      className={`form-control col-span-12 grid w-full lg:col-span-${colSpan}`}
-    >
+    <label className={`form-control col-span-12 grid w-full lg:col-span-6`}>
       <div className="label">
         <span className="label-text">{label}</span>
       </div>

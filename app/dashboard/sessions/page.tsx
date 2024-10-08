@@ -6,7 +6,6 @@ import { sessionsHeaders } from "@/constants/dashboard/headers";
 import { getAllMovies } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
 import { createSession, deleteSession, getSessions } from "@/services/sessions";
-import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 
 export default async function SessionsPage({
   searchParams,
