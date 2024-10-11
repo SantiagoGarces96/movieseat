@@ -8,6 +8,7 @@ import Session from "@/models/Session";
 import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
+import mongoose from "mongoose";
 
 const options = [5, 10, 15, 20];
 
@@ -119,6 +120,55 @@ export const getSessions = async (
       totalPages: 0,
       totalResults: 0,
     };
+  }
+};
+
+export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
+  await dbConnect();
+  try {
+    const now = new Date();
+    const todayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+
+    const sessions = await Session.aggregate([
+      {
+        $match: {
+          movieId: new mongoose.Types.ObjectId(movieId),
+          dateTime: { $gte: todayUTC },
+        },
+      },
+      {
+        $lookup: {
+          from: "rooms",
+          localField: "roomId",
+          foreignField: "_id",
+          as: "room",
+        },
+      },
+      {
+        $unwind: "$room",
+      },
+      {
+        $sort: { dateTime: 1 },
+      },
+      {
+        $project: {
+          _id: { $toString: "$_id" },
+          room: { $toString: "$room.name" },
+          date: {
+            $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
+          },
+          time: {
+            $dateToString: { format: "%H:%M:%S", date: "$dateTime" },
+          },
+        },
+      },
+    ]);
+    return sessions;
+  } catch (error: any) {
+    console.error(`Error in getSessionByIdMovie function: ${error.message}`);
+    return [];
   }
 };
 
