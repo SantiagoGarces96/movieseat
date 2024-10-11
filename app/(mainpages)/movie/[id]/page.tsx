@@ -3,6 +3,7 @@ import { IMovie } from "@/interfaces/movie";
 import MovieBanner from "@/app/ui/customers/movie/MovieBanner/MovieBanner";
 import DetailsMovie from "@/app/ui/customers/movie/DetailsMovie/DetailsMovie";
 import { getMovieById } from "@/services/movies";
+import { getSessionByIdMovie } from "@/services/sessions";
 
 interface MoviePageProps {
   params: { id: string };
@@ -11,6 +12,8 @@ interface MoviePageProps {
 export default async function MoviePage({ params }: MoviePageProps) {
   const movieId = params.id;
   const movie: IMovie | null = await getMovieById(movieId);
+
+  await getSessionByIdMovie(movieId);
 
   if (!movie) {
     return <div>Película no encontrada</div>;
