@@ -21,7 +21,9 @@ function Table({
   totalResults: number;
   page: number;
   totalPages: number;
-  handleDelete: (id: string) => Promise<{ message: string }>;
+  handleDelete: (id: string) => Promise<{
+    success: boolean;
+  }>;
 }) {
   return (
     <div className="h-full overflow-x-auto">

@@ -1,6 +1,5 @@
 import Alert from "@/app/ui/dashboard/Alert";
-import CreateForm from "@/app/ui/dashboard/Form/Create";
-import OpenModal from "@/app/ui/dashboard/Form/Create/components/Button/OpenModal";
+import Form from "@/app/ui/dashboard/Form";
 import Table from "@/app/ui/dashboard/Table";
 import { createSessionData } from "@/constants/dashboard/formData";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
@@ -18,7 +17,6 @@ export default async function SessionsPage({
     sortBy?: string;
     order?: string;
     roomId?: string;
-    formState?: string;
   };
 }) {
   const page = searchParams?.page || " 1";
@@ -27,22 +25,21 @@ export default async function SessionsPage({
   const sortBy = searchParams?.sortBy || "createdAt";
   const order = searchParams?.order || "";
   const roomId = searchParams?.roomId || "";
-  const formState = searchParams?.formState || null;
   const sessions = await getSessions(page, limit, query, sortBy, order);
   const movies = await getAllMovies();
   const rooms = await getAllRooms();
 
   return (
     <section className="h-[100vh] w-full divide-y">
-      {formState && <Alert success={formState === "true"} />}
-      <CreateForm
-        title="Crear nueva sesion"
-        inputData={createSessionData(movies, rooms, roomId)}
-        handle={createSession}
-      />
+      <Alert />
       <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">Sesiones</h2>
-        <OpenModal label="Crear sesion" />
+        <Form
+          label="Crear sesion"
+          title="Crear nueva sesion"
+          inputData={createSessionData(movies, rooms, roomId)}
+          handle={createSession}
+        />
       </div>
       <div className="p-5">
         <Table

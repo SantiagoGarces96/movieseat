@@ -7,7 +7,7 @@ export const metadata = {
   description: "cine.",
 };
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], preload: true });
 
 export default function RootLayout({
   children,

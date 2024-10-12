@@ -94,7 +94,7 @@ export const getSessions = async (
           preferentialPrice: { $toString: "$preferentialPrice" },
           generalPrice: { $toString: "$generalPrice" },
           dateTime: {
-            $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
+            $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$dateTime" },
           },
           createdAt: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
@@ -175,7 +175,7 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
 export const createSession = async (
   prevState: any,
   formData: FormData,
-): Promise<any> => {
+): Promise<{ status: string; success: boolean }> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
@@ -206,7 +206,7 @@ export const createSession = async (
     const fields = {
       movieId,
       roomId,
-      dateTime: dateTime,
+      dateTime: new Date(dateTime.toString() + ":00"),
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -227,15 +227,15 @@ export const createSession = async (
 export const deleteSession = async (
   _id: string,
 ): Promise<{
-  message: string;
+  success: boolean;
 }> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
-    return { message: "Deleted Session" };
+    return { success: true };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
-    return { message: "Database Error: Failed to Delete Session." };
+    return { success: false };
   }
 };
 

@@ -1,5 +1,5 @@
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export default function useParams() {
   const searchParams = useSearchParams();
@@ -16,15 +16,21 @@ export default function useParams() {
     return param?.toString() || "";
   };
 
-  const updateParam = (name: string, value: string) => {
-    params.set(name, value);
-    replace(`${pathname}?${params.toString()}`);
-  };
+  const updateParam = useCallback(
+    (name: string, value: string) => {
+      params.set(name, value);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [params, pathname, replace],
+  );
 
-  const deleteParam = (name: string) => {
-    params.delete(name);
-    replace(`${pathname}?${params.toString()}`);
-  };
+  const deleteParam = useCallback(
+    (name: string) => {
+      params.delete(name);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [params, pathname, replace],
+  );
 
   return { getParam, updateParam, deleteParam };
 }

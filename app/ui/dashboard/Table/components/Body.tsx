@@ -8,7 +8,9 @@ function Element({
 }: {
   data: { [key: string]: string };
   dataIndex: number;
-  deleteAction: (id: string) => Promise<{ message: string }>;
+  deleteAction: (id: string) => Promise<{
+    success: boolean;
+  }>;
 }) {
   const id = data._id;
   return (
@@ -37,7 +39,9 @@ function Body({
   body: { [key: string]: string }[];
   currentPage: number;
   limit: number;
-  handle: (id: string) => Promise<{ message: string }>;
+  handle: (id: string) => Promise<{
+    success: boolean;
+  }>;
 }) {
   return (
     <tbody>
