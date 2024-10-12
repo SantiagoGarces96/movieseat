@@ -37,7 +37,7 @@ export const createSessionData = (
     {
       label: "Fecha de la funcion",
       name: "dateTime",
-      type: "date",
+      type: "datetime-local",
       required: true,
     },
     {
