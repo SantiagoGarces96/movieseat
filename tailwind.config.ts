@@ -20,6 +20,15 @@ const config: Config = {
         fhd: "1920px", // Minimum width for Full HD screens (1080p)
         "2k": "2400px", // Minimum width for 2K screens
       },
+      keyframes: {
+        carousel: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+      },
+      animation: {
+        carousel: "carousel 50s linear infinite",
+      },
     },
   },
   daisyui: {
