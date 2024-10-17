@@ -17,7 +17,7 @@ export default async function FoodsByCategoryPage({ params }: PageProps) {
   const foods: IFood[] = await getFoodsByCategory(category);
 
   return (
-    <div className="flex w-full flex-col overflow-hidden">
+    <div className="flex w-full flex-col overflow-hidden p-4">
       <h1 className="mb-6 flex justify-center text-4xl font-bold capitalize">
         {category.charAt(0).toUpperCase() + category.slice(1)}
       </h1>
