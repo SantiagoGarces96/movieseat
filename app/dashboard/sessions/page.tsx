@@ -1,11 +1,20 @@
 import Alert from "@/app/ui/dashboard/Alert";
 import Form from "@/app/ui/dashboard/Form";
 import Table from "@/app/ui/dashboard/Table";
-import { createSessionData } from "@/constants/dashboard/formData";
+import Create from "@/app/ui/dashboard/Table/components/Buttons/Create";
+import {
+  createSessionData,
+  editSessionData,
+} from "@/constants/dashboard/formData";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
 import { getAllMovies } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
-import { createSession, deleteSession, getSessions } from "@/services/sessions";
+import {
+  createSession,
+  deleteSession,
+  getSessions,
+  updateSession,
+} from "@/services/sessions";
 
 export default async function SessionsPage({
   searchParams,
@@ -34,11 +43,10 @@ export default async function SessionsPage({
       <Alert />
       <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">Sesiones</h2>
-        <Form
+        <Create
           label="Crear sesion"
-          title="Crear nueva sesion"
-          inputData={createSessionData(movies, rooms, roomId)}
-          handle={createSession}
+          createInputData={createSessionData(movies, rooms, roomId)}
+          handleCreate={createSession}
         />
       </div>
       <div className="p-5">
@@ -50,6 +58,7 @@ export default async function SessionsPage({
           page={sessions.page || 1}
           totalPages={sessions.totalPages}
           handleDelete={deleteSession}
+          editInputData={createSessionData(movies, rooms, roomId)}
         />
       </div>
     </section>

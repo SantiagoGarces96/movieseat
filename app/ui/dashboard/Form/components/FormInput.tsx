@@ -1,7 +1,7 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
-import { ISessionFormInput } from "@/interfaces/session";
 import useParams from "@/app/hooks/useParams";
+import { IFormInputData } from "@/interfaces/Form";
 
 export default function FormInput({
   label,
@@ -12,7 +12,7 @@ export default function FormInput({
   autofocus = false,
   currentValue = "",
   required = false,
-}: ISessionFormInput) {
+}: IFormInputData) {
   const { updateParam, deleteParam } = useParams();
   const [value, setValue] = useState<string>(currentValue?.toString() || "");
 
