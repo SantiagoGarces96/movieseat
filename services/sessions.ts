@@ -1,6 +1,10 @@
 "use server";
 import { IRoom } from "@/interfaces/room";
-import { IAvailableSeatsByRoom, ISessionResponse } from "@/interfaces/session";
+import {
+  IAvailableSeatsByRoom,
+  ISession,
+  ISessionResponse,
+} from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import Room from "@/models/Room";
@@ -123,6 +127,17 @@ export const getSessions = async (
   }
 };
 
+export const getSessionById = async (_id: string): Promise<ISession | null> => {
+  await dbConnect();
+  try {
+    const session: ISession | null = await Session.findById(_id);
+    return session;
+  } catch (error: any) {
+    console.error(`Error in getSessionById function: ${error.message}`);
+    return null;
+  }
+};
+
 export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
   await dbConnect();
   try {
@@ -220,6 +235,59 @@ export const createSession = async (
     return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
+    return { status: "completed", success: false };
+  }
+};
+
+export const updateSession = async (
+  prevState: any,
+  formData: FormData,
+): Promise<{ status: string; success: boolean }> => {
+  try {
+    const movieId = formData.get("movieId");
+    const roomId = formData.get("roomId");
+    const dateTime = formData.get("dateTime");
+    const preferentialPrice = formData.get("preferentialPrice");
+    const generalPrice = formData.get("generalPrice");
+
+    if (
+      !movieId ||
+      !roomId ||
+      !dateTime ||
+      !preferentialPrice ||
+      !generalPrice
+    ) {
+      throw new Error("Fields are required.");
+    }
+
+    const room: IRoom | null = await Room.findById(roomId);
+
+    if (!room) {
+      throw new Error("Room not found.");
+    }
+
+    const seatsPreferential = room.totalSeatsPreferential;
+    const seatsGeneral = room.totalSeatsGeneral;
+    const availableSeats = room.totalSeats;
+
+    const fields = {
+      movieId,
+      roomId,
+      dateTime: new Date(dateTime.toString() + ":00"),
+      seatsPreferential: getSeatsNumber(seatsPreferential),
+      availableSeatsPreferential: seatsPreferential,
+      preferentialPrice,
+      seatsGeneral: getSeatsNumber(seatsGeneral),
+      availableSeatsGeneral: seatsGeneral,
+      generalPrice,
+      availableSeats,
+    };
+    // const response = await Session.findByIdAndUpdate();
+
+    revalidatePath("/dashboard/sessions");
+    return { status: "completed", success: true };
+  } catch (error: any) {
+    console.error(`Error in updateSession function: ${error.message}`);
     return { status: "completed", success: false };
   }
 };
