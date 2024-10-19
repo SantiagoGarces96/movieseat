@@ -1,13 +1,46 @@
-import Link from "next/link";
+"use client";
 
-function Create() {
+import { useEffect, useState } from "react";
+import Form from "../../../Form";
+import { IFormInputData } from "@/interfaces/Form";
+
+function Create({
+  label,
+  createInputData,
+  handleCreate,
+}: {
+  label: string;
+  createInputData: IFormInputData[];
+  handleCreate: (prevState: any, formData: FormData) => Promise<any>;
+}) {
+  const [modal, setModal] = useState<HTMLDialogElement | null>(null);
+  const openModal = (): void => {
+    if (modal) {
+      modal.showModal();
+    }
+  };
+
+  useEffect(() => {
+    setModal(
+      document.getElementById("modal_create") as HTMLDialogElement | null,
+    );
+  }, []);
+
   return (
-    <Link
-      href="/dashboard/sessions/create"
-      className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-    >
-      <span className="hidden md:block">Crear Session</span>
-    </Link>
+    <div>
+      <button
+        className="btn btn-secondary btn-sm text-primary"
+        onClick={openModal}
+      >
+        {label}
+      </button>
+      <Form
+        title="Crear sesion"
+        modalName="modal_create"
+        inputData={createInputData}
+        handle={handleCreate}
+      />
+    </div>
   );
 }
 

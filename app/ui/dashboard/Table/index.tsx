@@ -5,6 +5,7 @@ import Pagination from "./components/Pagination";
 import Count from "./components/Count";
 import Header from "./components/Header";
 import Body from "./components/Body";
+import { IFormInputData } from "@/interfaces/Form";
 
 function Table({
   headers,
@@ -14,6 +15,7 @@ function Table({
   page,
   totalPages,
   handleDelete,
+  editInputData,
 }: {
   headers: { [key: string]: string }[];
   body: { [key: string]: string }[];
@@ -24,6 +26,7 @@ function Table({
   handleDelete: (id: string) => Promise<{
     success: boolean;
   }>;
+  editInputData: IFormInputData[];
 }) {
   return (
     <div className="h-full overflow-x-auto">
@@ -37,7 +40,8 @@ function Table({
           body={body}
           currentPage={page}
           limit={parseInt(limit)}
-          handle={handleDelete}
+          deleteAction={handleDelete}
+          editInputData={editInputData}
         />
       </table>
       <div className="flex items-center justify-between px-1 py-5">
