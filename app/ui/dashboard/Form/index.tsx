@@ -20,7 +20,6 @@ export default function Form({
   handle: (prevState: any, formData: FormData) => Promise<any>;
 }) {
   const { updateParam, deleteParam } = useParams();
-  const updateParamRef = useRef(updateParam);
   const [modal, setModal] = useState<HTMLDialogElement | null>(null);
   const [state, formAction] = useFormState(handle, {
     status: "pending",
@@ -36,17 +35,18 @@ export default function Form({
   };
 
   useEffect(() => {
-    console.log("hello");
-
     if (state.status === "completed") {
       if (state.success) {
-        updateParamRef.current("formState", "true");
+        inputData.forEach(({ type, name }) => {
+          type === "select" && name && deleteParam(name);
+        });
+        updateParam("formState", "true");
         if (modal) {
           setResetKey((prev) => prev + 1);
           modal.close();
         }
       } else {
-        updateParamRef.current("formState", "false");
+        updateParam("formState", "false");
       }
     }
   }, [state, modal]);
