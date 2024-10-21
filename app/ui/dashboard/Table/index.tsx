@@ -6,6 +6,7 @@ import Count from "./components/Count";
 import Header from "./components/Header";
 import Body from "./components/Body";
 import { IFormInputData } from "@/interfaces/Form";
+import { HandleDelete, HandleEdit } from "@/types/form";
 
 function Table({
   headers,
@@ -14,8 +15,9 @@ function Table({
   totalResults,
   page,
   totalPages,
-  handleDelete,
   editInputData,
+  handleDelete,
+  updateAction,
 }: {
   headers: { [key: string]: string }[];
   body: { [key: string]: string }[];
@@ -23,10 +25,9 @@ function Table({
   totalResults: number;
   page: number;
   totalPages: number;
-  handleDelete: (id: string) => Promise<{
-    success: boolean;
-  }>;
   editInputData: IFormInputData[];
+  handleDelete: HandleDelete;
+  updateAction: HandleEdit;
 }) {
   return (
     <div className="h-full overflow-x-auto">
@@ -42,6 +43,7 @@ function Table({
           limit={parseInt(limit)}
           deleteAction={handleDelete}
           editInputData={editInputData}
+          updateAction={updateAction}
         />
       </table>
       <div className="flex items-center justify-between px-1 py-5">

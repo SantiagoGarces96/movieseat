@@ -1,10 +1,11 @@
 "use client";
 import useParams from "@/app/hooks/useParams";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import FormInput from "./components/FormInput";
 import Submit from "./components/Submit";
 import { IFormInputData } from "@/interfaces/Form";
+import { FormHandle } from "@/types/form";
 
 // TODO validate available Date by each session depends of date.
 
@@ -17,7 +18,8 @@ export default function Form({
   title: string;
   modalName: string;
   inputData: IFormInputData[];
-  handle: (prevState: any, formData: FormData) => Promise<any>;
+  isEdit?: boolean;
+  handle: FormHandle;
 }) {
   const { updateParam, deleteParam } = useParams();
   const [modal, setModal] = useState<HTMLDialogElement | null>(null);

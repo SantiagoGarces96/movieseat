@@ -13,6 +13,7 @@ import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
+import { FormState } from "@/types/form";
 
 const options = [5, 10, 15, 20];
 
@@ -130,6 +131,9 @@ export const getSessions = async (
 export const getSessionById = async (_id: string): Promise<ISession | null> => {
   await dbConnect();
   try {
+    if (!_id) {
+      return null;
+    }
     const session: ISession | null = await Session.findById(_id);
     return session;
   } catch (error: any) {
@@ -188,9 +192,9 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
 };
 
 export const createSession = async (
-  prevState: any,
+  prevState: FormState,
   formData: FormData,
-): Promise<{ status: string; success: boolean }> => {
+): Promise<FormState> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
@@ -240,15 +244,18 @@ export const createSession = async (
 };
 
 export const updateSession = async (
-  prevState: any,
+  id: string,
+  prevState: FormState,
   formData: FormData,
-): Promise<{ status: string; success: boolean }> => {
+): Promise<FormState> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
     const dateTime = formData.get("dateTime");
     const preferentialPrice = formData.get("preferentialPrice");
     const generalPrice = formData.get("generalPrice");
+
+    console.log({ movieId, roomId, dateTime, preferentialPrice, generalPrice });
 
     if (
       !movieId ||
@@ -282,8 +289,7 @@ export const updateSession = async (
       generalPrice,
       availableSeats,
     };
-    // const response = await Session.findByIdAndUpdate();
-
+    await Session.findByIdAndUpdate(id, fields);
     revalidatePath("/dashboard/sessions");
     return { status: "completed", success: true };
   } catch (error: any) {
@@ -292,18 +298,14 @@ export const updateSession = async (
   }
 };
 
-export const deleteSession = async (
-  _id: string,
-): Promise<{
-  success: boolean;
-}> => {
+export const deleteSession = async (_id: string): Promise<FormState> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
-    return { success: true };
+    return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
-    return { success: false };
+    return { status: "completed", success: false };
   }
 };
 

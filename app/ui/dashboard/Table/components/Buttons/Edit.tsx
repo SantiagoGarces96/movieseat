@@ -4,9 +4,17 @@ import { IFormInputData } from "@/interfaces/Form";
 import { useEffect, useState } from "react";
 import { HiOutlinePencil } from "react-icons/hi2";
 import Form from "../../../Form";
-import { updateSession } from "@/services/sessions";
+import { FormHandle, HandleEdit } from "@/types/form";
 
-function Edit({ id, inputData }: { id: string; inputData: IFormInputData[] }) {
+function Edit({
+  id,
+  inputData,
+  action,
+}: {
+  id: string;
+  inputData: IFormInputData[];
+  action: HandleEdit;
+}) {
   const { updateParam } = useParams();
   const [modal, setModal] = useState<HTMLDialogElement | null>(null);
 
@@ -30,7 +38,7 @@ function Edit({ id, inputData }: { id: string; inputData: IFormInputData[] }) {
         title="Editar sesion"
         modalName="modal_edit"
         inputData={inputData}
-        handle={updateSession}
+        handle={action.bind(null, id)}
       />
     </div>
   );

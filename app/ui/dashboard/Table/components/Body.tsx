@@ -1,21 +1,22 @@
 import { IFormInputData } from "@/interfaces/Form";
 import Delete from "./Buttons/Delete";
 import Edit from "./Buttons/Edit";
+import { HandleDelete, HandleEdit } from "@/types/form";
 
 function Body({
   body,
   currentPage,
   limit,
-  deleteAction,
   editInputData,
+  deleteAction,
+  updateAction,
 }: {
   body: { [key: string]: string }[];
   currentPage: number;
   limit: number;
   editInputData: IFormInputData[];
-  deleteAction: (id: string) => Promise<{
-    success: boolean;
-  }>;
+  deleteAction: HandleDelete;
+  updateAction: HandleEdit;
 }) {
   return (
     <tbody>
@@ -32,7 +33,11 @@ function Body({
           })}
           <th className="flex items-center justify-center">
             <Delete id={data._id} action={deleteAction} />
-            <Edit id={data._id} inputData={editInputData} />
+            <Edit
+              id={data._id}
+              inputData={editInputData}
+              action={updateAction}
+            />
           </th>
         </tr>
       ))}

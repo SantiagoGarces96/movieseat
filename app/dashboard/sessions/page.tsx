@@ -12,6 +12,7 @@ import { getAllRooms } from "@/services/rooms";
 import {
   createSession,
   deleteSession,
+  getSessionById,
   getSessions,
   updateSession,
 } from "@/services/sessions";
@@ -26,6 +27,7 @@ export default async function SessionsPage({
     sortBy?: string;
     order?: string;
     roomId?: string;
+    sessionId?: string;
   };
 }) {
   const page = searchParams?.page || " 1";
@@ -34,9 +36,13 @@ export default async function SessionsPage({
   const sortBy = searchParams?.sortBy || "createdAt";
   const order = searchParams?.order || "";
   const roomId = searchParams?.roomId || "";
+  const sessionId = searchParams?.sessionId || "";
   const sessions = await getSessions(page, limit, query, sortBy, order);
+  const session = await getSessionById(sessionId);
   const movies = await getAllMovies();
   const rooms = await getAllRooms();
+  const createInputData = createSessionData(movies, rooms, roomId);
+  const editInputData = editSessionData(movies, rooms, session, roomId);
 
   return (
     <section className="h-[100vh] w-full divide-y">
@@ -45,7 +51,7 @@ export default async function SessionsPage({
         <h2 className="text-3xl font-bold">Sesiones</h2>
         <Create
           label="Crear sesion"
-          createInputData={createSessionData(movies, rooms, roomId)}
+          createInputData={createInputData}
           handleCreate={createSession}
         />
       </div>
@@ -58,7 +64,8 @@ export default async function SessionsPage({
           page={sessions.page || 1}
           totalPages={sessions.totalPages}
           handleDelete={deleteSession}
-          editInputData={createSessionData(movies, rooms, roomId)}
+          editInputData={editInputData}
+          updateAction={updateSession}
         />
       </div>
     </section>
