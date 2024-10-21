@@ -1,17 +1,10 @@
 "use client";
 import useParams from "@/app/hooks/useParams";
-import { useEffect, useState } from "react";
+import { HandleDelete } from "@/types/form";
+import { useEffect, useRef, useState } from "react";
 import { HiOutlineExclamationCircle, HiOutlineTrash } from "react-icons/hi2";
 
-function Delete({
-  id,
-  action,
-}: {
-  id: string;
-  action: (id: string) => Promise<{
-    success: boolean;
-  }>;
-}) {
+function Delete({ id, action }: { id: string; action: HandleDelete }) {
   const { updateParam } = useParams();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<HTMLDialogElement | null>(null);
@@ -39,6 +32,10 @@ function Delete({
       document.getElementById("confirm_alert") as HTMLDialogElement | null,
     );
   }, []);
+
+  useEffect(() => {
+    console.log(id);
+  }, [id]);
 
   return (
     <div>

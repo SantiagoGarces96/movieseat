@@ -1,24 +1,27 @@
 "use client";
 import useParams from "@/app/hooks/useParams";
-import { ISessionFormInput } from "@/interfaces/session";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import FormInput from "./components/FormInput";
 import Submit from "./components/Submit";
+import { IFormInputData } from "@/interfaces/Form";
+import { FormHandle } from "@/types/form";
+
+// TODO validate available Date by each session depends of date.
 
 export default function Form({
-  label,
   title,
+  modalName,
   inputData,
   handle,
 }: {
-  label: string;
   title: string;
-  inputData: ISessionFormInput[];
-  handle: (prevState: any, formData: FormData) => Promise<any>;
+  modalName: string;
+  inputData: IFormInputData[];
+  isEdit?: boolean;
+  handle: FormHandle;
 }) {
-  const { updateParam } = useParams();
-  const updateParamRef = useRef(updateParam);
+  const { updateParam, deleteParam } = useParams();
   const [modal, setModal] = useState<HTMLDialogElement | null>(null);
   const [state, formAction] = useFormState(handle, {
     status: "pending",
@@ -26,68 +29,65 @@ export default function Form({
   });
   const [resetKey, setResetKey] = useState(0);
 
-  const openModal = (): void => {
-    if (modal) {
-      modal.showModal();
-    }
+  const handleClick = () => {
+    inputData.forEach(({ type, name }) => {
+      type === "select" && name && deleteParam(name);
+    });
+    setResetKey((prev) => prev + 1);
   };
 
   useEffect(() => {
     if (state.status === "completed") {
       if (state.success) {
-        updateParamRef.current("formState", "true");
+        inputData.forEach(({ type, name }) => {
+          type === "select" && name && deleteParam(name);
+        });
+        updateParam("formState", "true");
         if (modal) {
           setResetKey((prev) => prev + 1);
           modal.close();
         }
       } else {
-        updateParamRef.current("formState", "true");
+        updateParam("formState", "false");
       }
     }
   }, [state, modal]);
 
   useEffect(() => {
-    setModal(
-      document.getElementById("modal_create") as HTMLDialogElement | null,
-    );
-  }, []);
+    setModal(document.getElementById(modalName) as HTMLDialogElement | null);
+  }, [modalName]);
 
   return (
-    <div>
-      <button
-        className="btn btn-secondary btn-sm text-primary"
-        onClick={openModal}
-      >
-        {label}
-      </button>
-      <dialog id="modal_create" className="modal">
-        <div className="modal-box !max-w-full lg:w-1/2">
-          <form method="dialog">
-            <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
-              ✕
-            </button>
-          </form>
-          <h3 className="text-lg font-bold">{title}</h3>
-          <form
-            className="grid grid-cols-12 gap-4 py-4"
-            action={formAction}
-            key={resetKey}
+    <dialog id={modalName} className="modal">
+      <div className="modal-box !max-w-full lg:w-1/2">
+        <form method="dialog">
+          <button
+            className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
+            onClick={handleClick}
           >
-            {inputData.map((input, index) => (
-              <FormInput
-                key={title + "_form" + index}
-                {...input}
-                autofocus={index === 0 ? true : false}
-              />
-            ))}
-            <div className="col-span-12 grid">
-              <div className="flex w-full items-center justify-center gap-4 lg:justify-end">
-                <Submit />
-              </div>
+            ✕
+          </button>
+        </form>
+        <h3 className="text-lg font-bold">{title}</h3>
+        <form
+          className="grid grid-cols-12 gap-4 py-4"
+          action={formAction}
+          key={resetKey}
+        >
+          {inputData.map((input, index) => (
+            <FormInput
+              key={title + "_form" + index}
+              {...input}
+              autofocus={index === 0 ? true : false}
+            />
+          ))}
+          <div className="col-span-12 grid">
+            <div className="flex w-full items-center justify-center gap-4 lg:justify-end">
+              <Submit />
             </div>
-          </form>
-        </div>
-      </dialog>
-    </div>
+          </div>
+        </form>
+      </div>
+    </dialog>
   );
 }

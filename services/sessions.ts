@@ -1,6 +1,10 @@
 "use server";
 import { IRoom } from "@/interfaces/room";
-import { IAvailableSeatsByRoom, ISessionResponse } from "@/interfaces/session";
+import {
+  IAvailableSeatsByRoom,
+  ISession,
+  ISessionResponse,
+} from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import Room from "@/models/Room";
@@ -9,6 +13,7 @@ import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
+import { FormState } from "@/types/form";
 
 const options = [5, 10, 15, 20];
 
@@ -123,6 +128,20 @@ export const getSessions = async (
   }
 };
 
+export const getSessionById = async (_id: string): Promise<ISession | null> => {
+  await dbConnect();
+  try {
+    if (!_id) {
+      return null;
+    }
+    const session: ISession | null = await Session.findById(_id);
+    return session;
+  } catch (error: any) {
+    console.error(`Error in getSessionById function: ${error.message}`);
+    return null;
+  }
+};
+
 export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
   await dbConnect();
   try {
@@ -173,9 +192,9 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
 };
 
 export const createSession = async (
-  prevState: any,
+  prevState: FormState,
   formData: FormData,
-): Promise<{ status: string; success: boolean }> => {
+): Promise<FormState> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
@@ -224,18 +243,69 @@ export const createSession = async (
   }
 };
 
-export const deleteSession = async (
-  _id: string,
-): Promise<{
-  success: boolean;
-}> => {
+export const updateSession = async (
+  id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const movieId = formData.get("movieId");
+    const roomId = formData.get("roomId");
+    const dateTime = formData.get("dateTime");
+    const preferentialPrice = formData.get("preferentialPrice");
+    const generalPrice = formData.get("generalPrice");
+
+    console.log({ movieId, roomId, dateTime, preferentialPrice, generalPrice });
+
+    if (
+      !movieId ||
+      !roomId ||
+      !dateTime ||
+      !preferentialPrice ||
+      !generalPrice
+    ) {
+      throw new Error("Fields are required.");
+    }
+
+    const room: IRoom | null = await Room.findById(roomId);
+
+    if (!room) {
+      throw new Error("Room not found.");
+    }
+
+    const seatsPreferential = room.totalSeatsPreferential;
+    const seatsGeneral = room.totalSeatsGeneral;
+    const availableSeats = room.totalSeats;
+
+    const fields = {
+      movieId,
+      roomId,
+      dateTime: new Date(dateTime.toString() + ":00"),
+      seatsPreferential: getSeatsNumber(seatsPreferential),
+      availableSeatsPreferential: seatsPreferential,
+      preferentialPrice,
+      seatsGeneral: getSeatsNumber(seatsGeneral),
+      availableSeatsGeneral: seatsGeneral,
+      generalPrice,
+      availableSeats,
+    };
+    await Session.findByIdAndUpdate(id, fields);
+    revalidatePath("/dashboard/sessions");
+    return { status: "completed", success: true };
+  } catch (error: any) {
+    console.error(`Error in updateSession function: ${error.message}`);
+    return { status: "completed", success: false };
+  }
+};
+
+export const deleteSession = async (_id: string): Promise<FormState> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
-    return { success: true };
+    return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
-    return { success: false };
+    return { status: "completed", success: false };
   }
 };
 

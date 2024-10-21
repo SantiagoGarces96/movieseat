@@ -1,57 +1,45 @@
+import { IFormInputData } from "@/interfaces/Form";
 import Delete from "./Buttons/Delete";
 import Edit from "./Buttons/Edit";
-
-function Element({
-  data,
-  dataIndex,
-  deleteAction,
-}: {
-  data: { [key: string]: string };
-  dataIndex: number;
-  deleteAction: (id: string) => Promise<{
-    success: boolean;
-  }>;
-}) {
-  const id = data._id;
-  return (
-    <tr>
-      {Object.entries(data).map(([key, value], index) => {
-        return key === "_id" ? (
-          <th key={value + index}>{dataIndex}</th>
-        ) : (
-          <th key={value + index}>{value}</th>
-        );
-      })}
-      <th className="flex items-center justify-center">
-        <Delete id={id} action={deleteAction} />
-        <Edit id={id} />
-      </th>
-    </tr>
-  );
-}
+import { HandleDelete, HandleEdit } from "@/types/form";
 
 function Body({
   body,
   currentPage,
   limit,
-  handle,
+  editInputData,
+  deleteAction,
+  updateAction,
 }: {
   body: { [key: string]: string }[];
   currentPage: number;
   limit: number;
-  handle: (id: string) => Promise<{
-    success: boolean;
-  }>;
+  editInputData: IFormInputData[];
+  deleteAction: HandleDelete;
+  updateAction: HandleEdit;
 }) {
   return (
     <tbody>
       {body.map((data, index) => (
-        <Element
-          key={"element" + index}
-          data={data}
-          dataIndex={(currentPage - 1) * limit + index + 1}
-          deleteAction={handle}
-        />
+        <tr key={"element" + index}>
+          {Object.entries(data).map(([key, value]) => {
+            return key === "_id" ? (
+              <th key={Math.random()}>
+                {(currentPage - 1) * limit + index + 1}
+              </th>
+            ) : (
+              <th key={Math.random()}>{value}</th>
+            );
+          })}
+          <th className="flex items-center justify-center">
+            <Delete id={data._id} action={deleteAction} />
+            <Edit
+              id={data._id}
+              inputData={editInputData}
+              action={updateAction}
+            />
+          </th>
+        </tr>
       ))}
     </tbody>
   );
