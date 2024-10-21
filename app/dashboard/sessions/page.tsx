@@ -1,16 +1,11 @@
 import Alert from "@/app/ui/dashboard/Alert";
-import Form from "@/app/ui/dashboard/Form";
+import { CreateSession } from "@/app/ui/dashboard/sessions/buttons";
 import Table from "@/app/ui/dashboard/Table";
-import Create from "@/app/ui/dashboard/Table/components/Buttons/Create";
-import {
-  createSessionData,
-  editSessionData,
-} from "@/constants/dashboard/formData";
+import { editSessionData } from "@/constants/dashboard/formData";
 import { sessionsHeaders } from "@/constants/dashboard/headers";
 import { getAllMovies } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
 import {
-  createSession,
   deleteSession,
   getSessionById,
   getSessions,
@@ -41,7 +36,6 @@ export default async function SessionsPage({
   const session = await getSessionById(sessionId);
   const movies = await getAllMovies();
   const rooms = await getAllRooms();
-  const createInputData = createSessionData(movies, rooms, roomId);
   const editInputData = editSessionData(movies, rooms, session, roomId);
 
   return (
@@ -49,11 +43,7 @@ export default async function SessionsPage({
       <Alert />
       <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">Sesiones</h2>
-        <Create
-          label="Crear sesion"
-          createInputData={createInputData}
-          handleCreate={createSession}
-        />
+        <CreateSession />
       </div>
       <div className="p-5">
         <Table
