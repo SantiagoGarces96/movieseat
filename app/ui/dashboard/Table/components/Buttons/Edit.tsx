@@ -3,7 +3,7 @@ import useParams from "@/app/hooks/useParams";
 import { IFormInputData } from "@/interfaces/Form";
 import { useEffect, useState } from "react";
 import { HiOutlinePencil } from "react-icons/hi2";
-import Form from "../../../Form";
+import Form from "../../../form";
 import { FormHandle, HandleEdit } from "@/types/form";
 
 function Edit({

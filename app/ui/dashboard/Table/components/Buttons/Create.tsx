@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Form from "../../../Form";
+import Form from "../../../form";
 import { IFormInputData } from "@/interfaces/Form";
 
 function Create({

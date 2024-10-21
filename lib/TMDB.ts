@@ -15,10 +15,11 @@ import {
 import Session from "@/models/Session";
 import Room from "@/models/Room";
 import { IRoom } from "@/interfaces/room";
-import { ISeats, ISession } from "@/interfaces/session";
+import { ISession } from "@/interfaces/session";
 import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
 import { getSeatsNumber } from "@/utils/getSeatsNumber";
+import { sessionTimes } from "@/constants/sessions";
 
 export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
@@ -267,14 +268,6 @@ const createMovieSessions = async (
 
   if (status === MovieStatus.ARCHIVED || status === MovieStatus.UPCOMING)
     return [];
-
-  const sessionTimes = [
-    "10:00:00",
-    "13:00:00",
-    "16:00:00",
-    "19:00:00",
-    "22:00:00",
-  ];
 
   const existingSessions: ISession[] = await Session.find({
     dateTime: { $gte: today },

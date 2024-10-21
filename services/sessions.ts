@@ -14,6 +14,9 @@ import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 import { FormState } from "@/types/form";
+import { sessionTimes } from "@/constants/sessions";
+import { parseToTimeUTC } from "@/utils/parseDate";
+import { redirect } from "next/navigation";
 
 const options = [5, 10, 15, 20];
 
@@ -192,22 +195,24 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
 };
 
 export const createSession = async (
+  currentTime: string,
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
-    const dateTime = formData.get("dateTime");
+    const date = formData.get("date");
     const preferentialPrice = formData.get("preferentialPrice");
     const generalPrice = formData.get("generalPrice");
 
     if (
       !movieId ||
       !roomId ||
-      !dateTime ||
+      !date ||
       !preferentialPrice ||
-      !generalPrice
+      !generalPrice ||
+      !currentTime
     ) {
       throw new Error("Fields are required.");
     }
@@ -225,7 +230,7 @@ export const createSession = async (
     const fields = {
       movieId,
       roomId,
-      dateTime: new Date(dateTime.toString() + ":00"),
+      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -235,12 +240,13 @@ export const createSession = async (
       availableSeats,
     };
     await Session.create(fields);
-    revalidatePath("/dashboard/sessions");
-    return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
     return { status: "completed", success: false };
   }
+
+  revalidatePath("/dashboard/sessions");
+  redirect("/dashboard/sessions");
 };
 
 export const updateSession = async (
@@ -336,6 +342,67 @@ export const getAvailableSeatsByRoom = async (): Promise<
   } catch (error: any) {
     console.error(
       `Error in getAvailableSeatsByRoom function: ${error.message}`,
+    );
+    return [];
+  }
+};
+
+export const getAvailableSessionTimes = async (
+  selectedDate: string,
+  roomId: string,
+): Promise<string[]> => {
+  await dbConnect();
+  try {
+    const startOfDay = new Date(
+      Date.UTC(
+        new Date(selectedDate).getUTCFullYear(),
+        new Date(selectedDate).getUTCMonth(),
+        new Date(selectedDate).getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
+
+    const endOfDay = new Date(
+      Date.UTC(
+        new Date(selectedDate).getUTCFullYear(),
+        new Date(selectedDate).getUTCMonth(),
+        new Date(selectedDate).getUTCDate(),
+        23,
+        59,
+        59,
+        999,
+      ),
+    );
+
+    console.log(startOfDay);
+
+    const sessions = await Session.find({
+      dateTime: { $gte: startOfDay, $lte: endOfDay },
+      roomId,
+    }).select("dateTime");
+
+    const occupiedTimes = sessions.map((session) => {
+      return new Date(session.dateTime)
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0];
+    });
+
+    const availableTimes = sessionTimes.filter((time) => {
+      const sessionTime = parseToTimeUTC(time, selectedDate)
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0];
+      return !occupiedTimes.includes(sessionTime);
+    });
+
+    return availableTimes;
+  } catch (error: any) {
+    console.error(
+      `Error in getAvailableSessionTimes function: ${error.message}`,
     );
     return [];
   }
