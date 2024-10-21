@@ -2,6 +2,7 @@ import { IFormInputData } from "@/interfaces/Form";
 import Delete from "./Buttons/Delete";
 import Edit from "./Buttons/Edit";
 import { HandleDelete, HandleEdit } from "@/types/form";
+import { UpdateSession } from "../../sessions/buttons";
 
 function Body({
   body,
@@ -33,11 +34,7 @@ function Body({
           })}
           <th className="flex items-center justify-center">
             <Delete id={data._id} action={deleteAction} />
-            <Edit
-              id={data._id}
-              inputData={editInputData}
-              action={updateAction}
-            />
+            <UpdateSession id={data._id} />
           </th>
         </tr>
       ))}
