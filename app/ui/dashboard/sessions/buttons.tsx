@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HiOutlinePencil } from "react-icons/hi2";
 
 export function CreateSession() {
   return (
@@ -11,16 +12,16 @@ export function CreateSession() {
   );
 }
 
-// export function UpdateInvoice({ id }: { id: string }) {
-//   return (
-//     <Link
-//       href={`/dashboard/invoices/${id}/edit`}
-//       className="rounded-md border p-2 hover:bg-gray-100"
-//     >
-//       <PencilIcon className="w-5" />
-//     </Link>
-//   );
-// }
+export function UpdateSession({ id }: { id: string }) {
+  return (
+    <Link
+      href={`/dashboard/sessions/${id}`}
+      className="btn btn-circle btn-ghost btn-sm"
+    >
+      <HiOutlinePencil className="h-4 w-4" />
+    </Link>
+  );
+}
 
 // export function DeleteInvoice({ id }: { id: string }) {
 //   const deleteInvoiceWithId = deleteInvoice.bind(null, id);

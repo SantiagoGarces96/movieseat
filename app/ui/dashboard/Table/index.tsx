@@ -8,6 +8,8 @@ import Body from "./components/Body";
 import { IFormInputData } from "@/interfaces/Form";
 import { HandleDelete, HandleEdit } from "@/types/form";
 
+// TODO only show sessions after today
+
 function Table({
   headers,
   body,
@@ -17,7 +19,6 @@ function Table({
   totalPages,
   editInputData,
   handleDelete,
-  updateAction,
 }: {
   headers: { [key: string]: string }[];
   body: { [key: string]: string }[];
@@ -27,7 +28,6 @@ function Table({
   totalPages: number;
   editInputData: IFormInputData[];
   handleDelete: HandleDelete;
-  updateAction: HandleEdit;
 }) {
   return (
     <div className="h-full overflow-x-auto">
@@ -43,7 +43,6 @@ function Table({
           limit={parseInt(limit)}
           deleteAction={handleDelete}
           editInputData={editInputData}
-          updateAction={updateAction}
         />
       </table>
       <div className="flex items-center justify-between px-1 py-5">

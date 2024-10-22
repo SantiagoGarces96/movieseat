@@ -55,7 +55,6 @@ export default async function SessionsPage({
           totalPages={sessions.totalPages}
           handleDelete={deleteSession}
           editInputData={editInputData}
-          updateAction={updateSession}
         />
       </div>
     </section>
