@@ -250,25 +250,28 @@ export const createSession = async (
 };
 
 export const updateSession = async (
-  id: string,
+  {
+    id,
+    movieId,
+    currentTime,
+  }: { id: string; movieId: string; currentTime: string },
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
   try {
-    const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
-    const dateTime = formData.get("dateTime");
+    const date = formData.get("date");
     const preferentialPrice = formData.get("preferentialPrice");
     const generalPrice = formData.get("generalPrice");
-
-    console.log({ movieId, roomId, dateTime, preferentialPrice, generalPrice });
 
     if (
       !movieId ||
       !roomId ||
-      !dateTime ||
+      !date ||
       !preferentialPrice ||
-      !generalPrice
+      !generalPrice ||
+      !currentTime ||
+      !id
     ) {
       throw new Error("Fields are required.");
     }
@@ -286,7 +289,7 @@ export const updateSession = async (
     const fields = {
       movieId,
       roomId,
-      dateTime: new Date(dateTime.toString() + ":00"),
+      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -296,12 +299,12 @@ export const updateSession = async (
       availableSeats,
     };
     await Session.findByIdAndUpdate(id, fields);
-    revalidatePath("/dashboard/sessions");
-    return { status: "completed", success: true };
   } catch (error: any) {
     console.error(`Error in updateSession function: ${error.message}`);
     return { status: "completed", success: false };
   }
+  revalidatePath("/dashboard/sessions");
+  redirect("/dashboard/sessions");
 };
 
 export const deleteSession = async (_id: string): Promise<FormState> => {
@@ -376,8 +379,6 @@ export const getAvailableSessionTimes = async (
         999,
       ),
     );
-
-    console.log(startOfDay);
 
     const sessions = await Session.find({
       dateTime: { $gte: startOfDay, $lte: endOfDay },
