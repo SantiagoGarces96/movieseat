@@ -1,18 +1,16 @@
 "use client";
 import { IRoom } from "@/interfaces/room";
-import {
-  createSession,
-  getAvailableSessionTimes,
-  updateSession,
-} from "@/services/sessions";
+import { getAvailableSessionTimes, updateSession } from "@/services/sessions";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../Button";
-import { FormState } from "@/types/form";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
 import { ISession } from "@/interfaces/session";
 import { IMovie } from "@/interfaces/movie";
+import { initialState } from "@/constants/dashboard/form";
+import useAlert from "@/app/hooks/useAlert";
+import Alert from "../Alert";
 
 export default function SessionEditForm({
   session,
@@ -39,7 +37,6 @@ export default function SessionEditForm({
     useState<string[]>(availableSessions);
   const [currentTime, setCurrentTime] = useState<string>(time.split(".")[0]);
 
-  const initialState: FormState = { status: "pending", success: false };
   const [state, formAction] = useFormState(
     updateSession.bind(null, {
       id: session._id.toString(),
@@ -48,6 +45,8 @@ export default function SessionEditForm({
     }),
     initialState,
   );
+
+  const { showAlert } = useAlert(state);
 
   const handleRoom = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const currentRoomId = e.target.value;
@@ -80,6 +79,7 @@ export default function SessionEditForm({
       action={formAction}
       className="grid grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16"
     >
+      {showAlert && <Alert {...state} />}
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
         <div className="label">
           <span className="label-text">Película</span>

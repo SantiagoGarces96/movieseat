@@ -3,13 +3,13 @@ import { IMovie } from "@/interfaces/movie";
 import { IRoom } from "@/interfaces/room";
 import { createSession, getAvailableSessionTimes } from "@/services/sessions";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../Button";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
 import Alert from "../Alert";
 import { initialState } from "@/constants/dashboard/form";
-import { FormStatus } from "@/types/form";
+import useAlert from "@/app/hooks/useAlert";
 
 export default function SessionCreateForm({
   movies,
@@ -31,12 +31,13 @@ export default function SessionCreateForm({
     [],
   );
   const [currentTime, setCurrentTime] = useState<string>("");
-  const [showAlert, setShowAlert] = useState(false);
 
   const [state, formAction] = useFormState(
     createSession.bind(null, currentTime),
     initialState,
   );
+
+  const { showAlert } = useAlert(state);
 
   const handleRoom = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const currentRoomId = e.target.value;
@@ -61,18 +62,6 @@ export default function SessionCreateForm({
     setAvailableSessionTimes(availableSessions);
     setNotAvailableTimes(!!date && availableSessions.length === 0);
   };
-
-  useEffect(() => {
-    if (state.status !== FormStatus.PENDING) {
-      setShowAlert(true);
-
-      const timer = setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [state]);
 
   return (
     <form
