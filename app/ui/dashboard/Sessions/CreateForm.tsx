@@ -3,11 +3,13 @@ import { IMovie } from "@/interfaces/movie";
 import { IRoom } from "@/interfaces/room";
 import { createSession, getAvailableSessionTimes } from "@/services/sessions";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../Button";
-import { FormState } from "@/types/form";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
+import Alert from "../Alert";
+import { initialState } from "@/constants/dashboard/form";
+import { FormStatus } from "@/types/form";
 
 export default function SessionCreateForm({
   movies,
@@ -29,8 +31,8 @@ export default function SessionCreateForm({
     [],
   );
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [showAlert, setShowAlert] = useState(false);
 
-  const initialState: FormState = { status: "pending", success: false };
   const [state, formAction] = useFormState(
     createSession.bind(null, currentTime),
     initialState,
@@ -60,11 +62,24 @@ export default function SessionCreateForm({
     setNotAvailableTimes(!!date && availableSessions.length === 0);
   };
 
+  useEffect(() => {
+    if (state.status !== FormStatus.PENDING) {
+      setShowAlert(true);
+
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [state]);
+
   return (
     <form
       action={formAction}
       className="grid grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16"
     >
+      {showAlert && <Alert {...state} />}
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
         <div className="label">
           <span className="label-text">Película</span>
