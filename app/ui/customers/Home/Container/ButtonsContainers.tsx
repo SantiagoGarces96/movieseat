@@ -44,7 +44,7 @@ const PaginationButtons: React.FC<PaginationButtonsProps> = ({
         <Link
           href={generateHref(newSearchParamsPrev)}
           scroll={false}
-          className="rounded-full bg-gray-800 p-2 text-white"
+          className="rounded-md bg-gray-800 p-2 text-white"
         >
           &lt;
         </Link>
@@ -54,7 +54,7 @@ const PaginationButtons: React.FC<PaginationButtonsProps> = ({
         <Link
           href={generateHref(newSearchParamsNext)}
           scroll={false}
-          className="rounded-full bg-gray-800 p-2 text-white"
+          className="rounded-md bg-gray-800 p-2 text-white"
         >
           &gt;
         </Link>
