@@ -1,4 +1,4 @@
-import SessionCreateForm from "@/app/ui/dashboard/sessions/create-form";
+import SessionCreateForm from "@/app/ui/dashboard/Sessions/CreateForm";
 import { getAllMovies } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
 

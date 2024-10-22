@@ -7,7 +7,7 @@ import {
 } from "@/services/sessions";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button } from "../button";
+import { Button } from "../Button";
 import { FormState } from "@/types/form";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
