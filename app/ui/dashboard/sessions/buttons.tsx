@@ -1,5 +1,6 @@
+import { HiOutlineTrash, HiOutlinePencil } from "react-icons/hi2";
 import Link from "next/link";
-import { HiOutlinePencil } from "react-icons/hi2";
+import { deleteSession } from "@/services/sessions";
 
 export function CreateSession() {
   return (
@@ -23,15 +24,14 @@ export function UpdateSession({ id }: { id: string }) {
   );
 }
 
-// export function DeleteInvoice({ id }: { id: string }) {
-//   const deleteInvoiceWithId = deleteInvoice.bind(null, id);
+export function DeleteSession({ id }: { id: string }) {
+  const deleteSessionWithId = deleteSession.bind(null, id);
 
-//   return (
-//     <form action={deleteInvoiceWithId}>
-//       <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
-//         <span className="sr-only">Delete</span>
-//         <TrashIcon className="w-5" />
-//       </button>
-//     </form>
-//   );
-// }
+  return (
+    <form action={deleteSessionWithId}>
+      <button type="submit" className="btn btn-circle btn-ghost btn-sm">
+        <HiOutlineTrash className="h-4 w-4" />
+      </button>
+    </form>
+  );
+}
