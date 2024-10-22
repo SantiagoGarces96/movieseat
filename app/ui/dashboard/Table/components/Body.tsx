@@ -10,14 +10,12 @@ function Body({
   limit,
   editInputData,
   deleteAction,
-  updateAction,
 }: {
   body: { [key: string]: string }[];
   currentPage: number;
   limit: number;
   editInputData: IFormInputData[];
   deleteAction: HandleDelete;
-  updateAction: HandleEdit;
 }) {
   return (
     <tbody>
