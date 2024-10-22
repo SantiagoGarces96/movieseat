@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const TechnologiesSection = () => {
   return (
-    <div className="mx-auto w-2/3 p-6">
+    <div className="mx-auto p-6 sm:w-full hd:w-3/4 fhd:w-2/3">
       <h1 className="mb-8 text-center text-4xl font-bold">Tecnologías</h1>
 
       {/* 2D Technology */}
@@ -22,7 +22,7 @@ const TechnologiesSection = () => {
             src="https://decoratel.com/wp-content/uploads/2020/01/elevadores-infantiles-para-ver-toy-story.jpg"
             alt="2D Cinema"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "cover" }}
             className="rounded-t-lg"
           />
         </div>
@@ -35,7 +35,7 @@ const TechnologiesSection = () => {
             src="https://media.airedesantafe.com.ar/p/6258ddf0867eec54cfa5d44f79b79b92/adjuntos/268/imagenes/003/690/0003690342/1200x0/smart/imagepng.png"
             alt="3D Cinema"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "cover" }}
             className="rounded-t-lg"
           />
         </div>
@@ -68,7 +68,7 @@ const TechnologiesSection = () => {
             src="https://images.squarespace-cdn.com/content/v1/581bd18003596e16cc905cad/5b8a2d7a-6f9f-4b02-bec7-8fab0c40ae33/more-about-imax-news.jpg"
             alt="IMAX Cinema"
             fill
-            style={{ objectFit: "fill" }}
+            style={{ objectFit: "cover" }}
             className="rounded-t-lg"
           />
         </div>
