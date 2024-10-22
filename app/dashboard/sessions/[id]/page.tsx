@@ -1,4 +1,4 @@
-import SessionEditForm from "@/app/ui/dashboard/sessions/edit-form";
+import SessionEditForm from "@/app/ui/dashboard/Sessions/EditForm";
 import { getMovieById } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
 import { getAvailableSessionTimes, getSessionById } from "@/services/sessions";

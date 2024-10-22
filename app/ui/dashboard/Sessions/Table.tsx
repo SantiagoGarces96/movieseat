@@ -1,10 +1,10 @@
 import { sessionsHeaders } from "@/constants/dashboard/headers";
-import ResultCount from "../result-count";
-import ResultSearch from "../result-search";
-import SortableHeader from "../sortable-header";
+import ResultCount from "../ResultCount";
+import ResultSearch from "../ResultSearch";
+import SortableHeader from "../SortableHeader";
 import { getSessions } from "@/services/sessions";
-import { DeleteSession, UpdateSession } from "./buttons";
-import ResultPagination from "../result-pagination";
+import { DeleteSession, UpdateSession } from "./Buttons";
+import ResultPagination from "../ResultPagination";
 
 export default async function SessionsTable({
   page,

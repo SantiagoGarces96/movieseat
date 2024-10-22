@@ -1,6 +1,6 @@
 import Alert from "@/app/ui/dashboard/Alert";
-import { CreateSession } from "@/app/ui/dashboard/sessions/buttons";
-import SessionsTable from "@/app/ui/dashboard/sessions/table";
+import { CreateSession } from "@/app/ui/dashboard/Sessions/Buttons";
+import SessionsTable from "@/app/ui/dashboard/Sessions/Table";
 import { CountResultOpt } from "@/constants/dashboard/table";
 
 export default async function SessionsPage({
