@@ -2,9 +2,14 @@ import PreSaleUpcomingBox from "@/app/ui/customers/Home/Container/ContainerUpcom
 import { getMovies } from "@/services/movies";
 import Box from "../ui/customers/Home/Container/ContainerBillboard";
 import { MovieStatus } from "@/types/movie";
+import CarouselNavigation from "@/app/ui/customers/Home/carousel/CarouselNavigation";
 
 interface PageProps {
-  searchParams: { billboardPage?: string; upcomingPage?: string };
+  searchParams: {
+    billboardPage?: string;
+    upcomingPage?: string;
+    slide?: string;
+  };
 }
 
 export default async function Page({ searchParams }: PageProps) {
@@ -15,10 +20,10 @@ export default async function Page({ searchParams }: PageProps) {
   const upcomingMovies = await getMovies(MovieStatus.UPCOMING, upcomingPage);
 
   return (
-    <div className="p-4">
-      <h2 className="my-6 text-2xl font-bold capitalize">
-        Estrenos / Cartelera
-      </h2>
+    <div className="mx-auto w-full">
+      <div className="pb-6">
+        <CarouselNavigation searchParams={searchParams} />
+      </div>
       <Box
         movies={billboardMovies.results}
         currentPage={billboardMovies.page}
@@ -26,9 +31,6 @@ export default async function Page({ searchParams }: PageProps) {
         type={MovieStatus.BILLBOARD}
         searchParams={searchParams}
       />
-      <h2 className="my-6 text-2xl font-bold capitalize">
-        Preventa / Próximo Estreno
-      </h2>
       <PreSaleUpcomingBox
         movies={upcomingMovies.results}
         currentPage={upcomingMovies.page}

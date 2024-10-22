@@ -9,6 +9,8 @@ const nextConfig = {
       { protocol: "https", hostname: "media.airedesantafe.com.ar" },
       { protocol: "https", hostname: "decoratel.com" },
       { protocol: "https", hostname: "images.squarespace-cdn.com" },
+      { protocol: "https", hostname: "assets.cinemark-core.com" },
+
     ],
   },
 };
