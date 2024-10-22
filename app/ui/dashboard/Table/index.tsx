@@ -6,9 +6,7 @@ import Count from "./components/Count";
 import Header from "./components/Header";
 import Body from "./components/Body";
 import { IFormInputData } from "@/interfaces/Form";
-import { HandleDelete, HandleEdit } from "@/types/form";
-
-// TODO only show sessions after today
+import { HandleDelete } from "@/types/form";
 
 function Table({
   headers,

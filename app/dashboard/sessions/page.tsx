@@ -1,42 +1,18 @@
 import Alert from "@/app/ui/dashboard/Alert";
 import { CreateSession } from "@/app/ui/dashboard/sessions/buttons";
-import Table from "@/app/ui/dashboard/Table";
-import { editSessionData } from "@/constants/dashboard/formData";
-import { sessionsHeaders } from "@/constants/dashboard/headers";
-import { getAllMovies } from "@/services/movies";
-import { getAllRooms } from "@/services/rooms";
-import {
-  deleteSession,
-  getSessionById,
-  getSessions,
-  updateSession,
-} from "@/services/sessions";
+import SessionsTable from "@/app/ui/dashboard/sessions/table";
+import { CountResultOpt } from "@/constants/dashboard/table";
 
 export default async function SessionsPage({
   searchParams,
 }: {
-  searchParams?: {
-    page?: string;
-    limit?: string;
-    tableQuery?: string;
-    sortBy?: string;
-    order?: string;
-    roomId?: string;
-    sessionId?: string;
-  };
+  searchParams: { [key: string]: string | undefined };
 }) {
-  const page = searchParams?.page || " 1";
-  const limit = searchParams?.limit || "5";
-  const query = searchParams?.tableQuery || "";
-  const sortBy = searchParams?.sortBy || "createdAt";
-  const order = searchParams?.order || "";
-  const roomId = searchParams?.roomId || "";
-  const sessionId = searchParams?.sessionId || "";
-  const sessions = await getSessions(page, limit, query, sortBy, order);
-  const session = await getSessionById(sessionId);
-  const movies = await getAllMovies();
-  const rooms = await getAllRooms();
-  const editInputData = editSessionData(movies, rooms, session, roomId);
+  const page = searchParams.page || " 1";
+  const limit = searchParams.limit || CountResultOpt[1].toString();
+  const query = searchParams.tableQuery || "";
+  const sortBy = searchParams.sortBy || "createdAt";
+  const order = searchParams.order || "";
 
   return (
     <section className="h-[100vh] w-full divide-y">
@@ -46,15 +22,12 @@ export default async function SessionsPage({
         <CreateSession />
       </div>
       <div className="p-5">
-        <Table
-          headers={sessionsHeaders}
-          body={sessions.results}
+        <SessionsTable
+          page={page}
           limit={limit}
-          totalResults={sessions.totalResults}
-          page={sessions.page || 1}
-          totalPages={sessions.totalPages}
-          handleDelete={deleteSession}
-          editInputData={editInputData}
+          query={query}
+          sortBy={sortBy}
+          order={order}
         />
       </div>
     </section>

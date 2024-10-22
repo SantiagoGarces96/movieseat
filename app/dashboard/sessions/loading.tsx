@@ -1,5 +1,5 @@
 import React from "react";
-
+// TODO create skeleton
 export default function loading({}) {
   return (
     <section className="h-[100vh] w-full divide-y">

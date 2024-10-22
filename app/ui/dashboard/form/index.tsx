@@ -7,8 +7,6 @@ import Submit from "./components/Submit";
 import { IFormInputData } from "@/interfaces/Form";
 import { FormHandle } from "@/types/form";
 
-// TODO validate available Date by each session depends of date.
-
 export default function Form({
   title,
   modalName,

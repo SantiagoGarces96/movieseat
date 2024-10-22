@@ -17,18 +17,17 @@ import { FormState } from "@/types/form";
 import { sessionTimes } from "@/constants/sessions";
 import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
-
-const options = [5, 10, 15, 20];
+import { CountResultOpt } from "@/constants/dashboard/table";
 
 export const getSessions = async (
   page: string = "1",
-  limit: string = "5",
+  limit: string = CountResultOpt[1].toString(),
   query: string = "",
   sortBy: string = "createdAt",
   order: string = "",
 ): Promise<ISessionResponse> => {
   await dbConnect();
-  const pageSize = options.reduce((prev, curr) =>
+  const pageSize = CountResultOpt.reduce((prev, curr) =>
     Math.abs(curr - parseInt(limit)) < Math.abs(prev - parseInt(limit))
       ? curr
       : prev,
