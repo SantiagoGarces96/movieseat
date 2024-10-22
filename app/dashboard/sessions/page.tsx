@@ -1,4 +1,3 @@
-import Alert from "@/app/ui/dashboard/Alert";
 import { CreateSession } from "@/app/ui/dashboard/Sessions/Buttons";
 import SessionsTable from "@/app/ui/dashboard/Sessions/Table";
 import { CountResultOpt } from "@/constants/dashboard/table";
@@ -13,10 +12,8 @@ export default async function SessionsPage({
   const query = searchParams.tableQuery || "";
   const sortBy = searchParams.sortBy || "createdAt";
   const order = searchParams.order || "";
-
   return (
     <section className="h-[100vh] w-full divide-y">
-      <Alert />
       <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">Sesiones</h2>
         <CreateSession />
