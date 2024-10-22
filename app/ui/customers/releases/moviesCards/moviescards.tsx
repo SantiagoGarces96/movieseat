@@ -3,7 +3,6 @@ import MovieCard from "@/app/ui/customers/card/MovieCard";
 import MobileMovieCard from "@/app/ui/customers/card/MobileMovieCard";
 import Button from "@/app/ui/customers/pagination/pagination";
 import { IMovie } from "@/interfaces/movie";
-import Link from "next/link";
 
 interface PaginatedMoviesProps {
   movies: IMovie[];
@@ -25,7 +24,6 @@ const PaginatedMovies: React.FC<PaginatedMoviesProps> = ({
       <h1 className="mb-6 flex justify-center text-4xl font-bold capitalize">
         Cartelera
       </h1>
-      {/* Versión para pantallas grandes (HD, FHD, 2K) */}
       <div className="hidden flex-wrap justify-center gap-6 p-8 md:flex">
         {movies.map((movie) => (
           <div
@@ -45,7 +43,6 @@ const PaginatedMovies: React.FC<PaginatedMoviesProps> = ({
         ))}
       </div>
 
-      {/* Versión para pantallas pequeñas y medianas (SM y XS) */}
       <div className="block w-full md:hidden md:p-0">
         {movies.map((movie) => (
           <div key={movie._id} className="mb-4">
