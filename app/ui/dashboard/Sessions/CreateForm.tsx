@@ -5,9 +5,11 @@ import { createSession, getAvailableSessionTimes } from "@/services/sessions";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../Button";
-import { FormState } from "@/types/form";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
+import Alert from "../Alert";
+import { initialState } from "@/constants/dashboard/form";
+import useAlert from "@/app/hooks/useAlert";
 
 export default function SessionCreateForm({
   movies,
@@ -30,11 +32,12 @@ export default function SessionCreateForm({
   );
   const [currentTime, setCurrentTime] = useState<string>("");
 
-  const initialState: FormState = { status: "pending", success: false };
   const [state, formAction] = useFormState(
     createSession.bind(null, currentTime),
     initialState,
   );
+
+  const { showAlert } = useAlert(state);
 
   const handleRoom = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const currentRoomId = e.target.value;
@@ -65,6 +68,7 @@ export default function SessionCreateForm({
       action={formAction}
       className="grid grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16"
     >
+      {showAlert && <Alert {...state} />}
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
         <div className="label">
           <span className="label-text">Película</span>

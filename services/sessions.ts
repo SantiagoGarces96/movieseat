@@ -13,7 +13,7 @@ import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
-import { FormState } from "@/types/form";
+import { FormState, FormStatus } from "@/types/form";
 import { sessionTimes } from "@/constants/sessions";
 import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
@@ -241,7 +241,11 @@ export const createSession = async (
     await Session.create(fields);
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
-    return { status: "completed", success: false };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
   }
 
   revalidatePath("/dashboard/sessions");
@@ -300,20 +304,36 @@ export const updateSession = async (
     await Session.findByIdAndUpdate(id, fields);
   } catch (error: any) {
     console.error(`Error in updateSession function: ${error.message}`);
-    return { status: "completed", success: false };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
   }
   revalidatePath("/dashboard/sessions");
   redirect("/dashboard/sessions");
 };
 
-export const deleteSession = async (_id: string): Promise<FormState> => {
+export const deleteSession = async (
+  _id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
-    return { status: "completed", success: true };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Sessión eliminada con exito.",
+    };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
-    return { status: "completed", success: false };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
   }
 };
 
