@@ -314,7 +314,11 @@ export const updateSession = async (
   redirect("/dashboard/sessions");
 };
 
-export const deleteSession = async (_id: string): Promise<FormState> => {
+export const deleteSession = async (
+  _id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
