@@ -22,10 +22,13 @@ export default async function SessionsTable({
   const sessions = await getSessions(page, limit, query, sortBy, order);
   const current = parseInt(limit) * parseInt(page);
   return (
-    <div className="h-full overflow-x-auto">
+    <div className="h-full">
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
-        <ResultSearch placeholder="Nombre de la pelicula" />
+        <ResultSearch
+          placeholder="Ingrese su busqueda"
+          tooltipText="Puedes buscar por: Nombre de la película."
+        />
       </div>
       <table className="table table-xs">
         <thead>

@@ -1,10 +1,6 @@
 "use server";
 import { IRoom } from "@/interfaces/room";
-import {
-  IAvailableSeatsByRoom,
-  ISession,
-  ISessionResponse,
-} from "@/interfaces/session";
+import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import Room from "@/models/Room";
@@ -18,6 +14,7 @@ import { sessionTimes } from "@/constants/sessions";
 import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
 import { CountResultOpt } from "@/constants/dashboard/table";
+import { IDashboardResponse } from "@/interfaces/dasboard";
 
 export const getSessions = async (
   page: string = "1",
@@ -25,7 +22,7 @@ export const getSessions = async (
   query: string = "",
   sortBy: string = "createdAt",
   order: string = "",
-): Promise<ISessionResponse> => {
+): Promise<IDashboardResponse> => {
   await dbConnect();
   const pageSize = CountResultOpt.reduce((prev, curr) =>
     Math.abs(curr - parseInt(limit)) < Math.abs(prev - parseInt(limit))
@@ -33,12 +30,13 @@ export const getSessions = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
+  const clearQuery = query.trim();
 
   try {
     const totalResults = await Session.countDocuments({
       movieId: {
         $in: await Movie.find({
-          title: { $regex: query, $options: "i" },
+          title: { $regex: clearQuery, $options: "i" },
         }).select("_id"),
       },
     });
@@ -78,7 +76,7 @@ export const getSessions = async (
       },
       {
         $match: {
-          "movie.title": { $regex: query, $options: "i" },
+          "movie.title": { $regex: clearQuery, $options: "i" },
         },
       },
       {

@@ -4,9 +4,15 @@ import { HiMiniXMark } from "react-icons/hi2";
 import { useDebouncedCallback } from "use-debounce";
 import useParams from "@/app/hooks/useParams";
 
+interface ResultSearchProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  tooltipText: string;
+}
+
 export default function ResultSearch({
+  tooltipText,
   ...rest
-}: React.InputHTMLAttributes<HTMLInputElement>) {
+}: ResultSearchProps) {
   const { updateParam, deleteParam } = useParams();
   const [value, setValue] = useState("");
 
@@ -30,11 +36,16 @@ export default function ResultSearch({
   };
 
   return (
-    <label className="input input-sm input-bordered flex items-center gap-2">
-      <input {...rest} type="text" onChange={handleChange} value={value} />
-      {!!value && (
-        <HiMiniXMark className="cursor-pointer" onClick={handleClearInput} />
-      )}
-    </label>
+    <div
+      className="!z-50 hover:tooltip hover:tooltip-accent"
+      data-tip={tooltipText}
+    >
+      <label className="input input-sm input-bordered flex items-center gap-2">
+        <input {...rest} type="text" onChange={handleChange} value={value} />
+        {!!value && (
+          <HiMiniXMark className="cursor-pointer" onClick={handleClearInput} />
+        )}
+      </label>
+    </div>
   );
 }
