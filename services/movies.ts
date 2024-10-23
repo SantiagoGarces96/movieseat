@@ -1,5 +1,8 @@
 "use server";
-import { IResultDataDashboard } from "@/interfaces/dasboard";
+import {
+  IDashboardResponse,
+  IResultDataDashboard,
+} from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
 import {
   IMovie,
@@ -9,6 +12,8 @@ import {
 } from "@/interfaces/movie";
 import Movie from "@/models/Movie";
 import { MovieStatus } from "@/types/movie";
+import { CountResultOpt } from "@/constants/dashboard/table";
+import { SortOrder } from "mongoose";
 
 export const getMovies = async (
   type?: MovieStatus,
@@ -59,6 +64,137 @@ export const getMovies = async (
     };
   } catch (error: any) {
     console.error(`Error in getMovies function: ${error.message}`);
+    return {
+      results: [],
+      page: 1,
+      totalPages: 0,
+      totalResults: 0,
+    };
+  }
+};
+
+export const getMoviesInDashboard = async (
+  page: string = "1",
+  limit: string = CountResultOpt[1].toString(),
+  query: string = "",
+  sortBy: string = "createdAt",
+  order: string = "",
+): Promise<IDashboardResponse> => {
+  await dbConnect();
+  const pageSize = CountResultOpt.reduce((prev, curr) =>
+    Math.abs(curr - parseInt(limit)) < Math.abs(prev - parseInt(limit))
+      ? curr
+      : prev,
+  );
+  const orderType: SortOrder = order === "desc" ? -1 : 1;
+  const clearQuery = query.trim();
+
+  try {
+    const totalResults = await Movie.countDocuments({
+      $or: [
+        { title: { $regex: clearQuery, $options: "i" } },
+        { genre: { $regex: clearQuery, $options: "i" } },
+        { director: { $regex: clearQuery, $options: "i" } },
+        { status: { $regex: clearQuery, $options: "i" } },
+      ],
+    });
+
+    const totalPages = Math.ceil(totalResults / pageSize);
+
+    const pageNumber =
+      parseInt(page) < 1
+        ? 1
+        : parseInt(page) > totalPages
+          ? totalPages
+          : parseInt(page);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const results = await Movie.aggregate([
+      {
+        $match: {
+          $or: [
+            { title: { $regex: clearQuery, $options: "i" } },
+            { genre: { $regex: clearQuery, $options: "i" } },
+            { director: { $regex: clearQuery, $options: "i" } },
+            { status: { $regex: clearQuery, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $sort: {
+          [sortBy]: orderType,
+        },
+      },
+      {
+        $skip: skip < 0 ? 0 : skip,
+      },
+      {
+        $limit: pageSize,
+      },
+      {
+        $project: {
+          _id: { $toString: "$_id" },
+          titleAndPoster: {
+            $concat: [
+              { $toString: "$title" },
+              "|",
+              { $toString: "$poster" },
+              "|",
+              {
+                $reduce: {
+                  input: "$genre",
+                  initialValue: "",
+                  in: {
+                    $cond: {
+                      if: { $eq: ["$$value", ""] },
+                      then: "$$this",
+                      else: { $concat: ["$$value", " - ", "$$this"] },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          description: { $toString: "$description" },
+          status: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$status", "billboard"] }, then: "Cartelera" },
+                { case: { $eq: ["$status", "pre-sale"] }, then: "Preventa" },
+                {
+                  case: { $eq: ["$status", "upcoming"] },
+                  then: "Próximamente",
+                },
+              ],
+              default: "Archivada",
+            },
+          },
+          director: { $toString: "$director" },
+          duration: { $concat: [{ $toString: "$duration" }, " Min."] },
+          releaseDate: {
+            $dateToString: {
+              format: "%Y-%m-%d %H:%M:%S",
+              date: "$releaseDate",
+            },
+          },
+          createdAt: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          updatedAt: {
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
+          },
+        },
+      },
+    ]);
+
+    return {
+      results,
+      page: pageNumber,
+      totalPages,
+      totalResults,
+    };
+  } catch (error: any) {
+    console.error(`Error in getMoviesInDashboard function: ${error.message}`);
     return {
       results: [],
       page: 1,
