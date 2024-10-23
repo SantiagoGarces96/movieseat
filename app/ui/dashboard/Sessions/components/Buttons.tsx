@@ -5,9 +5,9 @@ import { deleteSession } from "@/services/sessions";
 import { useFormState } from "react-dom";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
-import Alert from "../Alert";
+import Alert from "../../Alert";
 
-export function CreateSession() {
+export function CreateSessionButton() {
   return (
     <Link
       href="/dashboard/sessions/create"
@@ -18,7 +18,7 @@ export function CreateSession() {
   );
 }
 
-export function UpdateSession({ id }: { id: string }) {
+export function UpdateSessionButton({ id }: { id: string }) {
   return (
     <Link
       href={`/dashboard/sessions/${id}`}
@@ -29,7 +29,7 @@ export function UpdateSession({ id }: { id: string }) {
   );
 }
 
-export function DeleteSession({ id }: { id: string }) {
+export function DeleteSessionButton({ id }: { id: string }) {
   const deleteSessionWithId = deleteSession.bind(null, id);
   const [state, formAction] = useFormState(deleteSessionWithId, initialState);
   const { showAlert } = useAlert(state);

@@ -2,7 +2,7 @@ export default function loading() {
   return (
     <section className="h-[100vh] w-full divide-y">
       <div className="flex items-center justify-between p-5">
-        <h2 className="text-3xl font-bold">Crear sesión</h2>
+        <div className="skeleton h-9 w-48 rounded-md" />
       </div>
       <div className="flex h-full w-full items-start justify-center p-8">
         <div className="grid w-full max-w-[32rem] grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:max-w-[65rem] lg:px-10 xl:px-16">
