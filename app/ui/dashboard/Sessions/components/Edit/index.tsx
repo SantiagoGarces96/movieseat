@@ -22,7 +22,7 @@ export default async function EditSession({ id }: { id: string }) {
   );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Editar sesión">
       <SessionEditForm
         session={JSON.parse(JSON.stringify(session))}
         rooms={JSON.parse(JSON.stringify(rooms))}
