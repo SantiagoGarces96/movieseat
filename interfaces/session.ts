@@ -41,10 +41,3 @@ export interface IAvailableSeatsByRoom {
   _id: string;
   availableSeats: number;
 }
-
-export interface ISessionResponse {
-  results: { [key: string]: string }[];
-  page: number;
-  totalPages: number;
-  totalResults: number;
-}
