@@ -7,14 +7,15 @@ import { notFound } from "next/navigation";
 export default async function CreateSession({
   params,
 }: {
-  params: { id: string };
+  params: { section: string; id: string };
 }) {
-  const sessionId = params.id;
-  const session = await getSessionById(sessionId);
+  const { section, id } = params;
+  const session = await getSessionById(id);
 
   if (!session) {
     notFound();
   }
+
   const rooms = await getAllRooms();
   const movie = await getMovieById(session?.movieId.toString());
   const [date, time] = new Date(session.dateTime).toISOString().split("T");

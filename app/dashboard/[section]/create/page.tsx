@@ -2,7 +2,12 @@ import SessionCreateForm from "@/app/ui/dashboard/Sessions/CreateForm";
 import { getAllMovies } from "@/services/movies";
 import { getAllRooms } from "@/services/rooms";
 
-export default async function CreateSession() {
+export default async function CreateSession({
+  params,
+}: {
+  params: { section: string };
+}) {
+  const { section } = params;
   const movies = JSON.parse(JSON.stringify(await getAllMovies()));
   const rooms = JSON.parse(JSON.stringify(await getAllRooms()));
   return (
