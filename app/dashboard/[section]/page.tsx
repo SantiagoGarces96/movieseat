@@ -2,7 +2,7 @@ import SessionsPage from "@/app/ui/dashboard/Sessions";
 import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
 
-export default async function page({
+export default async function Page({
   params,
   searchParams,
 }: {
