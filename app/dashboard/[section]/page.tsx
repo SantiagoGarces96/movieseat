@@ -15,5 +15,27 @@ export default async function Page({
   if (!(section in AvailablesSections)) {
     return notFound();
   }
-  return <SessionsPage searchParams={searchParams} />;
+
+  switch (section.toLowerCase()) {
+    case AvailablesSections.SESSIONS:
+      return <SessionsPage searchParams={searchParams} />;
+
+    case AvailablesSections.MOVIES:
+    // return <MoviesPage searchParams={searchParams} />;
+
+    case AvailablesSections.ROOMS:
+    // return <RoomsPage searchParams={searchParams} />;
+
+    case AvailablesSections.FOOD:
+    // return <FoodPage searchParams={searchParams} />;
+
+    case AvailablesSections.USERS:
+    // return <UsersPage searchParams={searchParams} />;
+
+    case AvailablesSections.TICKETS:
+    // return <TicketsPage searchParams={searchParams} />;
+
+    default:
+    // return <TransactionsPage searchParams={searchParams} />;
+  }
 }
