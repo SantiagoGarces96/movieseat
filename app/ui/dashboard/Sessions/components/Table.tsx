@@ -1,10 +1,10 @@
 import { sessionsHeaders } from "@/constants/dashboard/headers";
 import { getSessions } from "@/services/sessions";
-import { DeleteSession, UpdateSession } from "./Buttons";
 import ResultCount from "../../ResultCount";
 import ResultSearch from "../../ResultSearch";
 import SortableHeader from "../../SortableHeader";
 import ResultPagination from "../../ResultPagination";
+import { DeleteSessionButton, UpdateSessionButton } from "./Buttons";
 
 export default async function SessionsTable({
   page,
@@ -50,8 +50,8 @@ export default async function SessionsTable({
                 );
               })}
               <th className="flex items-center justify-center">
-                <DeleteSession id={data._id} />
-                <UpdateSession id={data._id} />
+                <DeleteSessionButton id={data._id} />
+                <UpdateSessionButton id={data._id} />
               </th>
             </tr>
           ))}
