@@ -1,6 +1,8 @@
 import { CreateSession } from "@/app/ui/dashboard/Sessions/Buttons";
 import SessionsTable from "@/app/ui/dashboard/Sessions/Table";
 import { CountResultOpt } from "@/constants/dashboard/table";
+import { AvailablesSections } from "@/types/sections";
+import { notFound } from "next/navigation";
 
 export default async function SessionsPage({
   params,
@@ -9,6 +11,13 @@ export default async function SessionsPage({
   params: { section: string };
   searchParams: { [key: string]: string | undefined };
 }) {
+  const section: string =
+    params.section.toUpperCase() as keyof typeof AvailablesSections;
+
+  if (!(section in AvailablesSections)) {
+    return notFound();
+  }
+
   const page = searchParams.page || " 1";
   const limit = searchParams.limit || CountResultOpt[1].toString();
   const query = searchParams.tableQuery || "";
