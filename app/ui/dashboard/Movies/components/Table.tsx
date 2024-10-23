@@ -32,7 +32,10 @@ export default async function MoviesTable({
     <div className="h-full">
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
-        <ResultSearch placeholder="Ingrese su busqueda" />
+        <ResultSearch
+          placeholder="Ingrese su busqueda"
+          tooltipText="Puedes buscar por: Titulo, Género, Director y Estado(En Inglés)."
+        />
       </div>
       <table className="table table-xs">
         <thead>
@@ -68,7 +71,6 @@ export default async function MoviesTable({
                           </div>
                           <div className="max-w-56">
                             <div className="truncate font-bold">{title}</div>
-
                             <div
                               className="tooltip tooltip-bottom tooltip-accent"
                               data-tip={genre}
