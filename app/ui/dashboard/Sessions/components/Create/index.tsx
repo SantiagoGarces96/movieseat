@@ -3,7 +3,6 @@ import { getAllRooms } from "@/services/rooms";
 import DashboardLayout from "../../../DashboardLayout";
 import SessionCreateForm from "./components/CreateForm";
 
-// FIXME responsive form for biggers screens
 export default async function CreateSession() {
   const movies = JSON.parse(JSON.stringify(await getAllMovies()));
   const rooms = JSON.parse(JSON.stringify(await getAllRooms()));
