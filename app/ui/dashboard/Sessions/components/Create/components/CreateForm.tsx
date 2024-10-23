@@ -4,12 +4,12 @@ import { IRoom } from "@/interfaces/room";
 import { createSession, getAvailableSessionTimes } from "@/services/sessions";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "../Button";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
-import Alert from "../Alert";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
+import Alert from "../../../../Alert";
+import { Button } from "../../../../Button";
 
 export default function SessionCreateForm({
   movies,

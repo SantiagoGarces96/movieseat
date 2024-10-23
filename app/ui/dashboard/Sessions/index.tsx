@@ -1,7 +1,7 @@
 import { CountResultOpt } from "@/constants/dashboard/table";
 import DashboardLayout from "../DashboardLayout";
-import { CreateSession } from "./components/Buttons";
 import SessionsTable from "./components/Table";
+import { CreateSessionButton } from "./components/Buttons";
 
 export default function SessionsPage({
   searchParams,
@@ -14,7 +14,7 @@ export default function SessionsPage({
   const sortBy = searchParams.sortBy || "createdAt";
   const order = searchParams.order || "";
   return (
-    <DashboardLayout title="Sesiones" button={<CreateSession />}>
+    <DashboardLayout title="Sesiones" button={<CreateSessionButton />}>
       <SessionsTable
         page={page}
         limit={limit}
