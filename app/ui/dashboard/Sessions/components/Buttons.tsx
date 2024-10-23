@@ -5,7 +5,7 @@ import { deleteSession } from "@/services/sessions";
 import { useFormState } from "react-dom";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
-import Alert from "../Alert";
+import Alert from "../../Alert";
 
 export function CreateSession() {
   return (
