@@ -1,7 +1,9 @@
+import MoviesPage from "@/app/ui/dashboard/Movies";
 import SessionsPage from "@/app/ui/dashboard/Sessions";
 import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
 
+// TODO responsive tables
 export default async function Page({
   params,
   searchParams,
@@ -21,7 +23,7 @@ export default async function Page({
       return <SessionsPage searchParams={searchParams} />;
 
     case AvailablesSections.MOVIES:
-    // return <MoviesPage searchParams={searchParams} />;
+      return <MoviesPage searchParams={searchParams} />;
 
     case AvailablesSections.ROOMS:
     // return <RoomsPage searchParams={searchParams} />;
