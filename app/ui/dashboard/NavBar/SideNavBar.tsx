@@ -3,6 +3,7 @@ import { HiOutlineVideoCamera } from "react-icons/hi2";
 import ShowHideMenu from "./Icons/ShowHideMenuIcon";
 import NavLinks from "@/app/ui/dashboard/NavBar/NavLinks";
 
+// FIXME validate when section is selected in URL
 export default function SideNav() {
   return (
     <div className="flex h-full min-w-80 flex-col border-r p-2 lg:min-w-60">
