@@ -11,6 +11,8 @@ import { getAvailableSeatsByRoom } from "@/services/sessions";
 import { getDailyTicketSales } from "@/services/tickets";
 import { getFoodSells, getMonthlyRevenue } from "@/services/transactions";
 
+//FIXME validate search an navbar in smaller devices
+
 export default async function OverviewPage() {
   const moviesData = await getMoviesByGenre();
   const moviesByStatus = await getMoviesByStatus();
