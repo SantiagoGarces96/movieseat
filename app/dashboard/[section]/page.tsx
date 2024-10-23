@@ -3,8 +3,10 @@ import SessionsTable from "@/app/ui/dashboard/Sessions/Table";
 import { CountResultOpt } from "@/constants/dashboard/table";
 
 export default async function SessionsPage({
+  params,
   searchParams,
 }: {
+  params: { section: string };
   searchParams: { [key: string]: string | undefined };
 }) {
   const page = searchParams.page || " 1";
