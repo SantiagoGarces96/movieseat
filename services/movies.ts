@@ -5,6 +5,8 @@ import {
 } from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
 import {
+  IGenresMovies,
+  ILanguagesMovies,
   IMovie,
   IMovieByGenre,
   IMovieByStatus,
@@ -14,6 +16,7 @@ import Movie from "@/models/Movie";
 import { MovieStatus } from "@/types/movie";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
+import axios from "axios";
 
 export const getMovies = async (
   type?: MovieStatus,
@@ -295,6 +298,57 @@ export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
     return movies;
   } catch (error: any) {
     console.error(`Error in getMoviesByStatus function: ${error.message}`);
+    return [];
+  }
+};
+
+export const getGenres = async (): Promise<IGenresMovies[]> => {
+  try {
+    const options = {
+      url: "https://api.themoviedb.org/3/genre/movie/list?language=es",
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
+      },
+    };
+
+    const { data } = await axios.request(options);
+    const genres: IGenresMovies[] = data.genres;
+    return genres;
+  } catch (error: any) {
+    console.error(`Error in getGenres function: ${error.message}`);
+    return [];
+  }
+};
+
+export const getLanguages = async (): Promise<ILanguagesMovies[]> => {
+  try {
+    const options = {
+      url: "https://api.themoviedb.org/3/configuration/languages",
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
+      },
+    };
+
+    const { data } = await axios.request(options);
+    const genres = data.map(
+      ({
+        iso_639_1,
+        english_name,
+      }: {
+        iso_639_1: string;
+        english_name: string;
+      }) => ({
+        iso: iso_639_1,
+        name: english_name,
+      }),
+    );
+    return genres;
+  } catch (error: any) {
+    console.error(`Error in getGenres function: ${error.message}`);
     return [];
   }
 };
