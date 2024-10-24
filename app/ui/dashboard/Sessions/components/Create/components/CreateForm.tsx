@@ -70,7 +70,7 @@ export default function SessionCreateForm({
     >
       {showAlert && <Alert {...state} />}
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Película</span>
         </div>
         <select
@@ -92,7 +92,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Sala</span>
         </div>
         <select
@@ -115,7 +115,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-12">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Fecha de la función</span>
         </div>
         <input
@@ -153,7 +153,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Total asientos</span>
         </div>
         <input
@@ -167,7 +167,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Total asientos preferenciales</span>
         </div>
         <input
@@ -181,7 +181,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Total asientos generales</span>
         </div>
         <input
@@ -195,7 +195,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Precio asientos preferenciales</span>
         </div>
         <input
@@ -208,7 +208,7 @@ export default function SessionCreateForm({
       </label>
 
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
-        <div className="label">
+        <div className="label text-lg font-bold">
           <span className="label-text">Precio asientos generales</span>
         </div>
         <input
