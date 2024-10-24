@@ -1,3 +1,4 @@
+import CreateMovie from "@/app/ui/dashboard/Movies/components/Create";
 import CreateSession from "@/app/ui/dashboard/Sessions/components/Create";
 import { AvailablesSections } from "@/types/sections";
 
@@ -13,7 +14,7 @@ export default async function Page({
       return <CreateSession />;
 
     case AvailablesSections.MOVIES:
-    // return <CreateMovie />;
+      return <CreateMovie />;
 
     case AvailablesSections.ROOMS:
     // return <CreateRoom />;

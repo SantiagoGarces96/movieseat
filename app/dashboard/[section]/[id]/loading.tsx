@@ -5,7 +5,7 @@ export default function loading() {
         <div className="skeleton h-9 w-48 rounded-md" />
       </div>
       <div className="flex h-full w-full items-start justify-center p-8">
-        <div className="grid w-full max-w-[32rem] grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:max-w-[65rem] lg:px-10 xl:px-16">
+        <div className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4">
           <label className="form-control col-span-12 grid w-full lg:col-span-6">
             <div className="label">
               <div className="skeleton h-4 w-28 rounded-md" />

@@ -4,3 +4,10 @@ export enum MovieStatus {
   UPCOMING = "upcoming",
   ARCHIVED = "archived",
 }
+
+export enum SpanishMovieStatus {
+  PRE_SALE = "preventa",
+  BILLBOARD = "cartelera",
+  UPCOMING = "próximamente",
+  ARCHIVED = "archivada",
+}

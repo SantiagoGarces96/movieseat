@@ -21,7 +21,7 @@ const movieSchema = new Schema<IMovieModel>({
     enum: Object.values(MovieStatus),
     default: MovieStatus.UPCOMING,
   },
-  sessions: [{ type: Schema.Types.ObjectId, ref: "Session", required: true }],
+  sessions: [{ type: Schema.Types.ObjectId, ref: "Session" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

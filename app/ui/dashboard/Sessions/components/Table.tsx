@@ -49,7 +49,7 @@ export default async function SessionsTable({
                     {(parseInt(page) - 1) * parseInt(limit) + index + 1}
                   </th>
                 ) : (
-                  <th key={Math.random()}>{value}</th>
+                  <td key={Math.random()}>{value}</td>
                 );
               })}
               <th className="flex items-center justify-center">
