@@ -170,7 +170,13 @@ export const getMoviesInDashboard = async (
             },
           },
           director: { $toString: "$director" },
-          duration: { $concat: [{ $toString: "$duration" }, " Min."] },
+          duration: {
+            $cond: {
+              if: { $eq: ["$duration", 0] },
+              then: "-",
+              else: { $concat: [{ $toString: "$duration" }, " Min."] },
+            },
+          },
           releaseDate: {
             $dateToString: {
               format: "%Y-%m-%d %H:%M:%S",
