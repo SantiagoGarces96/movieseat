@@ -77,3 +77,13 @@ export interface IMoviesResponse {
   totalPages: number;
   totalResults: number;
 }
+
+export interface IGenresMovies {
+  id: number;
+  name: string;
+}
+
+export interface ILanguagesMovies {
+  iso: string;
+  name: string;
+}
