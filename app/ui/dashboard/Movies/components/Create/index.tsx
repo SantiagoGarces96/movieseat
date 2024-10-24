@@ -1,14 +1,14 @@
-import { getAllMovies } from "@/services/movies";
-import { getAllRooms } from "@/services/rooms";
+import { getGenres, getLanguages } from "@/services/movies";
 import DashboardLayout from "../../../DashboardLayout";
-import SessionCreateForm from "./components/CreateForm";
+import MovieCreateForm from "./components/CreateForm";
 
-export default async function CreateSession() {
-  const movies = JSON.parse(JSON.stringify(await getAllMovies()));
-  const rooms = JSON.parse(JSON.stringify(await getAllRooms()));
+export default async function CreateMovie() {
+  const genresData = await getGenres();
+  const languagesData = await getLanguages();
+
   return (
-    <DashboardLayout title="Crear sesión">
-      <SessionCreateForm movies={movies} rooms={rooms} />
+    <DashboardLayout title="Crear película">
+      <MovieCreateForm genres={genresData} languages={languagesData} />
     </DashboardLayout>
   );
 }
