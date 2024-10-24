@@ -10,7 +10,7 @@ import Alert from "../../Alert";
 export function CreateMovieButton() {
   return (
     <Link
-      href="/dashboard/movie/create"
+      href="/dashboard/movies/create"
       className="btn btn-secondary btn-sm text-primary"
     >
       Crear película
