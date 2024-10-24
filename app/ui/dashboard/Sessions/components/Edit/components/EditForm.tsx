@@ -77,7 +77,7 @@ export default function SessionEditForm({
   return (
     <form
       action={formAction}
-      className="grid grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16"
+      className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...state} />}
       <label className="form-control col-span-12 grid w-full lg:col-span-6">
