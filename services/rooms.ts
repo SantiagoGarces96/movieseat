@@ -30,7 +30,7 @@ export const getRoomsByQuery = async (
       return {
         src: "https://archivos-cms.cinecolombia.com/images/_aliases/medium/0/8/0/8/18080-3-esl-CO/17.png",
         label: name,
-        href: `/rooms/${_id}`,
+        href: `/dashboard/rooms/${_id}`,
       };
     });
     return parsedRooms;

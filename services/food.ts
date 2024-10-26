@@ -21,7 +21,7 @@ export const getFoodByQuery = async (
         return {
           src: image,
           label: name,
-          href: `/food/${_id}`,
+          href: `/dashboard/food/${_id}`,
         };
       },
     );

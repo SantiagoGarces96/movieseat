@@ -262,7 +262,7 @@ export const getMoviesByQuery = async (
               ? "https://archivos-cms.cinecolombia.com/images/_aliases/medium/3/4/2/8/8243-6-esl-CO/clasificaci%C3%B3n-de-peliculas.jpg"
               : poster,
           label: title,
-          href: `/movies/${_id}`,
+          href: `/dashboard/movies/${_id}`,
         };
       },
     );
