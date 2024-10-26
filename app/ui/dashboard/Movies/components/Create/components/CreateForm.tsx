@@ -7,10 +7,10 @@ import {
   SpanishMovieStatus,
 } from "@/types/movie";
 import { useState } from "react";
-import CastInput from "./Input/CastInput";
+import CastInput from "../../Input/CastInput";
 import { IGenresMovies, ILanguagesMovies } from "@/interfaces/movie";
-import GenreInput from "./Input/GenreInput";
-import LanguageInput from "./Input/LanguageInput";
+import GenreInput from "../../Input/GenreInput";
+import LanguageInput from "../../Input/LanguageInput";
 import { useFormState } from "react-dom";
 import { createMovie } from "@/services/movies";
 import { initialState } from "@/constants/dashboard/form";
