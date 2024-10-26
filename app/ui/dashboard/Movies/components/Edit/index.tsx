@@ -1,33 +1,24 @@
-import { getAvailableSessionTimes, getSessionById } from "@/services/sessions";
 import DashboardLayout from "../../../DashboardLayout";
-import SessionEditForm from "./components/EditForm";
 import { notFound } from "next/navigation";
-import { getAllRooms } from "@/services/rooms";
-import { getMovieById } from "@/services/movies";
+import { getGenres, getLanguages, getMovieById } from "@/services/movies";
+import MovieEditForm from "./components/EditForm";
 
-export default async function EditSession({ id }: { id: string }) {
-  const session = await getSessionById(id);
+export default async function EditMovie({ id }: { id: string }) {
+  const movie = await getMovieById(id);
 
-  if (!session) {
+  if (!movie) {
     notFound();
   }
 
-  const rooms = await getAllRooms();
-  const movie = await getMovieById(session?.movieId.toString());
-  const [date, time] = new Date(session.dateTime).toISOString().split("T");
-  const parseTime = time.split(".")[0];
-  const availableSessions = await getAvailableSessionTimes(
-    date,
-    session.roomId.toString(),
-  );
+  const genresData = await getGenres();
+  const languagesData = await getLanguages();
 
   return (
     <DashboardLayout title="Editar sesión">
-      <SessionEditForm
-        session={JSON.parse(JSON.stringify(session))}
-        rooms={JSON.parse(JSON.stringify(rooms))}
-        movie={JSON.parse(JSON.stringify(movie))}
-        availableSessions={[parseTime, ...availableSessions]}
+      <MovieEditForm
+        genres={genresData}
+        languages={languagesData}
+        movieData={JSON.parse(JSON.stringify(movie))}
       />
     </DashboardLayout>
   );

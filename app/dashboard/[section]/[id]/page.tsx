@@ -1,3 +1,4 @@
+import EditMovie from "@/app/ui/dashboard/Movies/components/Edit";
 import EditSession from "@/app/ui/dashboard/Sessions/components/Edit";
 import { AvailablesSections } from "@/types/sections";
 
@@ -13,7 +14,7 @@ export default async function Page({
       return <EditSession id={id} />;
 
     case AvailablesSections.MOVIES:
-    // return <EditMovie id={id} />;
+      return <EditMovie id={id} />;
 
     case AvailablesSections.ROOMS:
     // return <EditRoom id={id} />;

@@ -21,7 +21,7 @@ export function CreateMovieButton() {
 export function UpdateMovieButton({ id }: { id: string }) {
   return (
     <Link
-      href={`/dashboard/movie/${id}`}
+      href={`/dashboard/movies/${id}`}
       className="btn btn-circle btn-ghost btn-sm"
     >
       <HiOutlinePencil className="h-4 w-4" />
