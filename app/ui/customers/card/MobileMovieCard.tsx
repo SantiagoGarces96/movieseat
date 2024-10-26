@@ -42,7 +42,7 @@ const MobileMovieCard: React.FC<MobileMovieCardProps> = ({
               width={400}
               height={800}
               className="h-full w-full object-cover"
-              priority={true}
+              priority
             />
           </div>
 
