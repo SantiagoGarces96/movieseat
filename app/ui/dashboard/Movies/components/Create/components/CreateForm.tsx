@@ -1,20 +1,21 @@
 "use client";
 import Link from "next/link";
-
 import { Button } from "../../../../Button";
-import { SpanishMovieStatus } from "@/types/movie";
-
+import {
+  MovieCreateFormState,
+  MovieStatus,
+  SpanishMovieStatus,
+} from "@/types/movie";
 import { useState } from "react";
 import CastInput from "./Input/CastInput";
 import { IGenresMovies, ILanguagesMovies } from "@/interfaces/movie";
 import GenreInput from "./Input/GenreInput";
 import LanguageInput from "./Input/LanguageInput";
-
-export type IntialState = {
-  cast: string[];
-  genre: string[];
-  language: string[];
-};
+import { useFormState } from "react-dom";
+import { createMovie } from "@/services/movies";
+import { initialState } from "@/constants/dashboard/form";
+import Alert from "@/app/ui/dashboard/Alert";
+import useAlert from "@/app/hooks/useAlert";
 
 export default function MovieCreateForm({
   genres,
@@ -23,14 +24,25 @@ export default function MovieCreateForm({
   genres: IGenresMovies[];
   languages: ILanguagesMovies[];
 }) {
-  const [initialState, setInitialState] = useState<IntialState>({
+  const [state, setState] = useState<MovieCreateFormState>({
     cast: [],
     genre: [],
     language: [],
   });
 
+  const [stateAction, formAction] = useFormState(
+    createMovie.bind(null, state),
+    initialState,
+  );
+
+  const { showAlert } = useAlert(stateAction);
+
   return (
-    <form className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4">
+    <form
+      action={formAction}
+      className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
+    >
+      {showAlert && <Alert {...stateAction} />}
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
@@ -97,16 +109,9 @@ export default function MovieCreateForm({
         </label>
       </div>
 
-      <CastInput
-        initialState={initialState}
-        setInitialState={setInitialState}
-      />
+      <CastInput {...{ state, setState }} />
 
-      <GenreInput
-        initialState={initialState}
-        setInitialState={setInitialState}
-        genresData={genres}
-      />
+      <GenreInput {...{ state, setState, genresData: genres }} />
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
         <div className="label text-lg font-bold">
@@ -129,6 +134,7 @@ export default function MovieCreateForm({
           name="poster"
           type="url"
           className="input input-sm input-bordered w-full"
+          required
         />
       </label>
 
@@ -141,6 +147,7 @@ export default function MovieCreateForm({
           name="backdrop"
           type="url"
           className="input input-sm input-bordered w-full"
+          required
         />
       </label>
 
@@ -153,8 +160,10 @@ export default function MovieCreateForm({
             {SpanishMovieStatus.UPCOMING}
           </span>
           <input
+            id="status"
+            name="status"
             type="radio"
-            name="radio-10"
+            value={MovieStatus.UPCOMING}
             className="radio checked:bg-accent"
             defaultChecked
           />
@@ -164,8 +173,10 @@ export default function MovieCreateForm({
             {SpanishMovieStatus.PRE_SALE}
           </span>
           <input
+            id="status"
+            name="status"
             type="radio"
-            name="radio-10"
+            value={MovieStatus.PRE_SALE}
             className="radio checked:bg-accent"
           />
         </label>
@@ -174,18 +185,16 @@ export default function MovieCreateForm({
             {SpanishMovieStatus.BILLBOARD}
           </span>
           <input
+            id="status"
+            name="status"
             type="radio"
-            name="radio-10"
+            value={MovieStatus.BILLBOARD}
             className="radio checked:bg-accent"
           />
         </label>
       </div>
       <div className="col-span-12 grid lg:col-span-6">
-        <LanguageInput
-          initialState={initialState}
-          setInitialState={setInitialState}
-          languageData={languages}
-        />
+        <LanguageInput {...{ state, setState, languageData: languages }} />
         <div className="flex w-full gap-3">
           <label className="form-control w-full">
             <div className="label text-lg font-bold">

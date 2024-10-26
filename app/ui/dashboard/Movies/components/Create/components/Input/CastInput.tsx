@@ -1,14 +1,14 @@
 "use client";
+import { MovieCreateFormState } from "@/types/movie";
 import { useState } from "react";
 import { HiMiniPlus, HiMiniXMark } from "react-icons/hi2";
-import { IntialState } from "../CreateForm";
 
 export default function CastInput({
-  initialState,
-  setInitialState,
+  state,
+  setState,
 }: {
-  initialState: IntialState;
-  setInitialState: React.Dispatch<React.SetStateAction<IntialState>>;
+  state: MovieCreateFormState;
+  setState: React.Dispatch<React.SetStateAction<MovieCreateFormState>>;
 }) {
   const [actor, setActor] = useState<string>("");
 
@@ -20,17 +20,17 @@ export default function CastInput({
   const handleAdd = () => {
     const clearActor = actor.trim();
     if (clearActor) {
-      setInitialState({
-        ...initialState,
-        cast: [...initialState.cast, clearActor],
+      setState({
+        ...state,
+        cast: [...state.cast, clearActor],
       });
     }
     setActor("");
   };
 
   const handleDelete = (actorName: string) => {
-    const cast = initialState.cast.filter((el) => el != actorName);
-    setInitialState({ ...initialState, cast });
+    const cast = state.cast.filter((el) => el != actorName);
+    setState({ ...state, cast });
   };
 
   return (
@@ -54,7 +54,7 @@ export default function CastInput({
         </label>
       </label>
       <div className="mt-3 flex min-h-9 w-full flex-wrap items-center justify-center gap-3 p-2">
-        {initialState.cast.map((actorName, index) => (
+        {state.cast.map((actorName, index) => (
           <div
             key={"person-" + actorName + index}
             className="badge badge-outline"
