@@ -2,11 +2,20 @@ import React from "react";
 import { IMovie } from "@/interfaces/movie";
 import MovieBanner from "@/app/ui/customers/movie/MovieBanner/MovieBanner";
 import DetailsMovie from "@/app/ui/customers/movie/DetailsMovie/DetailsMovie";
-import { getMovieById } from "@/services/movies";
+import { getAllMovies, getMovieById } from "@/services/movies";
 import { getSessionByIdMovie } from "@/services/sessions";
 
 interface MoviePageProps {
   params: { id: string };
+}
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const movies = await getAllMovies();
+  return movies.map(({ _id }) => {
+    return { id: _id.toString() };
+  });
 }
 
 export default async function MoviePage({ params }: MoviePageProps) {
