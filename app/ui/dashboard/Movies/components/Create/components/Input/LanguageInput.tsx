@@ -1,28 +1,28 @@
 "use client";
 import { HiMiniXMark } from "react-icons/hi2";
-import { IntialState } from "../CreateForm";
 import { ILanguagesMovies } from "@/interfaces/movie";
+import { MovieCreateFormState } from "@/types/movie";
 
 export default function LanguageInput({
-  initialState,
-  setInitialState,
+  state,
+  setState,
   languageData,
 }: {
-  initialState: IntialState;
-  setInitialState: React.Dispatch<React.SetStateAction<IntialState>>;
+  state: MovieCreateFormState;
+  setState: React.Dispatch<React.SetStateAction<MovieCreateFormState>>;
   languageData: ILanguagesMovies[];
 }) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    setInitialState({
-      ...initialState,
-      language: [...initialState.language, value],
+    setState({
+      ...state,
+      language: [...state.language, value],
     });
   };
 
   const handleDelete = (languageName: string) => {
-    const language = initialState.language.filter((el) => el != languageName);
-    setInitialState({ ...initialState, language });
+    const language = state.language.filter((el) => el != languageName);
+    setState({ ...state, language });
   };
 
   return (
@@ -49,7 +49,7 @@ export default function LanguageInput({
         </select>
       </label>
       <div className="mt-3 flex min-h-9 w-full flex-wrap items-center justify-center gap-3 p-2">
-        {initialState.language.map((laeguageName, index) => (
+        {state.language.map((laeguageName, index) => (
           <div
             key={"language-" + laeguageName + index}
             className="badge badge-outline"

@@ -1,20 +1,12 @@
 "use client";
 import Link from "next/link";
-
 import { Button } from "../../../../Button";
-import { SpanishMovieStatus } from "@/types/movie";
-
+import { MovieCreateFormState, SpanishMovieStatus } from "@/types/movie";
 import { useState } from "react";
 import CastInput from "./Input/CastInput";
 import { IGenresMovies, ILanguagesMovies } from "@/interfaces/movie";
 import GenreInput from "./Input/GenreInput";
 import LanguageInput from "./Input/LanguageInput";
-
-export type IntialState = {
-  cast: string[];
-  genre: string[];
-  language: string[];
-};
 
 export default function MovieCreateForm({
   genres,
@@ -23,7 +15,7 @@ export default function MovieCreateForm({
   genres: IGenresMovies[];
   languages: ILanguagesMovies[];
 }) {
-  const [initialState, setInitialState] = useState<IntialState>({
+  const [state, setState] = useState<MovieCreateFormState>({
     cast: [],
     genre: [],
     language: [],
@@ -97,16 +89,9 @@ export default function MovieCreateForm({
         </label>
       </div>
 
-      <CastInput
-        initialState={initialState}
-        setInitialState={setInitialState}
-      />
+      <CastInput {...{ state, setState }} />
 
-      <GenreInput
-        initialState={initialState}
-        setInitialState={setInitialState}
-        genresData={genres}
-      />
+      <GenreInput {...{ state, setState, genresData: genres }} />
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
         <div className="label text-lg font-bold">
@@ -181,11 +166,7 @@ export default function MovieCreateForm({
         </label>
       </div>
       <div className="col-span-12 grid lg:col-span-6">
-        <LanguageInput
-          initialState={initialState}
-          setInitialState={setInitialState}
-          languageData={languages}
-        />
+        <LanguageInput {...{ state, setState, languageData: languages }} />
         <div className="flex w-full gap-3">
           <label className="form-control w-full">
             <div className="label text-lg font-bold">

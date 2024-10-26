@@ -1,28 +1,28 @@
 "use client";
 import { HiMiniXMark } from "react-icons/hi2";
-import { IntialState } from "../CreateForm";
 import { IGenresMovies } from "@/interfaces/movie";
+import { MovieCreateFormState } from "@/types/movie";
 
 export default function GenreInput({
-  initialState,
-  setInitialState,
+  state,
+  setState,
   genresData,
 }: {
-  initialState: IntialState;
-  setInitialState: React.Dispatch<React.SetStateAction<IntialState>>;
+  state: MovieCreateFormState;
+  setState: React.Dispatch<React.SetStateAction<MovieCreateFormState>>;
   genresData: IGenresMovies[];
 }) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    setInitialState({
-      ...initialState,
-      genre: [...initialState.genre, value],
+    setState({
+      ...state,
+      genre: [...state.genre, value],
     });
   };
 
   const handleDelete = (genreName: string) => {
-    const genre = initialState.genre.filter((el) => el != genreName);
-    setInitialState({ ...initialState, genre });
+    const genre = state.genre.filter((el) => el != genreName);
+    setState({ ...state, genre });
   };
 
   return (
@@ -49,7 +49,7 @@ export default function GenreInput({
         </select>
       </label>
       <div className="mt-3 flex min-h-9 w-full flex-wrap items-center justify-center gap-3 p-2">
-        {initialState.genre.map((genreName, index) => (
+        {state.genre.map((genreName, index) => (
           <div
             key={"person-" + genreName + index}
             className="badge badge-outline"
