@@ -2,16 +2,12 @@ import AreaChartOverview from "@/app/ui/dashboard/Chart/AreaChart";
 import BarChartOverview from "@/app/ui/dashboard/Chart/BarChart";
 import LineChartOverview from "@/app/ui/dashboard/Chart/LineChart";
 import PieChartOverview from "@/app/ui/dashboard/Chart/PieChart";
-import SearchModal from "@/app/ui/dashboard/NavBar/Modals/SearchModal";
-import SideNavBarModal from "@/app/ui/dashboard/NavBar/Modals/SideNavBarModal";
 import OverviewCard from "@/app/ui/dashboard/OverviewCard";
 import StatOverview from "@/app/ui/dashboard/Stat";
 import { getMoviesByGenre, getMoviesByStatus } from "@/services/movies";
 import { getAvailableSeatsByRoom } from "@/services/sessions";
 import { getDailyTicketSales } from "@/services/tickets";
 import { getFoodSells, getMonthlyRevenue } from "@/services/transactions";
-
-//FIXME validate search an navbar in smaller devices
 
 export default async function OverviewPage() {
   const moviesData = await getMoviesByGenre();
@@ -23,8 +19,6 @@ export default async function OverviewPage() {
 
   return (
     <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
-      <SearchModal />
-      <SideNavBarModal />
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl font-bold">Bienvenido</h2>
         <p className="text-base text-gray-400">

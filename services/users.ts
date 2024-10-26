@@ -22,7 +22,7 @@ export const getUsersByQuery = async (
       return {
         src: "https://avatars.githubusercontent.com/u/93413716?v=4&size=256",
         label: name,
-        href: `/users/${_id}`,
+        href: `/dashboard/users/${_id}`,
       };
     });
     return parsedUsers;

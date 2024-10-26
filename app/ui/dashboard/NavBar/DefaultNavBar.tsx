@@ -1,16 +1,13 @@
 import Image from "next/image";
 import MenuIcon from "./Icons/MenuIcon";
 import SearchIcon from "./Icons/SearchIcon";
-import { Suspense } from "react";
 
 export default function DefaultNavBar() {
   return (
     <div className="navbar sticky top-0 z-50 border-b bg-base-100">
       <div className="navbar-start">
         <MenuIcon />
-        <Suspense fallback={<div>Loading...</div>}>
-          <SearchIcon />
-        </Suspense>
+        <SearchIcon />
       </div>
       <div className="navbar-end">
         {/* TODO get all data from next-auth */}
