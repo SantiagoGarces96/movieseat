@@ -407,7 +407,7 @@ export const createMovie = async (
 
     await Movie.create(fiels);
   } catch (error: any) {
-    console.error(`Error in createSession function: ${error.message}`);
+    console.error(`Error in createMovie function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
       const { errors } = error;
@@ -476,7 +476,7 @@ export const updateMovie = async (
 
     await Movie.findByIdAndUpdate(id, fiels);
   } catch (error: any) {
-    console.error(`Error in createSession function: ${error.message}`);
+    console.error(`Error in updateMovie function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
       const { errors } = error;
@@ -491,4 +491,27 @@ export const updateMovie = async (
 
   revalidatePath("/dashboard/movies");
   redirect("/dashboard/movies");
+};
+
+export const deleteMovie = async (
+  _id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    await Movie.findByIdAndDelete(_id);
+    revalidatePath("/dashboard/movies");
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Sessión eliminada con exito.",
+    };
+  } catch (error: any) {
+    console.error(`Error in deleteMovie function: ${error.message}`);
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
+  }
 };
