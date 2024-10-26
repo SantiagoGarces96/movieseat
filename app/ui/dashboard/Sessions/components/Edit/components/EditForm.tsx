@@ -105,7 +105,7 @@ export default function SessionEditForm({
           id="room"
           name="roomId"
           className="select select-bordered select-sm w-full"
-          value={roomId}
+          defaultValue={roomId}
           onChange={handleRoom}
           required
         >
@@ -130,7 +130,7 @@ export default function SessionEditForm({
           type="date"
           className="input input-sm input-bordered w-full"
           required
-          value={currentDate}
+          defaultValue={currentDate}
           disabled={disableDate}
           onChange={handleDate}
         />
@@ -165,7 +165,7 @@ export default function SessionEditForm({
         <input
           id="totalSeats"
           name="totalSeats"
-          value={seats.totalSeats}
+          defaultValue={seats.totalSeats}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled
@@ -179,7 +179,7 @@ export default function SessionEditForm({
         <input
           id="totalSeatsPreferential"
           name="totalSeatsPreferential"
-          value={seats.totalSeatsPreferential}
+          defaultValue={seats.totalSeatsPreferential}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled
@@ -193,7 +193,7 @@ export default function SessionEditForm({
         <input
           id="totalSeatsGeneral"
           name="totalSeatsGeneral"
-          value={seats.totalSeatsGeneral}
+          defaultValue={seats.totalSeatsGeneral}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled
