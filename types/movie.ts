@@ -11,3 +11,9 @@ export enum SpanishMovieStatus {
   UPCOMING = "próximamente",
   ARCHIVED = "archivada",
 }
+
+export type MovieCreateFormState = {
+  cast: string[];
+  genre: string[];
+  language: string[];
+};
