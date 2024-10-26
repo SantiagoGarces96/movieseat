@@ -13,10 +13,15 @@ import {
   IMoviesResponse,
 } from "@/interfaces/movie";
 import Movie from "@/models/Movie";
-import { MovieStatus } from "@/types/movie";
+import { MovieCreateFormState, MovieStatus } from "@/types/movie";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
 import axios from "axios";
+import { FormState, FormStatus } from "@/types/form";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { MovieFormSchema } from "@/schema/movie";
 
 export const getMovies = async (
   type?: MovieStatus,
@@ -351,4 +356,66 @@ export const getLanguages = async (): Promise<ILanguagesMovies[]> => {
     console.error(`Error in getGenres function: ${error.message}`);
     return [];
   }
+};
+
+export const createMovie = async (
+  state: MovieCreateFormState,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
+    const title = formData.get("title");
+    const backdrop = formData.get("backdrop");
+    const description = formData.get("description");
+    const releaseDate = new Date(
+      formData.get("releaseDate")?.toString() + "Z" || "",
+    );
+    const duration = parseInt(formData.get("duration")?.toString() || "");
+    const director = formData.get("director");
+    const subtitles = formData.get("subtitles") === "on";
+    const trailer = formData.get("trailer");
+    const poster = formData.get("poster");
+    const status = formData.get("status");
+
+    const fiels = {
+      ...state,
+      imdb_id,
+      title,
+      backdrop,
+      description,
+      releaseDate,
+      duration,
+      director,
+      subtitles,
+      trailer,
+      poster,
+      status,
+    };
+
+    MovieFormSchema.parse(fiels);
+
+    const movie: IMovie | null = await Movie.findOne({ imdb_id });
+
+    if (movie) {
+      throw new Error("La película ya existe");
+    }
+
+    await Movie.create(fiels);
+  } catch (error: any) {
+    console.error(`Error in createSession function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  revalidatePath("/dashboard/movies");
+  redirect("/dashboard/movies");
 };
