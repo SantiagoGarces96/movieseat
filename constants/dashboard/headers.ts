@@ -15,7 +15,7 @@ export const moviesHeaders = [
   { label: "Estado", value: "status" },
   { label: "Director", value: "director" },
   { label: "Duracion", value: "duration" },
-  { label: "Fecha de la Funcion", value: "releaseDate" },
+  { label: "Fecha de estreno", value: "releaseDate" },
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];

@@ -187,7 +187,7 @@ export const getMoviesInDashboard = async (
           },
           releaseDate: {
             $dateToString: {
-              format: "%Y-%m-%d %H:%M:%S",
+              format: "%Y-%m-%d",
               date: "$releaseDate",
             },
           },
