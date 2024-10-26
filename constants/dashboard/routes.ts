@@ -1,5 +1,4 @@
 export const routes = [
-  "dashboard",
   "sessions",
   "movies",
   "rooms",
@@ -7,5 +6,4 @@ export const routes = [
   "users",
   "tickets",
   "transactions",
-  "profile",
 ];

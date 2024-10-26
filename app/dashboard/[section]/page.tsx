@@ -1,16 +1,23 @@
 import MoviesPage from "@/app/ui/dashboard/Movies";
 import SessionsPage from "@/app/ui/dashboard/Sessions";
+import { routes } from "@/constants/dashboard/routes";
 import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
 
-// TODO responsive tables
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: { section: string };
+interface IPageProps {
+  params: {
+    section: string;
+  };
   searchParams: { [key: string]: string | undefined };
-}) {
+}
+
+export async function generateStaticParams() {
+  return routes.map((section) => {
+    return { section };
+  });
+}
+// TODO responsive tables
+export default async function Page({ params, searchParams }: IPageProps) {
   const section: string =
     params.section.toUpperCase() as keyof typeof AvailablesSections;
 
