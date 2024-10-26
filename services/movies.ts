@@ -398,10 +398,83 @@ export const createMovie = async (
     const movie: IMovie | null = await Movie.findOne({ imdb_id });
 
     if (movie) {
-      throw new Error("La película ya existe");
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La película ya existe",
+      };
     }
 
     await Movie.create(fiels);
+  } catch (error: any) {
+    console.error(`Error in createSession function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  revalidatePath("/dashboard/movies");
+  redirect("/dashboard/movies");
+};
+
+export const updateMovie = async (
+  state: MovieCreateFormState,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const { cast, genre, language, id } = state;
+    const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
+    const title = formData.get("title");
+    const backdrop = formData.get("backdrop");
+    const description = formData.get("description");
+    const releaseDate = new Date(
+      formData.get("releaseDate")?.toString() + "Z" || "",
+    );
+    const duration = parseInt(formData.get("duration")?.toString() || "");
+    const director = formData.get("director");
+    const subtitles = formData.get("subtitles") === "on";
+    const trailer = formData.get("trailer");
+    const poster = formData.get("poster");
+    const status = formData.get("status");
+
+    const fiels = {
+      cast,
+      genre,
+      language,
+      imdb_id,
+      title,
+      backdrop,
+      description,
+      releaseDate,
+      duration,
+      director,
+      subtitles,
+      trailer,
+      poster,
+      status,
+    };
+
+    MovieFormSchema.parse(fiels);
+
+    const movie: IMovie | null = await Movie.findById(id);
+
+    if (!movie) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La película no existe",
+      };
+    }
+
+    await Movie.findByIdAndUpdate(id, fiels);
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";

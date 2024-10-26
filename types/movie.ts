@@ -13,6 +13,7 @@ export enum SpanishMovieStatus {
 }
 
 export type MovieCreateFormState = {
+  id?: string;
   cast: string[];
   genre: string[];
   language: string[];
