@@ -20,7 +20,6 @@ const MobileFoodCard: React.FC<MobileFoodCardProps> = ({ food }) => {
               width={400}
               height={400}
               className="h-full w-full object-cover"
-              priority={true}
             />
           </div>
 

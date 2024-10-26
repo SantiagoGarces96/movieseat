@@ -42,6 +42,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
           style={{ objectFit: "cover" }}
           quality={100}
           className="brightness-75"
+          priority
         />
       </div>
 
@@ -60,6 +61,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
               height={500}
               style={{ objectFit: "fill" }}
               className="rounded-lg"
+              priority
             />
           </div>
 

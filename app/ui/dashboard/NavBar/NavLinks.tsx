@@ -25,7 +25,7 @@ export default function NavLinks() {
           className={cn({ active: pathname === "/dashboard" })}
         >
           <HiOutlineRectangleGroup className="h-5 w-5" />
-          <span className="text-base font-normal">Dasboard</span>
+          <span className="text-base font-normal">Dashboard</span>
         </Link>
       </li>
       <li className="menu-title">Pages</li>
