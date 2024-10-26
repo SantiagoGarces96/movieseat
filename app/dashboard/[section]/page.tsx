@@ -16,7 +16,7 @@ export async function generateStaticParams() {
     return { section };
   });
 }
-// TODO responsive tables
+
 export default async function Page({ params, searchParams }: IPageProps) {
   const section: string =
     params.section.toUpperCase() as keyof typeof AvailablesSections;
