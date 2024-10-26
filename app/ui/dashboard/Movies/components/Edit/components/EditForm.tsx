@@ -4,7 +4,7 @@ import useAlert from "@/app/hooks/useAlert";
 import Alert from "@/app/ui/dashboard/Alert";
 import { initialState } from "@/constants/dashboard/form";
 import { IGenresMovies, ILanguagesMovies, IMovie } from "@/interfaces/movie";
-import { createMovie } from "@/services/movies";
+import { updateMovie } from "@/services/movies";
 import {
   MovieCreateFormState,
   MovieStatus,
@@ -27,14 +27,18 @@ export default function MovieEditForm({
   languages: ILanguagesMovies[];
   movieData: IMovie;
 }) {
+  const [currentDate] = new Date(movieData.releaseDate)
+    .toISOString()
+    .split("T");
   const [state, setState] = useState<MovieCreateFormState>({
+    id: movieData._id,
     cast: movieData.cast,
     genre: movieData.genre,
     language: movieData.language,
   });
 
   const [stateAction, formAction] = useFormState(
-    createMovie.bind(null, state),
+    updateMovie.bind(null, state),
     initialState,
   );
 
@@ -55,7 +59,7 @@ export default function MovieEditForm({
             id="imdb_id"
             name="imdb_id"
             type="number"
-            value={movieData.imdb_id}
+            defaultValue={movieData.imdb_id}
             className="input input-sm input-bordered w-full"
             required
           />
@@ -68,7 +72,7 @@ export default function MovieEditForm({
             id="title"
             name="title"
             type="text"
-            value={movieData.title}
+            defaultValue={movieData.title}
             className="input input-sm input-bordered w-full"
             required
           />
@@ -81,7 +85,7 @@ export default function MovieEditForm({
             id="director"
             name="director"
             type="text"
-            value={movieData.director}
+            defaultValue={movieData.director}
             className="input input-sm input-bordered w-full"
             required
           />
@@ -94,7 +98,7 @@ export default function MovieEditForm({
             id="releaseDate"
             name="releaseDate"
             type="date"
-            value={movieData.releaseDate.toString()}
+            defaultValue={currentDate}
             className="input input-sm input-bordered w-full"
             required
           />
@@ -109,7 +113,7 @@ export default function MovieEditForm({
           <textarea
             id="description"
             name="description"
-            value={movieData.description}
+            defaultValue={movieData.description}
             className="textarea textarea-bordered textarea-sm w-full"
             required
             rows={8}
@@ -129,7 +133,7 @@ export default function MovieEditForm({
           id="trailer"
           name="trailer"
           type="url"
-          value={movieData.trailer}
+          defaultValue={movieData.trailer}
           className="input input-sm input-bordered w-full"
         />
       </label>
@@ -142,7 +146,7 @@ export default function MovieEditForm({
           id="poster"
           name="poster"
           type="url"
-          value={movieData.poster}
+          defaultValue={movieData.poster}
           className="input input-sm input-bordered w-full"
           required
         />
@@ -156,7 +160,7 @@ export default function MovieEditForm({
           id="backdrop"
           name="backdrop"
           type="url"
-          value={movieData.backdrop}
+          defaultValue={movieData.backdrop}
           className="input input-sm input-bordered w-full"
           required
         />
@@ -174,7 +178,7 @@ export default function MovieEditForm({
             id="status"
             name="status"
             type="radio"
-            value={MovieStatus.UPCOMING}
+            defaultValue={MovieStatus.UPCOMING}
             className="radio checked:bg-accent"
             defaultChecked={movieData.status === MovieStatus.UPCOMING}
           />
@@ -187,7 +191,7 @@ export default function MovieEditForm({
             id="status"
             name="status"
             type="radio"
-            value={MovieStatus.PRE_SALE}
+            defaultValue={MovieStatus.PRE_SALE}
             className="radio checked:bg-accent"
             defaultChecked={movieData.status === MovieStatus.PRE_SALE}
           />
@@ -200,7 +204,7 @@ export default function MovieEditForm({
             id="status"
             name="status"
             type="radio"
-            value={MovieStatus.BILLBOARD}
+            defaultValue={MovieStatus.BILLBOARD}
             className="radio checked:bg-accent"
             defaultChecked={movieData.status === MovieStatus.BILLBOARD}
           />
@@ -218,7 +222,7 @@ export default function MovieEditForm({
                 id="duration"
                 name="duration"
                 type="number"
-                value={movieData.duration}
+                defaultValue={movieData.duration}
                 className="w-full grow"
                 required
               />
@@ -248,7 +252,7 @@ export default function MovieEditForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit">Actualizar</Button>
         </div>
       </div>
     </form>
