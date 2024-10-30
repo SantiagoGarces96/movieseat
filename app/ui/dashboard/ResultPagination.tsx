@@ -25,7 +25,7 @@ export default function ResultPagination({
   const renderPageButton = (page: number) => (
     <button
       key={page}
-      className="btn join-item"
+      className="btn join-item btn-sm"
       aria-label="1"
       disabled={page === currentPage}
       onClick={() => handlePageChange(page)}
@@ -37,14 +37,14 @@ export default function ResultPagination({
   return (
     <div className="join">
       <button
-        className="btn join-item"
+        className="btn join-item btn-sm"
         disabled={currentPage === 1}
         onClick={() => handlePageChange(1)}
       >
         <HiChevronDoubleLeft />
       </button>
       <button
-        className="btn join-item"
+        className="btn join-item btn-sm"
         disabled={currentPage === 1}
         onClick={() => handlePageChange(currentPage - 1)}
       >
@@ -69,14 +69,14 @@ export default function ResultPagination({
       </div>
 
       <button
-        className="btn join-item"
+        className="btn join-item btn-sm"
         disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
       >
         <HiChevronRight />
       </button>
       <button
-        className="btn join-item"
+        className="btn join-item btn-sm"
         disabled={currentPage === totalPages}
         onClick={() => handlePageChange(totalPages)}
       >
