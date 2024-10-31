@@ -18,7 +18,7 @@ export default async function OverviewPage() {
   const dailyTicketSales = await getDailyTicketSales();
 
   return (
-    <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
+    <section className="flex w-full flex-col overflow-hidden px-2 py-9 2xl:max-w-[90rem]">
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl font-bold">Bienvenido</h2>
         <p className="text-base text-gray-400">
@@ -26,7 +26,7 @@ export default async function OverviewPage() {
           mantener a tu audiencia satiisfecha.
         </p>
       </div>
-      <div className="my-8 flex flex-col gap-4">
+      <div className="my-8 flex flex-col gap-4 overflow-auto">
         <div className="flex flex-col gap-4 lg:flex-row">
           <OverviewCard title="Películas por Género">
             <div className="min-h-[300px]">
