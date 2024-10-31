@@ -36,6 +36,8 @@ export default async function SessionsTable({
             <div className="flex w-full items-center justify-between pb-4 text-sm">
               <p className="w-1/2">
                 Sesión {(parseInt(page) - 1) * parseInt(limit) + index + 1}
+                <br />
+                <strong>{data.dateTime}</strong>
               </p>
               <p className="w-1/2 truncate text-end font-bold">{data.movie}</p>
             </div>
