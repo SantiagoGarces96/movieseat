@@ -51,6 +51,7 @@ export const getSessions = async (
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
 
+    //TODO optomize query
     const results = await Session.aggregate([
       {
         $lookup: {

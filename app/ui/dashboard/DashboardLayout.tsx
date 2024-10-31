@@ -12,7 +12,7 @@ export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   return (
-    <section className="min-h-[80vh] w-full divide-y">
+    <section className="h-full w-full divide-y overflow-auto">
       <div className="flex items-center justify-between p-5">
         <h2 className="text-3xl font-bold">{title}</h2>
         {button}
