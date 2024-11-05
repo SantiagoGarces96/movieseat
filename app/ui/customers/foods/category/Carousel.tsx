@@ -14,12 +14,14 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const displayedFoods = Object.values(foodsByCategory).flat().slice(0, 3);
 
   return (
-    <section className="section carousel-section relative overflow-hidden">
+    <section className="carousel-section relative hidden overflow-hidden hd:block">
       <div className="glide w-full">
-        {/* Contenedor animado */}
-        <ul className="animate-carousel flex">
+        <ul className="flex animate-carousel">
           {displayedFoods.map((food, index) => (
-            <li key={index} className="w-[20%] flex-none">
+            <li
+              key={index}
+              className="w-[90%] hd:w-[20%] fhd:w-[16.66%] 2k:w-[14.28%]"
+            >
               <article className="carousel-item">
                 <FoodCard food={food} />
               </article>
