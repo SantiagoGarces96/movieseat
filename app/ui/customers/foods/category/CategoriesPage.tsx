@@ -29,7 +29,7 @@ const CategoryCardsGrid: React.FC<CategoryCardsGridProps> = ({
         </p>
       </div>
       <br />
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 hd:grid-cols-3">
         {categories.map((category) => (
           <Link key={category.id} href={`/foods/${category.id}`}>
             <div className="max-w-sm cursor-pointer overflow-hidden rounded border border-gray-200 bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl">
