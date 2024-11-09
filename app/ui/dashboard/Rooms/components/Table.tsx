@@ -1,4 +1,4 @@
-import { sessionsHeaders } from "@/constants/dashboard/headers";
+import { roomsHeaders, sessionsHeaders } from "@/constants/dashboard/headers";
 import { getSessions } from "@/services/sessions";
 import ResultCount from "../../ResultCount";
 import ResultSearch from "../../ResultSearch";
@@ -72,7 +72,7 @@ export default async function RoomTable({
           <thead>
             <tr>
               <th></th>
-              {sessionsHeaders.map(({ label, value }, index) => (
+              {roomsHeaders.map(({ label, value }, index) => (
                 <SortableHeader
                   key={value + index}
                   title={label}
