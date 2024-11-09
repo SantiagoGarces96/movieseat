@@ -19,3 +19,13 @@ export const moviesHeaders = [
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];
+
+export const roomsHeaders = [
+  { label: "Nombre", value: "name" },
+  { label: "Tipo", value: "room" },
+  { label: "Asientos Preferenciales", value: "totalSeatsPreferential" },
+  { label: "Asientos Generales", value: "totalSeatsGeneral" },
+  { label: "Total Asientos", value: "totalSeats" },
+  { label: "Creada", value: "createdAt" },
+  { label: "Actualizada", value: "updatedAt" },
+];
