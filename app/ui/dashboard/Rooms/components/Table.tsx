@@ -6,7 +6,7 @@ import SortableHeader from "../../SortableHeader";
 import ResultPagination from "../../ResultPagination";
 import { DeleteRoomButton, UpdateRoomButton } from "./Buttons";
 
-export default async function SessionsTable({
+export default async function RoomTable({
   page,
   limit,
   query,
@@ -27,7 +27,7 @@ export default async function SessionsTable({
         <ResultCount />
         <ResultSearch
           placeholder="Ingrese su busqueda"
-          tooltipText="Puedes buscar por: Nombre de la película."
+          tooltipText="Puedes buscar por: nombre y tipo."
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">

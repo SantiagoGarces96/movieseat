@@ -1,7 +1,7 @@
 import { CountResultOpt } from "@/constants/dashboard/table";
 import DashboardLayout from "../DashboardLayout";
-import SessionsTable from "./components/Table";
 import { CreateRoomButton } from "./components/Buttons";
+import RoomTable from "./components/Table";
 
 export default function RoomsPage({
   searchParams,
@@ -15,7 +15,7 @@ export default function RoomsPage({
   const order = searchParams.order || "";
   return (
     <DashboardLayout title="Salas" button={<CreateRoomButton />}>
-      <SessionsTable
+      <RoomTable
         page={page}
         limit={limit}
         query={query}
