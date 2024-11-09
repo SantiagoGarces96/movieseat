@@ -1,6 +1,6 @@
 "use server";
 import { IRoom } from "@/interfaces/room";
-import { IAvailableSeatsByRoom, ISessionResponse } from "@/interfaces/session";
+import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import Room from "@/models/Room";
@@ -8,29 +8,35 @@ import Session from "@/models/Session";
 import { getSeatsNumber } from "@/utils/getSeatsNumber";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
-
-const options = [5, 10, 15, 20];
+import mongoose from "mongoose";
+import { FormState, FormStatus } from "@/types/form";
+import { sessionTimes } from "@/constants/sessions";
+import { parseToTimeUTC } from "@/utils/parseDate";
+import { redirect } from "next/navigation";
+import { CountResultOpt } from "@/constants/dashboard/table";
+import { IDashboardResponse } from "@/interfaces/dasboard";
 
 export const getSessions = async (
   page: string = "1",
-  limit: string = "5",
+  limit: string = CountResultOpt[1].toString(),
   query: string = "",
   sortBy: string = "createdAt",
   order: string = "",
-): Promise<ISessionResponse> => {
+): Promise<IDashboardResponse> => {
   await dbConnect();
-  const pageSize = options.reduce((prev, curr) =>
+  const pageSize = CountResultOpt.reduce((prev, curr) =>
     Math.abs(curr - parseInt(limit)) < Math.abs(prev - parseInt(limit))
       ? curr
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
+  const clearQuery = query.trim();
 
   try {
     const totalResults = await Session.countDocuments({
       movieId: {
         $in: await Movie.find({
-          title: { $regex: query, $options: "i" },
+          title: { $regex: clearQuery, $options: "i" },
         }).select("_id"),
       },
     });
@@ -45,6 +51,7 @@ export const getSessions = async (
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
 
+    //TODO optomize query
     const results = await Session.aggregate([
       {
         $lookup: {
@@ -70,7 +77,7 @@ export const getSessions = async (
       },
       {
         $match: {
-          "movie.title": { $regex: query, $options: "i" },
+          "movie.title": { $regex: clearQuery, $options: "i" },
         },
       },
       {
@@ -93,13 +100,13 @@ export const getSessions = async (
           preferentialPrice: { $toString: "$preferentialPrice" },
           generalPrice: { $toString: "$generalPrice" },
           dateTime: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$dateTime" },
           },
           createdAt: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
           updatedAt: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
           },
         },
       },
@@ -122,31 +129,96 @@ export const getSessions = async (
   }
 };
 
+export const getSessionById = async (_id: string): Promise<ISession | null> => {
+  await dbConnect();
+  try {
+    if (!_id) {
+      return null;
+    }
+    const session: ISession | null = await Session.findById(_id);
+    return session;
+  } catch (error: any) {
+    console.error(`Error in getSessionById function: ${error.message}`);
+    return null;
+  }
+};
+
+export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
+  await dbConnect();
+  try {
+    const now = new Date();
+    const todayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+
+    const sessions = await Session.aggregate([
+      {
+        $match: {
+          movieId: new mongoose.Types.ObjectId(movieId),
+          dateTime: { $gte: todayUTC },
+        },
+      },
+      {
+        $lookup: {
+          from: "rooms",
+          localField: "roomId",
+          foreignField: "_id",
+          as: "room",
+        },
+      },
+      {
+        $unwind: "$room",
+      },
+      {
+        $sort: { dateTime: 1 },
+      },
+      {
+        $project: {
+          _id: { $toString: "$_id" },
+          room: { $toString: "$room.name" },
+          date: {
+            $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
+          },
+          time: {
+            $dateToString: { format: "%H:%M:%S", date: "$dateTime" },
+          },
+        },
+      },
+    ]);
+    return sessions;
+  } catch (error: any) {
+    console.error(`Error in getSessionByIdMovie function: ${error.message}`);
+    return [];
+  }
+};
+
 export const createSession = async (
-  prevState: any,
+  currentTime: string,
+  prevState: FormState,
   formData: FormData,
-): Promise<any> => {
+): Promise<FormState> => {
   try {
     const movieId = formData.get("movieId");
     const roomId = formData.get("roomId");
-    const dateTime = formData.get("dateTime");
+    const date = formData.get("date");
     const preferentialPrice = formData.get("preferentialPrice");
     const generalPrice = formData.get("generalPrice");
 
     if (
       !movieId ||
       !roomId ||
-      !dateTime ||
+      !date ||
       !preferentialPrice ||
-      !generalPrice
+      !generalPrice ||
+      !currentTime
     ) {
-      return { success: false, message: "Todos lo campos son requeridos." };
+      throw new Error("Fields are required.");
     }
 
     const room: IRoom | null = await Room.findById(roomId);
 
     if (!room) {
-      return { success: false, message: "Sala no encontrada." };
+      throw new Error("Room not found.");
     }
 
     const seatsPreferential = room.totalSeatsPreferential;
@@ -156,7 +228,7 @@ export const createSession = async (
     const fields = {
       movieId,
       roomId,
-      dateTime: dateTime,
+      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -165,28 +237,102 @@ export const createSession = async (
       generalPrice,
       availableSeats,
     };
-
     await Session.create(fields);
-    revalidatePath("/dashboard/sessions");
-    return { success: true, message: "Sesion creada con exito." };
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
-    return { success: false, message: "Error al crear la sesion" };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
   }
+
+  revalidatePath("/dashboard/sessions");
+  redirect("/dashboard/sessions");
+};
+
+export const updateSession = async (
+  {
+    id,
+    movieId,
+    currentTime,
+  }: { id: string; movieId: string; currentTime: string },
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const roomId = formData.get("roomId");
+    const date = formData.get("date");
+    const preferentialPrice = formData.get("preferentialPrice");
+    const generalPrice = formData.get("generalPrice");
+
+    if (
+      !movieId ||
+      !roomId ||
+      !date ||
+      !preferentialPrice ||
+      !generalPrice ||
+      !currentTime ||
+      !id
+    ) {
+      throw new Error("Fields are required.");
+    }
+
+    const room: IRoom | null = await Room.findById(roomId);
+
+    if (!room) {
+      throw new Error("Room not found.");
+    }
+
+    const seatsPreferential = room.totalSeatsPreferential;
+    const seatsGeneral = room.totalSeatsGeneral;
+    const availableSeats = room.totalSeats;
+
+    const fields = {
+      movieId,
+      roomId,
+      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
+      seatsPreferential: getSeatsNumber(seatsPreferential),
+      availableSeatsPreferential: seatsPreferential,
+      preferentialPrice,
+      seatsGeneral: getSeatsNumber(seatsGeneral),
+      availableSeatsGeneral: seatsGeneral,
+      generalPrice,
+      availableSeats,
+    };
+    await Session.findByIdAndUpdate(id, fields);
+  } catch (error: any) {
+    console.error(`Error in updateSession function: ${error.message}`);
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
+  }
+  revalidatePath("/dashboard/sessions");
+  redirect("/dashboard/sessions");
 };
 
 export const deleteSession = async (
   _id: string,
-): Promise<{
-  message: string;
-}> => {
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/invoices");
-    return { message: "Deleted Session" };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Sessión eliminada con exito.",
+    };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
-    return { message: "Database Error: Failed to Delete Session." };
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
   }
 };
 
@@ -217,6 +363,65 @@ export const getAvailableSeatsByRoom = async (): Promise<
   } catch (error: any) {
     console.error(
       `Error in getAvailableSeatsByRoom function: ${error.message}`,
+    );
+    return [];
+  }
+};
+
+export const getAvailableSessionTimes = async (
+  selectedDate: string,
+  roomId: string,
+): Promise<string[]> => {
+  await dbConnect();
+  try {
+    const startOfDay = new Date(
+      Date.UTC(
+        new Date(selectedDate).getUTCFullYear(),
+        new Date(selectedDate).getUTCMonth(),
+        new Date(selectedDate).getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
+
+    const endOfDay = new Date(
+      Date.UTC(
+        new Date(selectedDate).getUTCFullYear(),
+        new Date(selectedDate).getUTCMonth(),
+        new Date(selectedDate).getUTCDate(),
+        23,
+        59,
+        59,
+        999,
+      ),
+    );
+
+    const sessions = await Session.find({
+      dateTime: { $gte: startOfDay, $lte: endOfDay },
+      roomId,
+    }).select("dateTime");
+
+    const occupiedTimes = sessions.map((session) => {
+      return new Date(session.dateTime)
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0];
+    });
+
+    const availableTimes = sessionTimes.filter((time) => {
+      const sessionTime = parseToTimeUTC(time, selectedDate)
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0];
+      return !occupiedTimes.includes(sessionTime);
+    });
+
+    return availableTimes;
+  } catch (error: any) {
+    console.error(
+      `Error in getAvailableSessionTimes function: ${error.message}`,
     );
     return [];
   }

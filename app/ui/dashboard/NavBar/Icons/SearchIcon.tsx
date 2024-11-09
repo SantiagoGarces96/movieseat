@@ -1,7 +1,7 @@
 "use client";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import SearchInput from "../Inputs/SearchInput";
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 
 export default function SearchIcon() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,7 +17,9 @@ export default function SearchIcon() {
   return (
     <div>
       <div className="hidden lg:flex">
-        <SearchInput inputRef={inputRef} />
+        <Suspense>
+          <SearchInput inputRef={inputRef} />
+        </Suspense>
       </div>
       <button
         className="btn btn-circle btn-ghost btn-sm lg:hidden"

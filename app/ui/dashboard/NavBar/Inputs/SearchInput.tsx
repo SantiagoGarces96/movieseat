@@ -1,11 +1,11 @@
 "use client";
 import { recentSearchSaver } from "@/utils/localStorage";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { RefObject, useCallback, useEffect } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useDebouncedCallback } from "use-debounce";
 import RecentSearch from "../DataDisplay/RecentSearch";
 import ResultsSearchs from "../DataDisplay/ResultsSearch";
+import useParams from "@/app/hooks/useParams";
 
 function Input({
   inputRef,
@@ -14,19 +14,15 @@ function Input({
   inputRef?: RefObject<HTMLInputElement>;
   kbd?: boolean;
 }) {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
+  const { getParam, updateParam, deleteParam } = useParams();
 
   const handleSearch = useDebouncedCallback((term: string) => {
-    const params = new URLSearchParams(searchParams);
     if (term) {
-      params.set("query", term);
+      updateParam("query", term);
       recentSearchSaver(term);
     } else {
-      params.delete("query");
+      deleteParam("query");
     }
-    replace(`${pathname}?${params.toString()}`);
   }, 500);
 
   const focusInput = useCallback(() => {
@@ -89,7 +85,7 @@ function Input({
         onChange={(e) => {
           handleSearch(e.target.value);
         }}
-        defaultValue={searchParams.get("query")?.toString()}
+        defaultValue={getParam("query")}
       />
       {kbd && (
         <>

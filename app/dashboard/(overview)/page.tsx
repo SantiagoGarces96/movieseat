@@ -2,8 +2,6 @@ import AreaChartOverview from "@/app/ui/dashboard/Chart/AreaChart";
 import BarChartOverview from "@/app/ui/dashboard/Chart/BarChart";
 import LineChartOverview from "@/app/ui/dashboard/Chart/LineChart";
 import PieChartOverview from "@/app/ui/dashboard/Chart/PieChart";
-import SearchModal from "@/app/ui/dashboard/NavBar/Modals/SearchModal";
-import SideNavBarModal from "@/app/ui/dashboard/NavBar/Modals/SideNavBarModal";
 import OverviewCard from "@/app/ui/dashboard/OverviewCard";
 import StatOverview from "@/app/ui/dashboard/Stat";
 import { getMoviesByGenre, getMoviesByStatus } from "@/services/movies";
@@ -20,9 +18,7 @@ export default async function OverviewPage() {
   const dailyTicketSales = await getDailyTicketSales();
 
   return (
-    <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
-      <SearchModal />
-      <SideNavBarModal />
+    <section className="flex w-full flex-col overflow-hidden px-2 py-9 2xl:max-w-[90rem]">
       <div className="flex flex-col gap-3">
         <h2 className="text-3xl font-bold">Bienvenido</h2>
         <p className="text-base text-gray-400">
@@ -30,7 +26,7 @@ export default async function OverviewPage() {
           mantener a tu audiencia satiisfecha.
         </p>
       </div>
-      <div className="my-8 flex flex-col gap-4">
+      <div className="my-8 flex flex-col gap-4 overflow-auto">
         <div className="flex flex-col gap-4 lg:flex-row">
           <OverviewCard title="Películas por Género">
             <div className="min-h-[300px]">

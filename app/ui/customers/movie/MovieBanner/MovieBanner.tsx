@@ -32,7 +32,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
   status,
 }) => {
   return (
-    <section className="relative h-[450px] w-full pt-16">
+    <section className="relative w-full pt-16 sm:h-[350px] hd:h-[400px] fhd:h-[450px]">
       {/* Backdrop */}
       <div className="absolute inset-0 h-full w-full overflow-hidden">
         <Image
@@ -42,6 +42,7 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
           style={{ objectFit: "cover" }}
           quality={100}
           className="brightness-75"
+          priority
         />
       </div>
 
@@ -49,10 +50,10 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
       <div className="absolute inset-0 z-10 bg-black opacity-70"></div>
 
       {/* Contenedor del contenido */}
-      <div className="container relative z-20 mx-auto flex h-full items-center justify-center px-8">
-        <div className="flex w-full flex-col items-center gap-8 fhd:w-4/5 fhd:flex-row">
+      <div className="container relative z-20 mx-auto flex h-full items-center justify-center px-8 sm:px-6 md:px-8">
+        <div className="flex w-screen flex-col items-center gap-8 sm:flex-row fhd:w-4/5">
           {/* Poster */}
-          <div className="w-1/5 flex-shrink-0 overflow-hidden rounded-lg shadow-lg">
+          <div className="w-2/5 flex-shrink-0 overflow-hidden rounded-lg shadow-lg md:w-1/4 hd:w-1/5">
             <Image
               src={poster}
               alt={`${title} poster`}
@@ -60,20 +61,25 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
               height={500}
               style={{ objectFit: "fill" }}
               className="rounded-lg"
+              priority
             />
           </div>
 
           {/* Información de la película */}
-          <div className="space-y-4 text-white">
-            <h1 className="text-4xl font-bold">{title}</h1>
-            <p className="text-lg">{`Estreno: ${releaseDate}`}</p>
-            <p className="text-md">{`Duración: ${duration} min`}</p>
-            <p className="text-md">{genre.join(", ")}</p>
+          <div className="space-y-4 text-white sm:text-left">
+            <h1 className="text-2xl font-bold md:text-3xl hd:text-4xl">
+              {title}
+            </h1>
+            <p className="text-sm md:text-base hd:text-lg">{`Estreno: ${releaseDate}`}</p>
+            <p className="text-sm md:text-base hd:text-lg">{`Duración: ${duration} min`}</p>
+            <p className="text-sm md:text-base hd:text-lg">
+              {genre.join(", ")}
+            </p>
 
             {/* estado */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 sm:justify-start">
               <span
-                className={`rounded px-2 py-1 text-white ${statusColors[status]}`}
+                className={`rounded px-2 py-1 text-xs text-white md:text-sm hd:text-base ${statusColors[status]}`}
               >
                 {status === MovieStatus.PRE_SALE
                   ? "Preventa"

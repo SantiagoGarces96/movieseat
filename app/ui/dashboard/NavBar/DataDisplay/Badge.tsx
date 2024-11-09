@@ -1,16 +1,12 @@
 "use client";
+import useParams from "@/app/hooks/useParams";
 import { IBadgeDashboard } from "@/interfaces/dasboard";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Badge({ label }: IBadgeDashboard) {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
+  const { updateParam } = useParams();
 
   const handleClick = () => {
-    const params = new URLSearchParams(searchParams);
-    params.set("query", label);
-    replace(`${pathname}?${params.toString()}`);
+    updateParam("query", label);
   };
 
   return (

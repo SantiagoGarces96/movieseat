@@ -63,6 +63,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
               fill
               style={{ objectFit: "fill" }}
               className="rounded-t-lg"
+              priority
             />
           </figure>
         </div>

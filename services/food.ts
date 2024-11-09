@@ -3,6 +3,7 @@ import { IResultDataDashboard } from "@/interfaces/dasboard";
 import dbConnect from "../lib/dbConnect";
 import { IFood } from "@/interfaces/food";
 import Food from "@/models/Food";
+import { FoodCategory } from "@/types/food";
 
 export const getFoodByQuery = async (
   query: string,
@@ -20,13 +21,32 @@ export const getFoodByQuery = async (
         return {
           src: image,
           label: name,
-          href: `/food/${_id}`,
+          href: `/dashboard/food/${_id}`,
         };
       },
     );
     return parsedFood;
   } catch (error: any) {
     console.error(`Error in getFoodByQuery function: ${error.message}`);
+    return [];
+  }
+};
+
+export const getFoodsByCategory = async (
+  category: FoodCategory,
+): Promise<IFood[]> => {
+  if (!category) {
+    return [];
+  }
+  await dbConnect();
+  try {
+    const foods: IFood[] = await Food.find({
+      category: category,
+    });
+
+    return foods;
+  } catch (error: any) {
+    console.error(`Error in getFoodsByCategory function: ${error.message}`);
     return [];
   }
 };

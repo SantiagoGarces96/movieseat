@@ -8,3 +8,14 @@ export const sessionsHeaders = [
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];
+
+export const moviesHeaders = [
+  { label: "Titulo", value: "title" },
+  { label: "Descripción", value: "description" },
+  { label: "Estado", value: "status" },
+  { label: "Director", value: "director" },
+  { label: "Duracion", value: "duration" },
+  { label: "Fecha de estreno", value: "releaseDate" },
+  { label: "Creada", value: "createdAt" },
+  { label: "Actualizada", value: "updatedAt" },
+];
