@@ -369,6 +369,13 @@ const updateMovieStatus = async (
 };
 
 export const updateMoviesStatus = async (): Promise<void> => {
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+  await Session.deleteMany({
+    dateTime: { $lt: oneMonthAgo },
+  });
+
   const movies: IMovie[] = await Movie.find({});
   const totalMovies = movies.length;
 
@@ -377,7 +384,6 @@ export const updateMoviesStatus = async (): Promise<void> => {
     const date = new Date(currentMovie.releaseDate);
     const formattedDate = date.toISOString().split("T")[0];
     const status = getMovieStatus(formattedDate);
-    const hasSessions = currentMovie.sessions.length === 0;
 
     if (status === MovieStatus.ARCHIVED) {
       await deleteArchivedMovies(currentMovie._id);
@@ -385,7 +391,7 @@ export const updateMoviesStatus = async (): Promise<void> => {
     }
 
     if (
-      hasSessions &&
+      currentMovie.sessions.length === 0 &&
       (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
     ) {
       await updateMovieStatus(currentMovie._id, formattedDate, status);
