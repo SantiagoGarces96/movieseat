@@ -7,7 +7,7 @@ const SessionRoomEnum = z.enum([
   SessionRoom.IMAX,
 ]);
 
-export const roomSchema = z.object({
+export const RoomFormSchema = z.object({
   name: z
     .string({
       required_error: "El título es obligatorio",
