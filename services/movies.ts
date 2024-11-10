@@ -378,7 +378,7 @@ export const createMovie = async (
     const poster = formData.get("poster");
     const status = formData.get("status");
 
-    const fiels = {
+    const fields = {
       ...state,
       imdb_id,
       title,
@@ -393,7 +393,7 @@ export const createMovie = async (
       status,
     };
 
-    MovieFormSchema.parse(fiels);
+    MovieFormSchema.parse(fields);
 
     const movie: IMovie | null = await Movie.findOne({ imdb_id });
 
@@ -405,7 +405,7 @@ export const createMovie = async (
       };
     }
 
-    await Movie.create(fiels);
+    await Movie.create(fields);
   } catch (error: any) {
     console.error(`Error in createMovie function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
