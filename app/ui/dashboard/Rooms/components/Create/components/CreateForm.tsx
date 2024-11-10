@@ -1,0 +1,90 @@
+"use client";
+import Link from "next/link";
+import { useFormState } from "react-dom";
+import { initialState } from "@/constants/dashboard/form";
+import useAlert from "@/app/hooks/useAlert";
+import Alert from "../../../../Alert";
+import { Button } from "../../../../Button";
+import { SessionRoom } from "@/types/session";
+import { createRooom } from "@/services/rooms";
+
+export default function RoomCreateForm() {
+  const [state, formAction] = useFormState(createRooom, initialState);
+  const { showAlert } = useAlert(state);
+  return (
+    <form
+      action={formAction}
+      className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
+    >
+      {showAlert && <Alert {...state} />}
+      <label className="form-control col-span-12 grid w-full lg:col-span-6">
+        <div className="label text-lg font-bold">
+          <span className="label-text">Nombre de la sala</span>
+        </div>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          className="input input-sm input-bordered w-full"
+          required
+        />
+      </label>
+      <label className="form-control col-span-12 grid w-full lg:col-span-6">
+        <div className="label text-lg font-bold">
+          <span className="label-text">Tipo de sala</span>
+        </div>
+        <select
+          id="room"
+          name="room"
+          className="select select-bordered select-sm w-full"
+          defaultValue=""
+          required
+        >
+          <option value="" disabled>
+            Seleccione un tipo
+          </option>
+          {Object.entries(SessionRoom).map(([_, value], index) => (
+            <option key={value + index} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="form-control col-span-12 grid w-full lg:col-span-6">
+        <div className="label text-lg font-bold">
+          <span className="label-text">Total asientos preferenciales</span>
+        </div>
+        <input
+          id="totalSeatsPreferential"
+          name="totalSeatsPreferential"
+          type="number"
+          className="input input-sm input-bordered w-full"
+          required
+        />
+      </label>
+      <label className="form-control col-span-12 grid w-full lg:col-span-6">
+        <div className="label text-lg font-bold">
+          <span className="label-text">Total asientos generales</span>
+        </div>
+        <input
+          id="totalSeatsGeneral"
+          name="totalSeatsGeneral"
+          type="number"
+          className="input input-sm input-bordered w-full"
+          required
+        />
+      </label>
+      <div className="col-span-12 mt-6 grid w-full">
+        <div className="flex w-full items-center justify-center gap-4">
+          <Link
+            href="/dashboard/rooms"
+            className="btn btn-error btn-sm min-w-28 text-primary"
+          >
+            Cancelar
+          </Link>
+          <Button type="submit">Crear</Button>
+        </div>
+      </div>
+    </form>
+  );
+}

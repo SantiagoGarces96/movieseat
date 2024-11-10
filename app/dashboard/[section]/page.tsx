@@ -1,4 +1,5 @@
 import MoviesPage from "@/app/ui/dashboard/Movies";
+import RoomsPage from "@/app/ui/dashboard/Rooms";
 import SessionsPage from "@/app/ui/dashboard/Sessions";
 import { routes } from "@/constants/dashboard/routes";
 import { AvailablesSections } from "@/types/sections";
@@ -33,7 +34,7 @@ export default async function Page({ params, searchParams }: IPageProps) {
       return <MoviesPage searchParams={searchParams} />;
 
     case AvailablesSections.ROOMS:
-    // return <RoomsPage searchParams={searchParams} />;
+      return <RoomsPage searchParams={searchParams} />;
 
     case AvailablesSections.FOOD:
     // return <FoodPage searchParams={searchParams} />;
