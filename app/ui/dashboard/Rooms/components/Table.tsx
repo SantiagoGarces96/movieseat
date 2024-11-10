@@ -1,10 +1,10 @@
-import { roomsHeaders, sessionsHeaders } from "@/constants/dashboard/headers";
-import { getSessions } from "@/services/sessions";
+import { roomsHeaders } from "@/constants/dashboard/headers";
 import ResultCount from "../../ResultCount";
 import ResultSearch from "../../ResultSearch";
 import SortableHeader from "../../SortableHeader";
 import ResultPagination from "../../ResultPagination";
 import { DeleteRoomButton, UpdateRoomButton } from "./Buttons";
+import { getRooms } from "@/services/rooms";
 
 export default async function RoomTable({
   page,
@@ -19,7 +19,9 @@ export default async function RoomTable({
   sortBy: string;
   order: string;
 }) {
-  const sessions = await getSessions(page, limit, query, sortBy, order);
+  const rooms = await getRooms(page, limit, query, sortBy, order);
+  console.log(rooms.results[0]);
+
   const current = parseInt(limit) * parseInt(page);
   return (
     <div className="flex h-full flex-col items-center justify-center">
@@ -31,7 +33,7 @@ export default async function RoomTable({
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">
-        {sessions.results.map((data, index) => (
+        {rooms.results.map((data, index) => (
           <div key={data._id} className="mb-2 w-full rounded-md border p-4">
             <div className="flex w-full items-center justify-between pb-4 text-sm">
               <p className="w-1/2">
@@ -83,7 +85,7 @@ export default async function RoomTable({
             </tr>
           </thead>
           <tbody>
-            {sessions.results.map((data, index) => (
+            {rooms.results.map((data, index) => (
               <tr key={"element" + index}>
                 {Object.entries(data).map(([key, value]) => {
                   return key === "_id" ? (
@@ -103,18 +105,16 @@ export default async function RoomTable({
           </tbody>
         </table>
       </div>
-      {sessions.totalPages > 0 && (
+      {rooms.totalPages > 0 && (
         <div className="flex w-full items-center justify-between px-1 py-5">
           <span className="text-base text-gray-400">
-            {(current > sessions.totalResults
-              ? sessions.totalResults
-              : current) +
+            {(current > rooms.totalResults ? rooms.totalResults : current) +
               " of " +
-              sessions.totalResults}
+              rooms.totalResults}
           </span>
           <ResultPagination
             currentPage={parseInt(page)}
-            totalPages={sessions.totalPages}
+            totalPages={rooms.totalPages}
           />
         </div>
       )}
