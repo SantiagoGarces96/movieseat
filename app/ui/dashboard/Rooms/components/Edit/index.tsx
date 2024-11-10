@@ -1,34 +1,18 @@
-import { getAvailableSessionTimes, getSessionById } from "@/services/sessions";
 import DashboardLayout from "../../../DashboardLayout";
 import SessionEditForm from "./components/EditForm";
 import { notFound } from "next/navigation";
-import { getAllRooms } from "@/services/rooms";
-import { getMovieById } from "@/services/movies";
+import { getRoomById } from "@/services/rooms";
 
-export default async function EditSession({ id }: { id: string }) {
-  const session = await getSessionById(id);
+export default async function EditRoom({ id }: { id: string }) {
+  const room = await getRoomById(id);
 
-  if (!session) {
+  if (!room) {
     notFound();
   }
 
-  const rooms = await getAllRooms();
-  const movie = await getMovieById(session?.movieId.toString());
-  const [date, time] = new Date(session.dateTime).toISOString().split("T");
-  const parseTime = time.split(".")[0];
-  const availableSessions = await getAvailableSessionTimes(
-    date,
-    session.roomId.toString(),
-  );
-
   return (
-    <DashboardLayout title="Editar sesión">
-      <SessionEditForm
-        session={JSON.parse(JSON.stringify(session))}
-        rooms={JSON.parse(JSON.stringify(rooms))}
-        movie={JSON.parse(JSON.stringify(movie))}
-        availableSessions={[parseTime, ...availableSessions]}
-      />
+    <DashboardLayout title="Editar sala">
+      <SessionEditForm room={room} />
     </DashboardLayout>
   );
 }
