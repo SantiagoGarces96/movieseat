@@ -18,7 +18,7 @@ export default async function EditMovie({ id }: { id: string }) {
       <MovieEditForm
         genres={genresData}
         languages={languagesData}
-        movieData={JSON.parse(JSON.stringify(movie))}
+        movieData={movie}
       />
     </DashboardLayout>
   );

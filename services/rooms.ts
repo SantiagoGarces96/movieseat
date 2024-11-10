@@ -17,8 +17,8 @@ import { RoomFormSchema } from "@/schema/room";
 export const getAllRooms = async (): Promise<IRoom[]> => {
   await dbConnect();
   try {
-    const movies: IRoom[] = await Room.find({}).sort({ name: 1 });
-    return movies;
+    const rooms: IRoom[] = await Room.find({}).sort({ name: 1 });
+    return JSON.parse(JSON.stringify(rooms));
   } catch (error: any) {
     console.error(`Error in getAllRooms function: ${error.message}`);
     return [];

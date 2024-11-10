@@ -136,7 +136,7 @@ export const getSessionById = async (_id: string): Promise<ISession | null> => {
       return null;
     }
     const session: ISession | null = await Session.findById(_id);
-    return session;
+    return JSON.parse(JSON.stringify(session));
   } catch (error: any) {
     console.error(`Error in getSessionById function: ${error.message}`);
     return null;
@@ -256,7 +256,7 @@ export const updateSession = async (
     id,
     movieId,
     currentTime,
-  }: { id: string; movieId: string; currentTime: string },
+  }: { id: string; movieId?: string; currentTime: string },
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {

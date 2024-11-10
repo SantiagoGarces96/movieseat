@@ -20,7 +20,7 @@ export default function SessionEditForm({
 }: {
   session: ISession;
   rooms: IRoom[];
-  movie: IMovie;
+  movie: IMovie | null;
   availableSessions: string[];
 }) {
   const [date, time] = new Date(session.dateTime).toISOString().split("T");
@@ -40,7 +40,7 @@ export default function SessionEditForm({
   const [state, formAction] = useFormState(
     updateSession.bind(null, {
       id: session._id.toString(),
-      movieId: movie._id.toString(),
+      movieId: movie?._id.toString(),
       currentTime,
     }),
     initialState,
@@ -92,7 +92,7 @@ export default function SessionEditForm({
           disabled
         >
           <option value="" disabled>
-            {movie.title}
+            {movie?.title}
           </option>
         </select>
       </label>
