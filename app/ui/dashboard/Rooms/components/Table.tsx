@@ -20,8 +20,6 @@ export default async function RoomTable({
   order: string;
 }) {
   const rooms = await getRooms(page, limit, query, sortBy, order);
-  console.log(rooms.results[0]);
-
   const current = parseInt(limit) * parseInt(page);
   return (
     <div className="flex h-full flex-col items-center justify-center">
@@ -37,30 +35,28 @@ export default async function RoomTable({
           <div key={data._id} className="mb-2 w-full rounded-md border p-4">
             <div className="flex w-full items-center justify-between pb-4 text-sm">
               <p className="w-1/2">
-                Sesión {(parseInt(page) - 1) * parseInt(limit) + index + 1}
+                Sala {(parseInt(page) - 1) * parseInt(limit) + index + 1}
                 <br />
-                <strong>{data.dateTime}</strong>
+                <strong>{data.room}</strong>
               </p>
               <p className="w-1/2 truncate text-end font-bold">{data.movie}</p>
             </div>
             <div className="flex w-full items-center justify-between border-b py-5">
               <div className="flex w-1/3 flex-col">
-                <p className="text-xs">Sala</p>
-                <p className="font-medium">{data.room}</p>
+                <p className="text-xs">Total asientos</p>
+                <p className="font-medium">{data.totalSeats}</p>
               </div>
               <div className="flex w-1/3 flex-col">
-                <p className="text-xs">Precio preferencial</p>
-                <p className="font-medium">{data.preferentialPrice}</p>
+                <p className="text-xs">Asientos preferenciales</p>
+                <p className="font-medium">{data.totalSeatsPreferential}</p>
               </div>
               <div className="flex w-1/3 flex-col">
-                <p className="text-xs">Precio general</p>
-                <p className="font-medium">{data.generalPrice}</p>
+                <p className="text-xs">Asientos generales</p>
+                <p className="font-medium">{data.totalSeatsGeneral}</p>
               </div>
             </div>
             <div className="flex w-full items-center justify-between pt-4 text-sm">
-              <p>
-                <strong>{data.availableSeats}</strong> asientos disponibles
-              </p>
+              <p />
               <div className="flex items-end justify-center gap-3">
                 <DeleteRoomButton id={data._id} />
                 <UpdateRoomButton id={data._id} />
