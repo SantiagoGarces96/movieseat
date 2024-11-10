@@ -45,7 +45,6 @@ export const getRooms = async (
     });
 
     const totalPages = Math.ceil(totalResults / pageSize);
-    console.log(totalPages);
 
     const pageNumber =
       parseInt(page) < 1
