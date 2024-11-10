@@ -1,11 +1,11 @@
 "use client";
 import { HiOutlineTrash, HiOutlinePencil } from "react-icons/hi2";
 import Link from "next/link";
-import { deleteSession } from "@/services/sessions";
 import { useFormState } from "react-dom";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../Alert";
+import { deleteRoom } from "@/services/rooms";
 
 export function CreateRoomButton() {
   return (
@@ -30,8 +30,8 @@ export function UpdateRoomButton({ id }: { id: string }) {
 }
 
 export function DeleteRoomButton({ id }: { id: string }) {
-  const deleteSessionWithId = deleteSession.bind(null, id);
-  const [state, formAction] = useFormState(deleteSessionWithId, initialState);
+  const deleteRoomWithId = deleteRoom.bind(null, id);
+  const [state, formAction] = useFormState(deleteRoomWithId, initialState);
   const { showAlert } = useAlert(state);
   return (
     <form action={formAction}>

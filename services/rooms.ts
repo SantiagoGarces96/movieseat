@@ -247,25 +247,25 @@ export const updateRoom = async (
   redirect("/dashboard/rooms");
 };
 
-// export const deleteSession = async (
-//   _id: string,
-//   prevState: FormState,
-//   formData: FormData,
-// ): Promise<FormState> => {
-//   try {
-//     await Session.findByIdAndDelete(_id);
-//     revalidatePath("/dashboard/invoices");
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: "Sessión eliminada con exito.",
-//     };
-//   } catch (error: any) {
-//     console.error(`Error in deleteSession function: ${error.message}`);
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: "Algo salió mal, por favor intentalo nuevamente.",
-//     };
-//   }
-// };
+export const deleteRoom = async (
+  _id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    await Room.findByIdAndDelete(_id);
+    revalidatePath("/dashboard/rooms");
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Room eliminada con exito.",
+    };
+  } catch (error: any) {
+    console.error(`Error in deleteSession function: ${error.message}`);
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
+  }
+};
