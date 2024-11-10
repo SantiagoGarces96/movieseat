@@ -129,7 +129,7 @@ export const getRoomById = async (_id: string): Promise<IRoom | null> => {
       return null;
     }
     const room: IRoom | null = await Room.findById(_id);
-    return room;
+    return JSON.parse(JSON.stringify(room));
   } catch (error: any) {
     console.error(`Error in getRoomById function: ${error.message}`);
     return null;
