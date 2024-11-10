@@ -7,7 +7,7 @@ import dbConnect from "../lib/dbConnect";
 import { IRoom } from "@/interfaces/room";
 import Room from "@/models/Room";
 import { CountResultOpt } from "@/constants/dashboard/table";
-import { SortOrder } from "mongoose";
+import { MongooseError, Schema, SortOrder } from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -152,7 +152,7 @@ export const createRooom = async (
 
     const fields = {
       name,
-      roomType,
+      room: roomType,
       totalSeatsPreferential,
       totalSeatsGeneral,
     };
@@ -189,67 +189,63 @@ export const createRooom = async (
   redirect("/dashboard/rooms");
 };
 
-// export const updateSession = async (
-//   {
-//     id,
-//     movieId,
-//     currentTime,
-//   }: { id: string; movieId: string; currentTime: string },
-//   prevState: FormState,
-//   formData: FormData,
-// ): Promise<FormState> => {
-//   try {
-//     const roomId = formData.get("roomId");
-//     const date = formData.get("date");
-//     const preferentialPrice = formData.get("preferentialPrice");
-//     const generalPrice = formData.get("generalPrice");
+export const updateRoom = async (
+  roomId: Schema.Types.ObjectId,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const name = formData.get("name")?.toString() || "";
+    const roomType = formData.get("room")?.toString() || "";
+    const totalSeatsPreferential = parseInt(
+      formData.get("totalSeatsPreferential")?.toString() || "0",
+    );
+    const totalSeatsGeneral = parseInt(
+      formData.get("totalSeatsGeneral")?.toString() || "0",
+    );
 
-//     if (
-//       !movieId ||
-//       !roomId ||
-//       !date ||
-//       !preferentialPrice ||
-//       !generalPrice ||
-//       !currentTime ||
-//       !id
-//     ) {
-//       throw new Error("Fields are required.");
-//     }
+    const fields = {
+      name,
+      room: roomType,
+      totalSeatsPreferential,
+      totalSeatsGeneral,
+    };
 
-//     const room: IRoom | null = await Room.findById(roomId);
+    RoomFormSchema.parse(fields);
 
-//     if (!room) {
-//       throw new Error("Room not found.");
-//     }
+    const totalSeats = totalSeatsPreferential + totalSeatsGeneral;
+    const room: IRoom | null = await Room.findById(roomId);
+    const isRoomName: IRoom | null = await Room.findOne({ name });
 
-//     const seatsPreferential = room.totalSeatsPreferential;
-//     const seatsGeneral = room.totalSeatsGeneral;
-//     const availableSeats = room.totalSeats;
+    if (!room) {
+      throw new Error("La sala no existe");
+    }
 
-//     const fields = {
-//       movieId,
-//       roomId,
-//       dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
-//       seatsPreferential: getSeatsNumber(seatsPreferential),
-//       availableSeatsPreferential: seatsPreferential,
-//       preferentialPrice,
-//       seatsGeneral: getSeatsNumber(seatsGeneral),
-//       availableSeatsGeneral: seatsGeneral,
-//       generalPrice,
-//       availableSeats,
-//     };
-//     await Session.findByIdAndUpdate(id, fields);
-//   } catch (error: any) {
-//     console.error(`Error in updateSession function: ${error.message}`);
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: "Algo salió mal, por favor intentalo nuevamente.",
-//     };
-//   }
-//   revalidatePath("/dashboard/sessions");
-//   redirect("/dashboard/sessions");
-// };
+    if (isRoomName) {
+      throw new Error("El nombre de la sala ya existe");
+    }
+
+    await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
+  } catch (error: any) {
+    console.error(`Error in updateRoom function: ${error.message}`);
+    let errorMessage =
+      error instanceof MongooseError
+        ? "Algo salió mal, por favor intentalo nuevamente"
+        : error.message;
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  revalidatePath("/dashboard/rooms");
+  redirect("/dashboard/rooms");
+};
 
 // export const deleteSession = async (
 //   _id: string,
