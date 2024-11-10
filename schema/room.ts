@@ -13,7 +13,7 @@ export const RoomFormSchema = z.object({
       required_error: "El título es obligatorio",
     })
     .min(1, "El título no puede estar vacío"),
-  roomType: SessionRoomEnum.default(SessionRoom["2D"]),
+  room: SessionRoomEnum.default(SessionRoom["2D"]),
   totalSeatsPreferential: z
     .number({
       required_error: "El Total asientos preferenciales es obligatorio",
