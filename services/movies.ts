@@ -236,6 +236,7 @@ export const getMovieById = async (id: string): Promise<IMovie | null> => {
   await dbConnect();
   try {
     const movie: IMovie | null = await Movie.findById(id);
+    // TODO parse JSON.parse(JSON.stringify(movie)); in all functions
     return movie;
   } catch (error: any) {
     console.error(`Error in getMovieById function: ${error.message}`);
