@@ -8,6 +8,11 @@ import { IRoom } from "@/interfaces/room";
 import Room from "@/models/Room";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
+import { FormState, FormStatus } from "@/types/form";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { RoomFormSchema } from "@/schema/room";
 
 export const getAllRooms = async (): Promise<IRoom[]> => {
   await dbConnect();
@@ -116,3 +121,141 @@ export const getRoomsByQuery = async (
     return [];
   }
 };
+
+export const createRooom = async (
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const name = formData.get("name")?.toString() || "";
+    const roomType = formData.get("room")?.toString() || "";
+    const totalSeatsPreferential = parseInt(
+      formData.get("totalSeatsPreferential")?.toString() || "0",
+    );
+    const totalSeatsGeneral = parseInt(
+      formData.get("totalSeatsGeneral")?.toString() || "0",
+    );
+
+    const fields = {
+      name,
+      roomType,
+      totalSeatsPreferential,
+      totalSeatsGeneral,
+    };
+
+    RoomFormSchema.parse(fields);
+
+    const totalSeats = totalSeatsPreferential + totalSeatsGeneral;
+    const room: IRoom | null = await Room.findOne({ name });
+
+    if (room) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La sala ya existe",
+      };
+    }
+
+    await Room.create({ ...fields, totalSeats });
+  } catch (error: any) {
+    console.error(`Error in createRooom function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  revalidatePath("/dashboard/rooms");
+  redirect("/dashboard/rooms");
+};
+
+// export const updateSession = async (
+//   {
+//     id,
+//     movieId,
+//     currentTime,
+//   }: { id: string; movieId: string; currentTime: string },
+//   prevState: FormState,
+//   formData: FormData,
+// ): Promise<FormState> => {
+//   try {
+//     const roomId = formData.get("roomId");
+//     const date = formData.get("date");
+//     const preferentialPrice = formData.get("preferentialPrice");
+//     const generalPrice = formData.get("generalPrice");
+
+//     if (
+//       !movieId ||
+//       !roomId ||
+//       !date ||
+//       !preferentialPrice ||
+//       !generalPrice ||
+//       !currentTime ||
+//       !id
+//     ) {
+//       throw new Error("Fields are required.");
+//     }
+
+//     const room: IRoom | null = await Room.findById(roomId);
+
+//     if (!room) {
+//       throw new Error("Room not found.");
+//     }
+
+//     const seatsPreferential = room.totalSeatsPreferential;
+//     const seatsGeneral = room.totalSeatsGeneral;
+//     const availableSeats = room.totalSeats;
+
+//     const fields = {
+//       movieId,
+//       roomId,
+//       dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
+//       seatsPreferential: getSeatsNumber(seatsPreferential),
+//       availableSeatsPreferential: seatsPreferential,
+//       preferentialPrice,
+//       seatsGeneral: getSeatsNumber(seatsGeneral),
+//       availableSeatsGeneral: seatsGeneral,
+//       generalPrice,
+//       availableSeats,
+//     };
+//     await Session.findByIdAndUpdate(id, fields);
+//   } catch (error: any) {
+//     console.error(`Error in updateSession function: ${error.message}`);
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: "Algo salió mal, por favor intentalo nuevamente.",
+//     };
+//   }
+//   revalidatePath("/dashboard/sessions");
+//   redirect("/dashboard/sessions");
+// };
+
+// export const deleteSession = async (
+//   _id: string,
+//   prevState: FormState,
+//   formData: FormData,
+// ): Promise<FormState> => {
+//   try {
+//     await Session.findByIdAndDelete(_id);
+//     revalidatePath("/dashboard/invoices");
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: "Sessión eliminada con exito.",
+//     };
+//   } catch (error: any) {
+//     console.error(`Error in deleteSession function: ${error.message}`);
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: "Algo salió mal, por favor intentalo nuevamente.",
+//     };
+//   }
+// };
