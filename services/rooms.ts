@@ -122,6 +122,20 @@ export const getRoomsByQuery = async (
   }
 };
 
+export const getRoomById = async (_id: string): Promise<IRoom | null> => {
+  await dbConnect();
+  try {
+    if (!_id) {
+      return null;
+    }
+    const room: IRoom | null = await Room.findById(_id);
+    return room;
+  } catch (error: any) {
+    console.error(`Error in getRoomById function: ${error.message}`);
+    return null;
+  }
+};
+
 export const createRooom = async (
   prevState: FormState,
   formData: FormData,
