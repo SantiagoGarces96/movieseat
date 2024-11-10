@@ -1,7 +1,7 @@
 import DashboardLayout from "../../../DashboardLayout";
-import SessionEditForm from "./components/EditForm";
 import { notFound } from "next/navigation";
 import { getRoomById } from "@/services/rooms";
+import RoomEditForm from "./components/EditForm";
 
 export default async function EditRoom({ id }: { id: string }) {
   const room = await getRoomById(id);
@@ -12,7 +12,7 @@ export default async function EditRoom({ id }: { id: string }) {
 
   return (
     <DashboardLayout title="Editar sala">
-      <SessionEditForm room={room} />
+      <RoomEditForm room={room} />
     </DashboardLayout>
   );
 }
