@@ -29,3 +29,13 @@ export const roomsHeaders = [
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];
+
+export const foodHeaders = [
+  { label: "Nombre", value: "name" },
+  { label: "Descripción", value: "description" },
+  { label: "Precio", value: "price" },
+  { label: "Tamaño", value: "size" },
+  { label: "Cantidad disponible", value: "availableAmount" },
+  { label: "Creada", value: "createdAt" },
+  { label: "Actualizada", value: "updatedAt" },
+];
