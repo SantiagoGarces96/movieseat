@@ -6,9 +6,14 @@ import {
 import dbConnect from "../lib/dbConnect";
 import { IFood } from "@/interfaces/food";
 import Food from "@/models/Food";
-import { FoodCategory } from "@/types/food";
+import { FoodCategory, FoodSize, FoodType } from "@/types/food";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
+import { FormState, FormStatus } from "@/types/form";
+import { FoodFormSchema } from "@/schema/food";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 
 export const getFoodByQuery = async (
   query: string,
@@ -136,3 +141,150 @@ export const getFoodsByCategory = async (
     return [];
   }
 };
+
+export const createFood = async (
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const name = formData.get("name")?.toString().trim() || "";
+    const image = formData.get("image")?.toString().trim() || "";
+    const description = formData.get("description")?.toString().trim() || "";
+    const size = formData.get("size")?.toString().trim() || FoodSize.SMALL;
+    const category =
+      formData.get("category")?.toString().trim() || FoodCategory.FOODS;
+    const type = formData.get("type")?.toString().trim() || FoodType.POPCORN;
+    const price = parseInt(formData.get("price")?.toString().trim() || "0");
+    const availableAmount = parseInt(
+      formData.get("availableAmount")?.toString().trim() || "0",
+    );
+
+    console.log(image);
+
+    const fields = {
+      name,
+      image,
+      description,
+      size,
+      price,
+      category,
+      type,
+      availableAmount,
+    };
+
+    FoodFormSchema.parse(fields);
+
+    const food: IFood | null = await Food.findOne({ name });
+
+    if (food) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La comida ya existe",
+      };
+    }
+
+    await Food.create(fields);
+  } catch (error: any) {
+    console.error(`Error in createRooom function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  revalidatePath("/dashboard/food");
+  redirect("/dashboard/food");
+};
+
+// export const updateRoom = async (
+//   roomId: Schema.Types.ObjectId,
+//   prevState: FormState,
+//   formData: FormData,
+// ): Promise<FormState> => {
+//   try {
+//     const name = formData.get("name")?.toString().trim() || "";
+//     const roomType = formData.get("room")?.toString().trim() || "";
+//     const totalSeatsPreferential = parseInt(
+//       formData.get("totalSeatsPreferential")?.toString().trim() || "0",
+//     );
+//     const totalSeatsGeneral = parseInt(
+//       formData.get("totalSeatsGeneral")?.toString().trim() || "0",
+//     );
+
+//     const fields = {
+//       name,
+//       room: roomType,
+//       totalSeatsPreferential,
+//       totalSeatsGeneral,
+//     };
+
+//     RoomFormSchema.parse(fields);
+
+//     const totalSeats = totalSeatsPreferential + totalSeatsGeneral;
+//     const room: IRoom | null = await Room.findById(roomId);
+//     const isRoomName: IRoom | null = await Room.findOne({ name });
+
+//     if (!room) {
+//       return {
+//         status: FormStatus.COMPLETE,
+//         success: false,
+//         message: "La sala no existe",
+//       };
+//     }
+
+//     if (isRoomName) {
+//       return {
+//         status: FormStatus.COMPLETE,
+//         success: false,
+//         message: "El nombre de la sala ya existe",
+//       };
+//     }
+
+//     await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
+//   } catch (error: any) {
+//     console.error(`Error in updateRoom function: ${error.message}`);
+//     let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
+//     if (error instanceof z.ZodError) {
+//       const { errors } = error;
+//       errorMessage = errors[0].message;
+//     }
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: errorMessage,
+//     };
+//   }
+
+//   revalidatePath("/dashboard/rooms");
+//   redirect("/dashboard/rooms");
+// };
+
+// export const deleteRoom = async (
+//   _id: string,
+//   prevState: FormState,
+//   formData: FormData,
+// ): Promise<FormState> => {
+//   try {
+//     await Room.findByIdAndDelete(_id);
+//     revalidatePath("/dashboard/rooms");
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: "Room eliminada con exito.",
+//     };
+//   } catch (error: any) {
+//     console.error(`Error in deleteSession function: ${error.message}`);
+//     return {
+//       status: FormStatus.COMPLETE,
+//       success: false,
+//       message: "Algo salió mal, por favor intentalo nuevamente.",
+//     };
+//   }
+// };
