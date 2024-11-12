@@ -3,7 +3,7 @@ import DashboardLayout from "../DashboardLayout";
 import { CreateMovieButton } from "./components/Buttons";
 import MoviesTable from "./components/Table";
 
-export default function MoviesPage({
+export default function FoodPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -14,7 +14,7 @@ export default function MoviesPage({
   const sortBy = searchParams.sortBy || "createdAt";
   const order = searchParams.order || "";
   return (
-    <DashboardLayout title="Películas" button={<CreateMovieButton />}>
+    <DashboardLayout title="Comidas" button={<CreateMovieButton />}>
       <MoviesTable
         page={page}
         limit={limit}
