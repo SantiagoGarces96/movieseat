@@ -141,13 +141,13 @@ export const createRooom = async (
   formData: FormData,
 ): Promise<FormState> => {
   try {
-    const name = formData.get("name")?.toString() || "";
-    const roomType = formData.get("room")?.toString() || "";
+    const name = formData.get("name")?.toString().trim() || "";
+    const roomType = formData.get("room")?.toString().trim() || "";
     const totalSeatsPreferential = parseInt(
-      formData.get("totalSeatsPreferential")?.toString() || "0",
+      formData.get("totalSeatsPreferential")?.toString().trim() || "0",
     );
     const totalSeatsGeneral = parseInt(
-      formData.get("totalSeatsGeneral")?.toString() || "0",
+      formData.get("totalSeatsGeneral")?.toString().trim() || "0",
     );
 
     const fields = {
@@ -195,13 +195,13 @@ export const updateRoom = async (
   formData: FormData,
 ): Promise<FormState> => {
   try {
-    const name = formData.get("name")?.toString() || "";
-    const roomType = formData.get("room")?.toString() || "";
+    const name = formData.get("name")?.toString().trim() || "";
+    const roomType = formData.get("room")?.toString().trim() || "";
     const totalSeatsPreferential = parseInt(
-      formData.get("totalSeatsPreferential")?.toString() || "0",
+      formData.get("totalSeatsPreferential")?.toString().trim() || "0",
     );
     const totalSeatsGeneral = parseInt(
-      formData.get("totalSeatsGeneral")?.toString() || "0",
+      formData.get("totalSeatsGeneral")?.toString().trim() || "0",
     );
 
     const fields = {
@@ -218,20 +218,25 @@ export const updateRoom = async (
     const isRoomName: IRoom | null = await Room.findOne({ name });
 
     if (!room) {
-      throw new Error("La sala no existe");
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La sala no existe",
+      };
     }
 
     if (isRoomName) {
-      throw new Error("El nombre de la sala ya existe");
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "El nombre de la sala ya existe",
+      };
     }
 
     await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
   } catch (error: any) {
     console.error(`Error in updateRoom function: ${error.message}`);
-    let errorMessage =
-      error instanceof MongooseError
-        ? "Algo salió mal, por favor intentalo nuevamente"
-        : error.message;
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
     if (error instanceof z.ZodError) {
       const { errors } = error;
       errorMessage = errors[0].message;

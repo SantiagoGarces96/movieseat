@@ -467,12 +467,21 @@ export const updateMovie = async (
     MovieFormSchema.parse(fiels);
 
     const movie: IMovie | null = await Movie.findById(id);
+    const isMovieTitle: IMovie | null = await Movie.findOne({ title });
 
     if (!movie) {
       return {
         status: FormStatus.COMPLETE,
         success: false,
         message: "La película no existe",
+      };
+    }
+
+    if (isMovieTitle) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "El nombre de la pelicula ya existe",
       };
     }
 
