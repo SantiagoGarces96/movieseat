@@ -42,6 +42,20 @@ export const getFoodByQuery = async (
   }
 };
 
+export const getFoodById = async (id: string): Promise<IFood | null> => {
+  if (!id) {
+    return null;
+  }
+  await dbConnect();
+  try {
+    const movie: IFood | null = await Food.findById(id);
+    return JSON.parse(JSON.stringify(movie));
+  } catch (error: any) {
+    console.error(`Error in getMovieById function: ${error.message}`);
+    return null;
+  }
+};
+
 export const getFood = async (
   page: string = "1",
   limit: string = CountResultOpt[1].toString(),
