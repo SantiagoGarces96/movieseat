@@ -18,10 +18,10 @@ export function CreateFoodButton() {
   );
 }
 
-export function UpdateMovieButton({ id }: { id: string }) {
+export function UpdateFoodButton({ id }: { id: string }) {
   return (
     <Link
-      href={`/dashboard/movies/${id}`}
+      href={`/dashboard/food/${id}`}
       className="btn btn-circle btn-ghost btn-sm"
     >
       <HiOutlinePencil className="h-4 w-4" />
@@ -29,7 +29,7 @@ export function UpdateMovieButton({ id }: { id: string }) {
   );
 }
 
-export function DeleteMovieButton({ id }: { id: string }) {
+export function DeleteFoodButton({ id }: { id: string }) {
   const deleteMovieWithId = deleteMovie.bind(null, id);
   const [state, formAction] = useFormState(deleteMovieWithId, initialState);
   const { showAlert } = useAlert(state);
