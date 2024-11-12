@@ -3,7 +3,7 @@ import ResultCount from "../../ResultCount";
 import ResultSearch from "../../ResultSearch";
 import SortableHeader from "../../SortableHeader";
 import ResultPagination from "../../ResultPagination";
-import { DeleteMovieButton, UpdateMovieButton } from "./Buttons";
+import { DeleteFoodButton, UpdateFoodButton } from "./Buttons";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
 import { getFood } from "@/services/food";
@@ -99,8 +99,8 @@ export default async function FoodTable({
                   <strong>{data.availableAmount}</strong> unidades disponibles
                 </p>
                 <div className="flex items-end justify-center gap-3">
-                  <DeleteMovieButton id={data._id} />
-                  <UpdateMovieButton id={data._id} />
+                  <DeleteFoodButton id={data._id} />
+                  <UpdateFoodButton id={data._id} />
                 </div>
               </div>
             </div>
@@ -197,8 +197,8 @@ export default async function FoodTable({
                   }
                 })}
                 <th className="flex items-center justify-center">
-                  <DeleteMovieButton id={data._id} />
-                  <UpdateMovieButton id={data._id} />
+                  <DeleteFoodButton id={data._id} />
+                  <UpdateFoodButton id={data._id} />
                 </th>
               </tr>
             ))}
