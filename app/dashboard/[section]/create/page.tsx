@@ -1,3 +1,4 @@
+import CreateFood from "@/app/ui/dashboard/Food/components/Create";
 import CreateMovie from "@/app/ui/dashboard/Movies/components/Create";
 import CreateRoom from "@/app/ui/dashboard/Rooms/components/Create";
 import CreateSession from "@/app/ui/dashboard/Sessions/components/Create";
@@ -21,7 +22,7 @@ export default async function Page({
       return <CreateRoom />;
 
     case AvailablesSections.FOOD:
-    // return <CreateFood />;
+      return <CreateFood />;
 
     case AvailablesSections.USERS:
     // return <CreateUser />;
