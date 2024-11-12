@@ -1,14 +1,10 @@
-import { getGenres, getLanguages } from "@/services/movies";
 import DashboardLayout from "../../../DashboardLayout";
-import MovieCreateForm from "./components/CreateForm";
+import FoodCreateForm from "./components/CreateForm";
 
-export default async function CreateMovie() {
-  const genresData = await getGenres();
-  const languagesData = await getLanguages();
-
+export default async function CreateFood() {
   return (
-    <DashboardLayout title="Crear película">
-      <MovieCreateForm genres={genresData} languages={languagesData} />
+    <DashboardLayout title="Crear comida">
+      <FoodCreateForm />
     </DashboardLayout>
   );
 }
