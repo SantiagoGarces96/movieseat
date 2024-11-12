@@ -5,7 +5,7 @@ import { useFormState } from "react-dom";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../Alert";
-import { deleteMovie } from "@/services/movies";
+import { deleteFood } from "@/services/food";
 
 export function CreateFoodButton() {
   return (
@@ -30,8 +30,8 @@ export function UpdateFoodButton({ id }: { id: string }) {
 }
 
 export function DeleteFoodButton({ id }: { id: string }) {
-  const deleteMovieWithId = deleteMovie.bind(null, id);
-  const [state, formAction] = useFormState(deleteMovieWithId, initialState);
+  const deleteFoodWithId = deleteFood.bind(null, id);
+  const [state, formAction] = useFormState(deleteFoodWithId, initialState);
   const { showAlert } = useAlert(state);
   return (
     <form action={formAction}>

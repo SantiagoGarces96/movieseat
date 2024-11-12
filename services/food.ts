@@ -198,7 +198,7 @@ export const createFood = async (
 
     await Food.create(fields);
   } catch (error: any) {
-    console.error(`Error in createRooom function: ${error.message}`);
+    console.error(`Error in createFood function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
       const { errors } = error;
@@ -258,7 +258,7 @@ export const updateFood = async (
 
     await Food.findByIdAndUpdate(foodId, fields);
   } catch (error: any) {
-    console.error(`Error in updateRoom function: ${error.message}`);
+    console.error(`Error in updateFood function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
     if (error instanceof z.ZodError) {
       const { errors } = error;
@@ -275,25 +275,25 @@ export const updateFood = async (
   redirect("/dashboard/food");
 };
 
-// export const deleteRoom = async (
-//   _id: string,
-//   prevState: FormState,
-//   formData: FormData,
-// ): Promise<FormState> => {
-//   try {
-//     await Room.findByIdAndDelete(_id);
-//     revalidatePath("/dashboard/rooms");
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: "Room eliminada con exito.",
-//     };
-//   } catch (error: any) {
-//     console.error(`Error in deleteSession function: ${error.message}`);
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: "Algo salió mal, por favor intentalo nuevamente.",
-//     };
-//   }
-// };
+export const deleteFood = async (
+  _id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    await Food.findByIdAndDelete(_id);
+    revalidatePath("/dashboard/food");
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Comida eliminada con exito.",
+    };
+  } catch (error: any) {
+    console.error(`Error in deleteFood function: ${error.message}`);
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: "Algo salió mal, por favor intentalo nuevamente.",
+    };
+  }
+};
