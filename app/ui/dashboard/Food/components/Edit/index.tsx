@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getGenres, getLanguages, getMovieById } from "@/services/movies";
 import MovieEditForm from "./components/EditForm";
 
-export default async function EditMovie({ id }: { id: string }) {
+export default async function EditFood({ id }: { id: string }) {
   const movie = await getMovieById(id);
 
   if (!movie) {
