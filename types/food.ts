@@ -24,7 +24,7 @@ export enum SpanishhFoodCategory {
 
 export enum FoodType {
   POPCORN = "popcorn",
-  FAST_FOOD = "fast-food",
+  FAST_FOOD = "fast_food",
   BAKERY = "bakery",
   DRINK = "drink",
   COMBO = "combo",
