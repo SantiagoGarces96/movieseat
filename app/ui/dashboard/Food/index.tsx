@@ -1,7 +1,7 @@
 import { CountResultOpt } from "@/constants/dashboard/table";
 import DashboardLayout from "../DashboardLayout";
-import { CreateMovieButton } from "./components/Buttons";
-import MoviesTable from "./components/Table";
+import { CreateFoodButton } from "./components/Buttons";
+import FoodTable from "./components/Table";
 
 export default function FoodPage({
   searchParams,
@@ -14,8 +14,8 @@ export default function FoodPage({
   const sortBy = searchParams.sortBy || "createdAt";
   const order = searchParams.order || "";
   return (
-    <DashboardLayout title="Comidas" button={<CreateMovieButton />}>
-      <MoviesTable
+    <DashboardLayout title="Comidas" button={<CreateFoodButton />}>
+      <FoodTable
         page={page}
         limit={limit}
         query={query}
