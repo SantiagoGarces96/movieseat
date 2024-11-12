@@ -1,3 +1,4 @@
+import EditFood from "@/app/ui/dashboard/Food/components/Edit";
 import EditMovie from "@/app/ui/dashboard/Movies/components/Edit";
 import EditRoom from "@/app/ui/dashboard/Rooms/components/Edit";
 import EditSession from "@/app/ui/dashboard/Sessions/components/Edit";
@@ -21,7 +22,7 @@ export default async function Page({
       return <EditRoom id={id} />;
 
     case AvailablesSections.FOOD:
-    // return <EditFood id={id} />;
+      return <EditFood id={id} />;
 
     case AvailablesSections.USERS:
     // return <EditUser id={id} />;
