@@ -7,13 +7,13 @@ import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../Alert";
 import { deleteMovie } from "@/services/movies";
 
-export function CreateMovieButton() {
+export function CreateFoodButton() {
   return (
     <Link
-      href="/dashboard/movies/create"
+      href="/dashboard/food/create"
       className="btn btn-secondary btn-sm text-primary"
     >
-      Crear película
+      Crear comida
     </Link>
   );
 }
