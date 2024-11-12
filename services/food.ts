@@ -8,7 +8,7 @@ import { IFood } from "@/interfaces/food";
 import Food from "@/models/Food";
 import { FoodCategory, FoodSize, FoodType } from "@/types/food";
 import { CountResultOpt } from "@/constants/dashboard/table";
-import { SortOrder } from "mongoose";
+import { Schema, SchemaDefinition, SortOrder } from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
 import { FoodFormSchema } from "@/schema/food";
 import { revalidatePath } from "next/cache";
@@ -173,8 +173,6 @@ export const createFood = async (
       formData.get("availableAmount")?.toString().trim() || "0",
     );
 
-    console.log(image);
-
     const fields = {
       name,
       image,
@@ -217,68 +215,65 @@ export const createFood = async (
   redirect("/dashboard/food");
 };
 
-// export const updateRoom = async (
-//   roomId: Schema.Types.ObjectId,
-//   prevState: FormState,
-//   formData: FormData,
-// ): Promise<FormState> => {
-//   try {
-//     const name = formData.get("name")?.toString().trim() || "";
-//     const roomType = formData.get("room")?.toString().trim() || "";
-//     const totalSeatsPreferential = parseInt(
-//       formData.get("totalSeatsPreferential")?.toString().trim() || "0",
-//     );
-//     const totalSeatsGeneral = parseInt(
-//       formData.get("totalSeatsGeneral")?.toString().trim() || "0",
-//     );
+export const updateFood = async (
+  foodId: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> => {
+  try {
+    const name = formData.get("name")?.toString().trim() || "";
+    const image = formData.get("image")?.toString().trim() || "";
+    const description = formData.get("description")?.toString().trim() || "";
+    const size = formData.get("size")?.toString().trim() || FoodSize.SMALL;
+    const category =
+      formData.get("category")?.toString().trim() || FoodCategory.FOODS;
+    const type = formData.get("type")?.toString().trim() || FoodType.POPCORN;
+    const price = parseInt(formData.get("price")?.toString().trim() || "0");
+    const availableAmount = parseInt(
+      formData.get("availableAmount")?.toString().trim() || "0",
+    );
 
-//     const fields = {
-//       name,
-//       room: roomType,
-//       totalSeatsPreferential,
-//       totalSeatsGeneral,
-//     };
+    const fields = {
+      name,
+      image,
+      description,
+      size,
+      price,
+      category,
+      type,
+      availableAmount,
+    };
 
-//     RoomFormSchema.parse(fields);
+    FoodFormSchema.parse(fields);
 
-//     const totalSeats = totalSeatsPreferential + totalSeatsGeneral;
-//     const room: IRoom | null = await Room.findById(roomId);
-//     const isRoomName: IRoom | null = await Room.findOne({ name });
+    const food: IFood | null = await Food.findById(foodId);
 
-//     if (!room) {
-//       return {
-//         status: FormStatus.COMPLETE,
-//         success: false,
-//         message: "La sala no existe",
-//       };
-//     }
+    if (!food) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "La comida no existe",
+      };
+    }
 
-//     if (isRoomName) {
-//       return {
-//         status: FormStatus.COMPLETE,
-//         success: false,
-//         message: "El nombre de la sala ya existe",
-//       };
-//     }
+    await Food.findByIdAndUpdate(foodId, fields);
+  } catch (error: any) {
+    console.error(`Error in updateRoom function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
+    return {
+      status: FormStatus.COMPLETE,
+      success: false,
+      message: errorMessage,
+    };
+  }
 
-//     await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
-//   } catch (error: any) {
-//     console.error(`Error in updateRoom function: ${error.message}`);
-//     let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
-//     if (error instanceof z.ZodError) {
-//       const { errors } = error;
-//       errorMessage = errors[0].message;
-//     }
-//     return {
-//       status: FormStatus.COMPLETE,
-//       success: false,
-//       message: errorMessage,
-//     };
-//   }
-
-//   revalidatePath("/dashboard/rooms");
-//   redirect("/dashboard/rooms");
-// };
+  revalidatePath("/dashboard/food");
+  redirect("/dashboard/food");
+};
 
 // export const deleteRoom = async (
 //   _id: string,
