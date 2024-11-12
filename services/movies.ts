@@ -64,8 +64,10 @@ export const getMovies = async (
       .skip(skip < 0 ? 0 : skip + 1)
       .limit(pageSize);
 
+    const parsedResults = JSON.parse(JSON.stringify(results));
+
     return {
-      results,
+      results: parsedResults,
       page: pageNumber,
       totalPages,
       totalResults,
@@ -221,8 +223,8 @@ export const getMoviesInDashboard = async (
 export const getAllMovies = async (): Promise<IMovie[]> => {
   await dbConnect();
   try {
-    const movie: IMovie[] = await Movie.find().sort({ title: 1 });
-    return movie;
+    const movies: IMovie[] = await Movie.find().sort({ title: 1 });
+    return JSON.parse(JSON.stringify(movies));
   } catch (error: any) {
     console.error(`Error in getAllMovies function: ${error.message}`);
     return [];
@@ -236,8 +238,7 @@ export const getMovieById = async (id: string): Promise<IMovie | null> => {
   await dbConnect();
   try {
     const movie: IMovie | null = await Movie.findById(id);
-    // TODO parse JSON.parse(JSON.stringify(movie)); in all functions
-    return movie;
+    return JSON.parse(JSON.stringify(movie));
   } catch (error: any) {
     console.error(`Error in getMovieById function: ${error.message}`);
     return null;
@@ -466,12 +467,21 @@ export const updateMovie = async (
     MovieFormSchema.parse(fiels);
 
     const movie: IMovie | null = await Movie.findById(id);
+    const isMovieTitle: IMovie | null = await Movie.findOne({ title });
 
     if (!movie) {
       return {
         status: FormStatus.COMPLETE,
         success: false,
         message: "La película no existe",
+      };
+    }
+
+    if (isMovieTitle) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "El nombre de la pelicula ya existe",
       };
     }
 

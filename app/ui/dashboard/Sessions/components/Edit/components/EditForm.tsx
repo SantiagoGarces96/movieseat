@@ -2,7 +2,7 @@
 import { IRoom } from "@/interfaces/room";
 import { getAvailableSessionTimes, updateSession } from "@/services/sessions";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { cn } from "@/utils/cn";
 import { ISession } from "@/interfaces/session";
@@ -20,14 +20,14 @@ export default function SessionEditForm({
 }: {
   session: ISession;
   rooms: IRoom[];
-  movie: IMovie;
+  movie: IMovie | null;
   availableSessions: string[];
 }) {
   const [date, time] = new Date(session.dateTime).toISOString().split("T");
   const [seats, setSeats] = useState({
-    totalSeats: 0,
-    totalSeatsPreferential: 0,
-    totalSeatsGeneral: 0,
+    totalSeats: session.availableSeats,
+    totalSeatsPreferential: session.availableSeatsPreferential,
+    totalSeatsGeneral: session.availableSeatsGeneral,
   });
   const [roomId, setRoomId] = useState<string>(session.roomId.toString());
   const [currentDate, setCurrentDate] = useState<string>(date);
@@ -40,7 +40,7 @@ export default function SessionEditForm({
   const [state, formAction] = useFormState(
     updateSession.bind(null, {
       id: session._id.toString(),
-      movieId: movie._id.toString(),
+      movieId: movie?._id.toString(),
       currentTime,
     }),
     initialState,
@@ -92,7 +92,7 @@ export default function SessionEditForm({
           disabled
         >
           <option value="" disabled>
-            {movie.title}
+            {movie?.title}
           </option>
         </select>
       </label>
@@ -165,7 +165,7 @@ export default function SessionEditForm({
         <input
           id="totalSeats"
           name="totalSeats"
-          defaultValue={seats.totalSeats}
+          value={seats.totalSeats}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled
@@ -179,7 +179,7 @@ export default function SessionEditForm({
         <input
           id="totalSeatsPreferential"
           name="totalSeatsPreferential"
-          defaultValue={seats.totalSeatsPreferential}
+          value={seats.totalSeatsPreferential}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled
@@ -193,7 +193,7 @@ export default function SessionEditForm({
         <input
           id="totalSeatsGeneral"
           name="totalSeatsGeneral"
-          defaultValue={seats.totalSeatsGeneral}
+          value={seats.totalSeatsGeneral}
           type="number"
           className="input input-sm input-bordered w-full"
           disabled

@@ -13,7 +13,7 @@ export default async function EditSession({ id }: { id: string }) {
   }
 
   const rooms = await getAllRooms();
-  const movie = await getMovieById(session?.movieId.toString());
+  const movie = await getMovieById(session.movieId.toString());
   const [date, time] = new Date(session.dateTime).toISOString().split("T");
   const parseTime = time.split(".")[0];
   const availableSessions = await getAvailableSessionTimes(
@@ -24,9 +24,9 @@ export default async function EditSession({ id }: { id: string }) {
   return (
     <DashboardLayout title="Editar sesión">
       <SessionEditForm
-        session={JSON.parse(JSON.stringify(session))}
-        rooms={JSON.parse(JSON.stringify(rooms))}
-        movie={JSON.parse(JSON.stringify(movie))}
+        session={session}
+        rooms={rooms}
+        movie={movie}
         availableSessions={[parseTime, ...availableSessions]}
       />
     </DashboardLayout>
