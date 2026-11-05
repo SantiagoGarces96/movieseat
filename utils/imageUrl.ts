@@ -1,0 +1,12 @@
+import { IMAGE_HOSTS } from "@/constants/imageHosts.mjs";
+
+export const IMAGE_HOST_ERROR = `La imagen debe venir de uno de estos sitios: ${IMAGE_HOSTS.join(", ")}`;
+
+export const isAllowedImageUrl = (value: string): boolean => {
+  try {
+    const { protocol, hostname } = new URL(value);
+    return protocol === "https:" && IMAGE_HOSTS.includes(hostname);
+  } catch {
+    return false;
+  }
+};

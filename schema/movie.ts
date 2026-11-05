@@ -1,4 +1,5 @@
 import { MovieStatus } from "@/types/movie";
+import { IMAGE_HOST_ERROR, isAllowedImageUrl } from "@/utils/imageUrl";
 import { z } from "zod";
 
 export const MovieFormSchema = z.object({
@@ -50,13 +51,15 @@ export const MovieFormSchema = z.object({
     .string({
       required_error: "La portada es obligatoria",
     })
-    .url("La portada debe ser una URL válida"),
+    .url("La portada debe ser una URL válida")
+    .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
 
   backdrop: z
     .string({
       required_error: "La contraportada es obligatoria",
     })
-    .url("La contraportada debe ser una URL válida"),
+    .url("La contraportada debe ser una URL válida")
+    .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
 
   status: z
     .enum([MovieStatus.UPCOMING, MovieStatus.PRE_SALE, MovieStatus.BILLBOARD])

@@ -1,4 +1,5 @@
 import { FoodCategory, FoodSize, FoodType } from "@/types/food";
+import { IMAGE_HOST_ERROR, isAllowedImageUrl } from "@/utils/imageUrl";
 import { z } from "zod";
 
 const SizeFoodEnum = z.enum([
@@ -31,7 +32,8 @@ export const FoodFormSchema = z.object({
     .string({
       required_error: "La url de la imagen es obligatoria",
     })
-    .url("El enlace de la imagen debe ser una URL válida"),
+    .url("El enlace de la imagen debe ser una URL válida")
+    .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
   description: z
     .string({
       required_error: "La descripcion es obligatoria",
