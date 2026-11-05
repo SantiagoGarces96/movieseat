@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import { IRoom } from "@/interfaces/room";
 import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
@@ -199,6 +200,7 @@ export const createSession = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const movieId = formData.get("movieId")?.toString().trim() || "";
     const roomId = formData.get("roomId")?.toString().trim() || "";
@@ -278,6 +280,7 @@ export const updateSession = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const roomId = formData.get("roomId")?.toString().trim() || "";
     const date = formData.get("date")?.toString().trim() || "";
@@ -351,6 +354,7 @@ export const deleteSession = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/sessions");

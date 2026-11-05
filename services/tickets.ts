@@ -1,9 +1,11 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import { IDailyTicketSales } from "@/interfaces/ticket";
 import dbConnect from "@/lib/dbConnect";
 import Ticket from "@/models/Ticket";
 
 export const getDailyTicketSales = async (): Promise<IDailyTicketSales[]> => {
+  await requireAdmin();
   await dbConnect();
   try {
     const dailyTicketSales: IDailyTicketSales[] = await Ticket.aggregate([

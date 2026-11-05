@@ -1,9 +1,11 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import { IFoodSells, IMonthlyRevenue } from "@/interfaces/transaction";
 import dbConnect from "@/lib/dbConnect";
 import Transaction from "@/models/Transaction";
 
 export const getFoodSells = async (): Promise<IFoodSells[]> => {
+  await requireAdmin();
   await dbConnect();
   try {
     const sells: IFoodSells[] = await Transaction.aggregate([
@@ -27,6 +29,7 @@ export const getFoodSells = async (): Promise<IFoodSells[]> => {
 };
 
 export const getMonthlyRevenue = async (): Promise<IMonthlyRevenue[]> => {
+  await requireAdmin();
   await dbConnect();
   try {
     const monthlyRevenue: IMonthlyRevenue[] = await Transaction.aggregate([

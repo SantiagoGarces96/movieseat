@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import { IUser } from "@/interfaces/user";
 import User from "@/models/User";
@@ -7,6 +8,7 @@ import dbConnect from "../lib/dbConnect";
 export const getUsersByQuery = async (
   query: string,
 ): Promise<IResultDataDashboard[]> => {
+  await requireAdmin();
   if (!query) {
     return [];
   }

@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
   IResultDataDashboard,
@@ -365,6 +366,7 @@ export const createMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
     const title = formData.get("title");
@@ -431,6 +433,7 @@ export const updateMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const { cast, genre, language, id } = state;
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
@@ -509,6 +512,7 @@ export const deleteMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     await Movie.findByIdAndDelete(_id);
     revalidatePath("/dashboard/movies");
