@@ -3,13 +3,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
+import Food from "@/models/Food";
 import Movie from "@/models/Movie";
 import Reservation from "@/models/Reservation";
 import Room from "@/models/Room";
 import Session from "@/models/Session";
+import CheckoutForm from "@/app/ui/customers/checkout/CheckoutForm";
 import ReservationHold from "@/app/ui/customers/checkout/ReservationHold";
 import { ReservationStatus, seatLabel } from "@/types/reservation";
-import { formatPrice } from "@/utils/format";
 import { formatShowDate, formatShowTime } from "@/utils/showtime";
 
 export const metadata: Metadata = { title: "Tu compra | MovieSeat" };
@@ -65,6 +66,11 @@ export default async function CheckoutPage({
     return <Closed text="No encontramos esta función" href="/releases" />;
   }
 
+  const foods = await Food.find({ availableAmount: { $gt: 0 } }).sort({
+    category: 1,
+    name: 1,
+  });
+
   return (
     <div className="ms-container max-w-2xl py-10 md:py-14">
       <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
@@ -83,19 +89,27 @@ export default async function CheckoutPage({
           {formatShowDate(session.dateTime)} ·{" "}
           {formatShowTime(session.dateTime)} · {room.name} · {room.room}
         </p>
-        <dl className="mt-5 space-y-2 border-t border-white/5 pt-5 text-sm">
-          <div className="flex justify-between gap-4">
-            <dt className="text-muted">Sillas</dt>
-            <dd className="text-right font-medium">
-              {reservation.seats.map(seatLabel).join(", ")}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-4 text-base font-bold">
-            <dt>Total</dt>
-            <dd>{formatPrice(reservation.seatsTotal)}</dd>
-          </div>
-        </dl>
+        <p className="mt-4 border-t border-white/5 pt-4 text-sm">
+          <span className="text-muted">Sillas: </span>
+          <span className="font-medium">
+            {reservation.seats.map(seatLabel).join(", ")}
+          </span>
+        </p>
       </div>
+
+      <CheckoutForm
+        reservationId={id}
+        seatsCount={reservation.seats.length}
+        seatsTotal={reservation.seatsTotal}
+        foods={foods.map((food) => ({
+          id: String(food._id),
+          name: food.name,
+          description: food.description,
+          image: food.image,
+          price: food.price,
+          availableAmount: food.availableAmount,
+        }))}
+      />
     </div>
   );
 }

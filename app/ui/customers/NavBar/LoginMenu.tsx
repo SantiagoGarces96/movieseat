@@ -82,6 +82,16 @@ const LoginMenu = ({ onClick }: { onClick?: () => void }) => {
             <p className="truncate text-sm font-semibold">{user.name}</p>
             <p className="truncate text-xs text-muted">{user.email}</p>
           </div>
+          <Link
+            href="/mis-boletas"
+            onClick={() => {
+              setIsOpen(false);
+              onClick?.();
+            }}
+            className="mt-1 block rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-white/5"
+          >
+            Mis boletas
+          </Link>
           {user.role === userRole.ADMIN && (
             <Link
               href="/dashboard"
