@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
   IResultDataDashboard,
@@ -160,6 +161,7 @@ export const createFood = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const image = formData.get("image")?.toString().trim() || "";
@@ -220,6 +222,7 @@ export const updateFood = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const image = formData.get("image")?.toString().trim() || "";
@@ -280,6 +283,7 @@ export const deleteFood = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     await Food.findByIdAndDelete(_id);
     revalidatePath("/dashboard/food");

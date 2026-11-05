@@ -1,7 +1,9 @@
 // Levanta la app con una base de datos temporal y películas ficticias, sin
 // necesidad de MongoDB Atlas ni de claves de TMDB. Los datos se borran al cerrar.
 // Uso: npm run demo
+import bcrypt from "bcryptjs";
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +14,10 @@ import sharp from "sharp";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const demoDir = path.join(root, "public", "demo");
 const DAY = 24 * 60 * 60 * 1000;
+
+// Solo existen en la base temporal del demo.
+const DEMO_ADMIN = { email: "admin@movieseat.test", password: "demo-admin-1234", name: "Admin", role: "admin" };
+const DEMO_CLIENT = { email: "cliente@movieseat.test", password: "demo-cliente-1234", name: "Cliente", role: "client" };
 
 const billboard = [
   ["La última función", "Drama", "#7c2d12", "#fbbf24", "Un proyeccionista descubre que su viejo cine guarda una película que nadie recuerda haber filmado."],
@@ -115,13 +121,37 @@ await mongoose.connection.collection("foods").insertMany(
     })),
   ),
 );
+await mongoose.connection.collection("users").insertMany(
+  await Promise.all(
+    [DEMO_ADMIN, DEMO_CLIENT].map(async ({ email, password, name, role }) => ({
+      email,
+      password: await bcrypt.hash(password, 10),
+      name,
+      lastName: "Demo",
+      role,
+      tickets: [],
+      transactions: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })),
+  ),
+);
 await mongoose.disconnect();
 console.log(`Datos de ejemplo listos: ${movies.length} películas y ${foods.length} comidas.`);
+console.log(`Administrador de prueba: ${DEMO_ADMIN.email} / ${DEMO_ADMIN.password}`);
 
 const next = spawn(
   process.execPath,
   [path.join(root, "node_modules", "next", "dist", "bin", "next"), "dev"],
-  { cwd: root, stdio: "inherit", env: { ...process.env, MONGODB_URI: uri } },
+  {
+    cwd: root,
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      MONGODB_URI: uri,
+      JWT_SECRET: randomBytes(32).toString("hex"),
+    },
+  },
 );
 
 const shutdown = async () => {

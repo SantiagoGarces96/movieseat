@@ -1,49 +1,54 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
+import {
+  createSessionToken,
+  SESSION_COOKIE,
+  SESSION_MAX_AGE_SECONDS,
+} from "@/lib/session";
 import User from "@/models/User";
+import { LoginSchema } from "@/schema/auth";
 import { comparePassword } from "@/utils/bcrypt";
-import { generateToken } from "@/utils/checkAdmin";
+
+const invalidCredentials = () =>
+  NextResponse.json({ message: "Credenciales inválidas." }, { status: 401 });
 
 export async function POST(request: Request) {
-  await dbConnect();
-
   try {
-    const { email, password } = await request.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { message: "Email y contraseña son obligatorios." },
-        { status: 400 },
-      );
-    }
-
-    // TODO remember create all information in english.
-    // Buscar usuario por email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return NextResponse.json(
-        { message: "Credenciales inválidas." },
-        { status: 401 },
-      );
-    }
-
-    // Comparar contraseña
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { message: "Credenciales inválidas." },
-        { status: 401 },
-      );
-    }
-
-    // Generar token JWT
-    const token = generateToken({ userId: user._id, role: user.role });
-
-    return NextResponse.json(
-      { message: "Inicio de sesión exitoso.", token },
-      { status: 200 },
+    const credentials = LoginSchema.safeParse(
+      await request.json().catch(() => null),
     );
-  } catch (error) {
+    if (!credentials.success) {
+      return invalidCredentials();
+    }
+
+    await dbConnect();
+    const { email, password } = credentials.data;
+    const user = await User.findOne({ email });
+    if (!user || !(await comparePassword(password, user.password))) {
+      return invalidCredentials();
+    }
+
+    const token = await createSessionToken({
+      userId: user._id.toString(),
+      role: user.role,
+      name: `${user.name} ${user.lastName}`,
+      email: user.email,
+    });
+
+    const response = NextResponse.json({
+      message: "Inicio de sesión exitoso.",
+      role: user.role,
+    });
+    response.cookies.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_MAX_AGE_SECONDS,
+    });
+    return response;
+  } catch (error: any) {
+    console.error(`Error in login route: ${error.message}`);
     return NextResponse.json(
       { message: "Error al iniciar sesión." },
       { status: 500 },

@@ -74,7 +74,7 @@ const MobileMenu = () => {
             </nav>
 
             <div className="mt-auto pt-6">
-              <LoginMenu />
+              <LoginMenu onClick={() => setIsOpen(false)} />
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
   IResultDataDashboard,
@@ -140,6 +141,7 @@ export const createRooom = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const roomType = formData.get("room")?.toString().trim() || "";
@@ -194,6 +196,7 @@ export const updateRoom = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const roomType = formData.get("room")?.toString().trim() || "";
@@ -257,6 +260,7 @@ export const deleteRoom = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
   try {
     await Room.findByIdAndDelete(_id);
     revalidatePath("/dashboard/rooms");
