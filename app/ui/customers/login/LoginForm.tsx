@@ -1,14 +1,7 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { userRole } from "@/types/user";
-
-const inputClass =
-  "mt-1.5 min-h-11 w-full rounded-xl border border-white/10 bg-ink-800 px-4 py-2.5 text-paper outline-none transition-colors focus:border-gold";
-
-// Solo se aceptan rutas internas, para que el enlace de login no pueda
-// llevar a la persona a otro sitio después de entrar.
-const getSafeNext = (next?: string): string | null =>
-  next && next.startsWith("/") && !/^\/[/\\]/.test(next) ? next : null;
+import { getSafeNext } from "@/utils/safeNext";
 
 const LoginForm = ({ next }: { next?: string }) => {
   const [error, setError] = useState("");
@@ -55,7 +48,7 @@ const LoginForm = ({ next }: { next?: string }) => {
           type="email"
           required
           autoComplete="email"
-          className={inputClass}
+          className="ms-input"
         />
       </div>
       <div>
@@ -68,7 +61,7 @@ const LoginForm = ({ next }: { next?: string }) => {
           type="password"
           required
           autoComplete="current-password"
-          className={inputClass}
+          className="ms-input"
         />
       </div>
       {error && (

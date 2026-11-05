@@ -1,4 +1,5 @@
 import { jwtVerify, SignJWT } from "jose";
+import type { NextResponse } from "next/server";
 import { userRole } from "@/types/user";
 
 // Este archivo también lo usa el middleware, así que no debe importar
@@ -32,6 +33,19 @@ export const createSessionToken = async ({
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE_SECONDS}s`)
     .sign(secret);
+};
+
+export const setSessionCookie = async (
+  response: NextResponse,
+  user: SessionUser,
+): Promise<void> => {
+  response.cookies.set(SESSION_COOKIE, await createSessionToken(user), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_MAX_AGE_SECONDS,
+  });
 };
 
 export const verifySessionToken = async (
