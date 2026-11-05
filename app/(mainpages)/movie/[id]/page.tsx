@@ -8,7 +8,7 @@ import { getSessionByIdMovie } from "@/services/sessions";
 import { formatReleaseDate } from "@/utils/format";
 
 interface MoviePageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export const revalidate = 60;
@@ -21,7 +21,7 @@ export async function generateStaticParams() {
 }
 
 export default async function MoviePage({ params }: MoviePageProps) {
-  const movieId = params.id;
+  const { id: movieId } = await params;
   const movie: IMovie | null = await getMovieById(movieId);
 
   await getSessionByIdMovie(movieId);

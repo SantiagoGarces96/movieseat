@@ -271,7 +271,7 @@ const createMovieSessions = async (
 
   const existingSessions: ISession[] = await Session.find({
     dateTime: { $gte: today },
-  }).lean();
+  }).lean<ISession[]>();
 
   const sessions: ISession[] = [];
   const usedRoomTimes = new Set();

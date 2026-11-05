@@ -7,10 +7,10 @@ import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
 
 interface IPageProps {
-  params: {
+  params: Promise<{
     section: string;
-  };
-  searchParams: { [key: string]: string | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }
 
 export async function generateStaticParams() {
@@ -19,7 +19,11 @@ export async function generateStaticParams() {
   });
 }
 
-export default async function Page({ params, searchParams }: IPageProps) {
+export default async function Page(props: IPageProps) {
+  const [params, searchParams] = await Promise.all([
+    props.params,
+    props.searchParams,
+  ]);
   const section: string =
     params.section.toUpperCase() as keyof typeof AvailablesSections;
 

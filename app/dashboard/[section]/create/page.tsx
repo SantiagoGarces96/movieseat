@@ -7,9 +7,9 @@ import { AvailablesSections } from "@/types/sections";
 export default async function Page({
   params,
 }: {
-  params: { section: string };
+  params: Promise<{ section: string }>;
 }) {
-  const { section } = params;
+  const { section } = await params;
 
   switch (section) {
     case AvailablesSections.SESSIONS:

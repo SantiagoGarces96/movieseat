@@ -17,7 +17,7 @@ export default function BarChartOverview({
   data,
   dataKey,
 }: {
-  data: IMovieByGenre[] | IAvailableSeatsByRoom[];
+  data: (IMovieByGenre | IAvailableSeatsByRoom)[];
   dataKey: string;
 }) {
   const [hydrated, setHydrated] = useState(false);
