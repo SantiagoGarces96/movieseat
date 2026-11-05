@@ -1,30 +1,37 @@
 "use client";
 import React, { useState } from "react";
-import { HiOutlinePlay } from "react-icons/hi2";
+import { HiPlay } from "react-icons/hi2";
 import TrailerPopup from "./TrailerPopup";
 
 interface TrailerButtonProps {
   trailerUrl: string;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-const TrailerButton: React.FC<TrailerButtonProps> = ({ trailerUrl }) => {
+const TrailerButton: React.FC<TrailerButtonProps> = ({
+  trailerUrl,
+  onOpenChange,
+}) => {
   const [showTrailer, setShowTrailer] = useState<boolean>(false);
 
-  const handleOpenTrailer = () => setShowTrailer(true);
-  const handleCloseTrailer = () => setShowTrailer(false);
+  const toggleTrailer = (isOpen: boolean) => {
+    setShowTrailer(isOpen);
+    onOpenChange?.(isOpen);
+  };
 
   return (
     <>
       <button
-        onClick={handleOpenTrailer}
-        className="mt-4 flex items-center rounded bg-red-500 px-4 py-2 text-white transition hover:bg-red-600 md:text-sm hd:text-base"
+        type="button"
+        onClick={() => toggleTrailer(true)}
+        className="ms-btn ms-btn-secondary"
       >
-        <HiOutlinePlay />
+        <HiPlay className="h-4 w-4" aria-hidden />
         Ver tráiler
       </button>
 
       {showTrailer && (
-        <TrailerPopup url={trailerUrl} onClose={handleCloseTrailer} />
+        <TrailerPopup url={trailerUrl} onClose={() => toggleTrailer(false)} />
       )}
     </>
   );

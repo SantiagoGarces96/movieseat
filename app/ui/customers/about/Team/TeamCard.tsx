@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FaGithub, FaGitlab, FaLinkedin } from "react-icons/fa";
 
 interface TeamCardProps {
   urls: {
@@ -13,47 +14,42 @@ interface TeamCardProps {
 }
 
 const TeamCard = ({ urls, role, name, photo, skills }: TeamCardProps) => {
+  const socialLinks = [
+    { label: "LinkedIn", href: urls.linkedin, Icon: FaLinkedin },
+    { label: "GitHub", href: urls.github, Icon: FaGithub },
+    { label: "GitLab", href: urls.gitlab, Icon: FaGitlab },
+  ];
+
   return (
-    <article className="flex h-full w-full flex-col items-start justify-between p-4">
-      <div className="relative w-full rounded-lg bg-white">
-        <h3 className="text-[9px] font-semibold text-gray-500 md:text-sm">
-          {role}
-        </h3>
-        <h2 className="text-2xl font-bold text-black">{name}</h2>
-
-        <div className="relative mb-8 mt-4 h-[25vh] md:h-[40vh] hd:h-[50vh]">
-          <Image
-            className="h-full w-full shadow-lg"
-            src={photo}
-            alt={name}
-            fill
-            style={{
-              objectFit: "cover",
-              filter: "drop-shadow(0 0 5px rgba(0, 0, 0, 0.5))",
-              maskImage:
-                "linear-gradient(to bottom, black 80%, transparent 100%)",
-            }}
-          />
-        </div>
-
-        <p className="text-sm leading-relaxed text-gray-700">{skills}</p>
-
-        {/* Enlaces a redes sociales */}
-        <div className="mt-4 flex space-x-4">
-          {urls.linkedin && (
-            <a href={urls.linkedin} target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-linkedin text-2xl hover:text-blue-600"></i>
-            </a>
-          )}
-          {urls.github && (
-            <a href={urls.github} target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-github text-2xl hover:text-gray-700"></i>
-            </a>
-          )}
-          {urls.gitlab && (
-            <a href={urls.gitlab} target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-gitlab text-2xl hover:text-orange-600"></i>
-            </a>
+    <article className="flex flex-col gap-5 rounded-2xl border border-white/5 bg-ink-900 p-6 sm:flex-row md:p-8">
+      <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-ink-800">
+        <Image
+          src={photo}
+          alt={`Foto de ${name}`}
+          fill
+          sizes="112px"
+          className="object-cover"
+        />
+      </div>
+      <div>
+        <h3 className="text-xl font-bold tracking-tight">{name}</h3>
+        <p className="mt-0.5 text-sm font-medium text-gold">{role}</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted">{skills}</p>
+        <div className="mt-4 flex gap-4">
+          {socialLinks.map(
+            ({ label, href, Icon }) =>
+              href && (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${label} de ${name}`}
+                  className="ms-link text-muted"
+                >
+                  <Icon className="h-5 w-5" aria-hidden />
+                </a>
+              ),
           )}
         </div>
       </div>

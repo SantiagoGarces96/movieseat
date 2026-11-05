@@ -1,8 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { MovieStatus } from "@/types/movie";
-import Link from "next/link";
-import { parseReleaseDate } from "@/utils/parseDate";
+import {
+  formatDuration,
+  formatReleaseDate,
+  movieStatusLabel,
+} from "@/utils/format";
 
 export interface MovieCardProps {
   id: string;
@@ -14,13 +18,6 @@ export interface MovieCardProps {
   genre: string[];
 }
 
-const statusColors: Record<MovieStatus, string> = {
-  [MovieStatus.PRE_SALE]: "bg-blue-500",
-  [MovieStatus.UPCOMING]: "bg-yellow-500",
-  [MovieStatus.BILLBOARD]: "bg-green-500",
-  [MovieStatus.ARCHIVED]: "bg-gray-500",
-};
-
 const MovieCard: React.FC<MovieCardProps> = ({
   id,
   title,
@@ -30,72 +27,35 @@ const MovieCard: React.FC<MovieCardProps> = ({
   releaseDate,
   genre,
 }) => {
-  const statusLabel =
-    status in statusColors
-      ? status.charAt(0).toUpperCase() + status.slice(1)
-      : "Unknown";
-
-  const displayedGenres = genre.slice(0, 3).join(", ");
+  const isBillboard = status === MovieStatus.BILLBOARD;
+  const details = isBillboard
+    ? [genre[0], formatDuration(duration)].filter(Boolean).join(" · ")
+    : `Estreno: ${formatReleaseDate(releaseDate)}`;
 
   return (
-    <div className="">
-      <Link
-        href={`/movie/${id}`}
-        className="block overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
-      >
-        <div className="relative">
-          <span
-            className={`absolute left-2 top-2 rounded px-2 py-1 text-xs font-semibold text-white ${statusColors[status]}`}
-            style={{ zIndex: 10 }}
-          >
-            {status === MovieStatus.PRE_SALE
-              ? "Preventa"
-              : status === MovieStatus.UPCOMING
-                ? "Próximamente"
-                : status === MovieStatus.BILLBOARD
-                  ? "Cartelera"
-                  : status}
+    <Link
+      href={`/movie/${id}`}
+      className="group block rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
+    >
+      <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-ink-800 ring-1 ring-white/5 transition duration-300 group-hover:ring-gold/70">
+        <Image
+          src={poster}
+          alt={`Póster de ${title}`}
+          fill
+          sizes="(min-width: 1280px) 16vw, (min-width: 460px) 33vw, 50vw"
+          className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+        />
+        {!isBillboard && (
+          <span className="absolute left-2.5 top-2.5 rounded-full bg-ink-950/85 px-2.5 py-1 text-xs font-semibold text-gold backdrop-blur">
+            {movieStatusLabel[status]}
           </span>
-          <figure className="relative w-full md:h-[15rem] hd:h-[20rem] fhd:h-[25rem]">
-            <Image
-              src={poster}
-              alt={title}
-              fill
-              style={{ objectFit: "fill" }}
-              className="rounded-t-lg"
-              priority
-            />
-          </figure>
-        </div>
-        <div className="p-4">
-          <h2 className="mb-1 overflow-hidden truncate whitespace-nowrap text-lg font-semibold">
-            {title}
-          </h2>
-          <span className="mb-1 block text-xs sm:text-sm">
-            Estreno: {parseReleaseDate(releaseDate)}
-          </span>
-          <span className="mb-2 block overflow-hidden truncate whitespace-nowrap text-xs">
-            Género: {displayedGenres}
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <span className="inline-block rounded bg-gray-200 px-2 py-1 text-xs font-medium text-gray-800">
-              {duration} Min
-            </span>
-            <span
-              className={`inline-block rounded px-2 py-1 text-xs font-medium text-white ${statusColors[status]}`}
-            >
-              {status === MovieStatus.PRE_SALE
-                ? "Preventa"
-                : status === MovieStatus.UPCOMING
-                  ? "Próximamente"
-                  : status === MovieStatus.BILLBOARD
-                    ? "Cartelera"
-                    : statusLabel}
-            </span>
-          </div>
-        </div>
-      </Link>
-    </div>
+        )}
+      </div>
+      <h3 className="mt-3 truncate text-sm font-semibold text-paper md:text-base">
+        {title}
+      </h3>
+      <p className="mt-0.5 truncate text-xs text-muted md:text-sm">{details}</p>
+    </Link>
   );
 };
 

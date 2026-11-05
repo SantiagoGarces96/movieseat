@@ -11,34 +11,31 @@ const DetailsMovie: React.FC<DetailsMovieProps> = ({
   cast,
   language,
 }) => {
-  const displayedCast = cast.slice(0, 7).join(", ");
+  const facts = [
+    { label: "Director", value: director },
+    { label: "Elenco", value: cast.slice(0, 7).join(", ") },
+    { label: "Idioma", value: language.join(", ") },
+  ];
+
   return (
-    <div className="container mx-auto p-6 hd:p-12">
-      <div className="flex flex-col gap-12 lg:flex-row">
-        {/* Descripción y detalles principales */}
-        <div className="hd:w-1/3">
-          <h2 className="mb-4 text-2xl font-bold">Sinopsis</h2>
-          <p className="text-base text-gray-700">{description}</p>
-        </div>
-
-        {/* Director */}
-        <div className="hd:w-1/3">
-          <h2 className="mb-2 text-2xl font-bold">Director</h2>
-          <p className="text-base text-gray-700">{director}</p>
-        </div>
-
-        {/* Elenco */}
-        <div className="hd:w-1/3">
-          <h2 className="mb-2 text-2xl font-bold">Elenco</h2>
-          <p className="text-base text-gray-700">{displayedCast}</p>
-        </div>
-
-        {/* Idioma */}
-        <div className="hd:w-1/3">
-          <h2 className="mb-2 text-2xl font-bold">Idioma</h2>
-          <p className="text-base text-gray-700">{language.join(", ")}</p>
-        </div>
+    <div className="ms-container grid gap-10 py-10 lg:grid-cols-3 lg:gap-16">
+      <div className="lg:col-span-2">
+        <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+          Sinopsis
+        </h2>
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-paper/80">
+          {description}
+        </p>
       </div>
+
+      <dl className="space-y-5">
+        {facts.map(({ label, value }) => (
+          <div key={label}>
+            <dt className="text-sm font-semibold text-muted">{label}</dt>
+            <dd className="mt-1 text-base">{value}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 };
