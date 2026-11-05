@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { IMovie } from "@/interfaces/movie";
 import MovieBanner from "@/app/ui/customers/movie/MovieBanner/MovieBanner";
+import Showtimes from "@/app/ui/customers/movie/Showtimes";
 import DetailsMovie from "@/app/ui/customers/movie/DetailsMovie/DetailsMovie";
 import { getAllMovies, getMovieById } from "@/services/movies";
 import { getSessionByIdMovie } from "@/services/sessions";
@@ -24,8 +25,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const { id: movieId } = await params;
   const movie: IMovie | null = await getMovieById(movieId);
 
-  await getSessionByIdMovie(movieId);
-
   if (!movie) {
     return (
       <div className="ms-container py-24 text-center">
@@ -42,6 +41,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
     );
   }
 
+  const showtimes = await getSessionByIdMovie(movieId);
+
   return (
     <>
       <MovieBanner
@@ -54,6 +55,12 @@ export default async function MoviePage({ params }: MoviePageProps) {
         trailer={movie.trailer}
         status={movie.status}
       />
+      <section id="funciones" className="ms-container pt-10">
+        <h2 className="mb-5 text-xl font-bold tracking-tight md:text-2xl">
+          Funciones
+        </h2>
+        <Showtimes showtimes={showtimes} />
+      </section>
       <DetailsMovie
         description={movie.description}
         director={movie.director}

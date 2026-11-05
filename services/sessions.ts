@@ -19,6 +19,8 @@ import { IDashboardResponse } from "@/interfaces/dasboard";
 import { SessionFormSchema } from "@/schema/session";
 import { IMovie } from "@/interfaces/movie";
 import { z } from "zod";
+import { IShowtime } from "@/app/ui/customers/movie/Showtimes";
+import { getLocalNow } from "@/utils/showtime";
 
 export const getSessions = async (
   page: string = "1",
@@ -146,19 +148,19 @@ export const getSessionById = async (_id: string): Promise<ISession | null> => {
   }
 };
 
-export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
+export const getSessionByIdMovie = async (
+  movieId: string,
+): Promise<IShowtime[]> => {
   await dbConnect();
   try {
-    const now = new Date();
-    const todayUTC = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
+    const now = getLocalNow();
+    const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const sessions = await Session.aggregate([
       {
         $match: {
           movieId: new mongoose.Types.ObjectId(movieId),
-          dateTime: { $gte: todayUTC },
+          dateTime: { $gt: now, $lte: twoWeeksFromNow },
         },
       },
       {
@@ -179,6 +181,9 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
         $project: {
           _id: { $toString: "$_id" },
           room: { $toString: "$room.name" },
+          format: "$room.room",
+          availableSeats: 1,
+          dateTime: { $toString: "$dateTime" },
           date: {
             $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
           },
