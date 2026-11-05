@@ -10,6 +10,8 @@ import { getSeatsNumber } from "@/utils/getSeatsNumber";
 // Con 10 salas y 5 horarios caben 50 funciones al día: unas 4 por película.
 export const MAX_BILLBOARD_MOVIES = 12;
 export const SCHEDULE_DAYS = 14;
+// La sincronización corre a diario. Tres días toleran que falle alguna vez.
+const SEEN_IN_COLOMBIA_MS = 3 * 24 * 60 * 60 * 1000;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const COLOMBIA_OFFSET_MS = 5 * 60 * 60 * 1000;
@@ -146,8 +148,24 @@ export const updateMoviesStatus = async () => {
   oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
   await Session.deleteMany({ dateTime: { $lt: oneMonthAgo } });
 
-  const movies = await Movie.find({}, { releaseDate: 1, status: 1 }).lean<
-    { _id: unknown; releaseDate: Date; status: MovieStatus }[]
+  const movies = await Movie.find(
+    {},
+    {
+      releaseDate: 1,
+      status: 1,
+      popularity: 1,
+      lastSeenInColombia: 1,
+      isManual: 1,
+    },
+  ).lean<
+    {
+      _id: unknown;
+      releaseDate: Date;
+      status: MovieStatus;
+      popularity?: number;
+      lastSeenInColombia?: Date;
+      isManual?: boolean;
+    }[]
   >();
 
   const withDateStatus = movies.map((movie) => ({
@@ -165,13 +183,28 @@ export const updateMoviesStatus = async () => {
     await Session.deleteMany({ movieId: { $in: expiredIds } });
   }
 
-  // Solo las más recientes de cartelera ocupan salas. Las demás quedan
-  // archivadas, y no se borran.
+  // Ocupan salas las películas en cartelera en Colombia según TMDB, más las
+  // creadas a mano en el panel, de la más popular a la menos popular. Si TMDB
+  // no ha reportado ninguna, se usan las estrenadas más recientemente. Las demás
+  // quedan archivadas, y no se borran.
+  const seenSince = Date.now() - SEEN_IN_COLOMBIA_MS;
   const billboard = withDateStatus
     .filter(({ dateStatus }) => dateStatus === MovieStatus.BILLBOARD)
-    .sort((a, b) => b.releaseDate.getTime() - a.releaseDate.getTime());
-  const activeBillboard = billboard.slice(0, MAX_BILLBOARD_MOVIES);
-  const overflow = billboard.slice(MAX_BILLBOARD_MOVIES);
+    .sort(
+      (a, b) =>
+        (b.popularity ?? 0) - (a.popularity ?? 0) ||
+        b.releaseDate.getTime() - a.releaseDate.getTime(),
+    );
+  const inColombia = billboard.filter(
+    ({ isManual, lastSeenInColombia }) =>
+      isManual || (lastSeenInColombia?.getTime() ?? 0) >= seenSince,
+  );
+  const activeBillboard = (inColombia.length ? inColombia : billboard).slice(
+    0,
+    MAX_BILLBOARD_MOVIES,
+  );
+  const activeIds = new Set(activeBillboard.map(({ id }) => id));
+  const overflow = billboard.filter(({ id }) => !activeIds.has(id));
   const preSale = withDateStatus.filter(
     ({ dateStatus }) => dateStatus === MovieStatus.PRE_SALE,
   );

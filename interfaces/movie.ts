@@ -19,6 +19,9 @@ export interface IMovieModel extends Document {
   poster: string;
   status: MovieStatus;
   sessions: Schema.Types.ObjectId[];
+  popularity: number;
+  lastSeenInColombia?: Date;
+  isManual: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +40,8 @@ export interface IParsedMovie {
   trailer: string;
   poster: string;
   status: MovieStatus;
+  popularity?: number;
+  lastSeenInColombia?: Date;
 }
 
 export interface IMovie {

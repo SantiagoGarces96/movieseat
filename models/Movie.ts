@@ -22,6 +22,9 @@ const movieSchema = new Schema<IMovieModel>({
     default: MovieStatus.UPCOMING,
   },
   sessions: [{ type: Schema.Types.ObjectId, ref: "Session" }],
+  popularity: { type: Number, default: 0 },
+  lastSeenInColombia: { type: Date },
+  isManual: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

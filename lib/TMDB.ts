@@ -1,11 +1,9 @@
-import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
-import { IMovie, IParsedMovie } from "@/interfaces/movie";
+import { TMDB_API_URL } from "@/constants";
+import { IParsedMovie } from "@/interfaces/movie";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
 import axios from "axios";
 import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
-import { calculateDates } from "@/utils/calculateDays";
-import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
 import {
   SessionPrice,
   SessionPriceAfternoon,
@@ -14,42 +12,37 @@ import {
 import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
 
-export const getNowPlayingTMDB = async (): Promise<void> => {
-  const { startDate, endDate } = calculateDatesBillboard();
-  try {
-    const options = {
-      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=MX&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
-      method: "GET",
+const getColombianList = async (
+  list: "now_playing" | "upcoming",
+): Promise<IDetailMovieListTMDB[]> => {
+  const { data } = await axios.get(
+    `${TMDB_API_URL}/${list}?language=es-MX&region=CO&page=1`,
+    {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
-    };
+    },
+  );
+  return data.results;
+};
 
-    const { data } = await axios.request(options);
-    await parseMovie(data.results);
+export const getNowPlayingTMDB = async (): Promise<void> => {
+  try {
+    await parseMovie(await getColombianList("now_playing"), true);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
 
 export const getUpcomingTMDB = async (): Promise<void> => {
-  const { startDate, endDate } = calculateDates();
   try {
-    const options = {
-      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=MX&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
-      },
-    };
-    const { data } = await axios.request(options);
-    await parseMovie(data.results);
+    await parseMovie(await getColombianList("upcoming"), false);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
+
 const isNonLatin = (text: string) => /[^\u0000-\u00ff]/.test(text);
 
 export const getMovieDetailTMDB = async (
@@ -190,31 +183,35 @@ export const calculatePrice = (
   );
 };
 
+// La fecha de la lista ya es la de Colombia cuando se consulta con region=CO.
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
+  playingInColombia: boolean,
 ): Promise<void> => {
-  const totalMovies = moviesData.length;
+  for (const movie of moviesData) {
+    try {
+      const status = getMovieStatus(movie.release_date);
+      if (status === MovieStatus.ARCHIVED || !movie.poster_path) {
+        continue;
+      }
 
-  for (let i = 0; i < totalMovies; i++) {
-    const movie = moviesData[i];
-    const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
+      const releaseDate = new Date(movie.release_date + "T00:00:00");
+      const syncFields = {
+        popularity: movie.popularity,
+        releaseDate,
+        ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
+      };
 
-    const status = getMovieStatus(dataTMDB.release_date);
+      const updated = await Movie.updateOne({ imdb_id: movie.id }, syncFields);
+      if (updated.matchedCount > 0) {
+        continue;
+      }
 
-    if (status === MovieStatus.ARCHIVED) {
-      continue;
-    }
-
-    const currentMovie: IMovie | null = await Movie.findOne({
-      imdb_id: dataTMDB.id,
-    });
-
-    if (!currentMovie) {
+      const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
       const director =
         dataTMDB.credits.crew.find(
           (crewMember) => crewMember.job === "Director",
         )?.original_name || "";
-
       const youtubeId =
         dataTMDB.videos.results.find(
           (video) => video.type === "Trailer" || video.type === "Teaser",
@@ -223,9 +220,9 @@ export const parseMovie = async (
       const parsedMovie: IParsedMovie = {
         imdb_id: dataTMDB.id,
         title: dataTMDB.title,
-        backdrop: `https://image.tmdb.org/t/p/original${moviesData[i].backdrop_path || moviesData[i].poster_path}`,
+        backdrop: `https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`,
         description: dataTMDB.overview || "",
-        releaseDate: new Date(moviesData[i].release_date + "T00:00:00"),
+        releaseDate,
         duration: dataTMDB.runtime,
         genre: dataTMDB.genres.map(({ name }) => name),
         director,
@@ -236,11 +233,16 @@ export const parseMovie = async (
         trailer: youtubeId
           ? `https://www.youtube.com/watch?v=${youtubeId}`
           : "",
-        poster: `https://image.tmdb.org/t/p/original${moviesData[i].poster_path}`,
+        poster: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
         status,
+        popularity: movie.popularity,
+        ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
       };
       await Movie.create(parsedMovie);
       await sleep(100);
+    } catch (error: any) {
+      // Una película con datos incompletos no debe detener a las demás.
+      console.error(`Error syncing movie ${movie.id}: ${error.message}`);
     }
   }
 };
