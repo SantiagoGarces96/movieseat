@@ -16,6 +16,9 @@
 # production
 /build
 
+# imágenes generadas por npm run demo
+/public/demo/
+
 # misc
 .DS_Store
 *.pem
