@@ -142,6 +142,7 @@ export const createRooom = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const roomType = formData.get("room")?.toString().trim() || "";
@@ -197,6 +198,7 @@ export const updateRoom = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const roomType = formData.get("room")?.toString().trim() || "";
@@ -228,7 +230,7 @@ export const updateRoom = async (
       };
     }
 
-    if (isRoomName) {
+    if (isRoomName && String(isRoomName._id) !== String(room._id)) {
       return {
         status: FormStatus.COMPLETE,
         success: false,
@@ -261,13 +263,14 @@ export const deleteRoom = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     await Room.findByIdAndDelete(_id);
     revalidatePath("/dashboard/rooms");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Room eliminada con exito.",
+      success: true,
+      message: "Sala eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);

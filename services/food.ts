@@ -162,6 +162,7 @@ export const createFood = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const image = formData.get("image")?.toString().trim() || "";
@@ -223,6 +224,7 @@ export const updateFood = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const name = formData.get("name")?.toString().trim() || "";
     const image = formData.get("image")?.toString().trim() || "";
@@ -284,13 +286,14 @@ export const deleteFood = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     await Food.findByIdAndDelete(_id);
     revalidatePath("/dashboard/food");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Comida eliminada con exito.",
+      success: true,
+      message: "Comida eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteFood function: ${error.message}`);

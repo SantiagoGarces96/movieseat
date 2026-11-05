@@ -367,6 +367,7 @@ export const createMovie = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
     const title = formData.get("title");
@@ -434,6 +435,7 @@ export const updateMovie = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const { cast, genre, language, id } = state;
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
@@ -480,7 +482,7 @@ export const updateMovie = async (
       };
     }
 
-    if (isMovieTitle) {
+    if (isMovieTitle && String(isMovieTitle._id) !== String(movie._id)) {
       return {
         status: FormStatus.COMPLETE,
         success: false,
@@ -513,13 +515,14 @@ export const deleteMovie = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     await Movie.findByIdAndDelete(_id);
     revalidatePath("/dashboard/movies");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Sessión eliminada con exito.",
+      success: true,
+      message: "Película eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteMovie function: ${error.message}`);
