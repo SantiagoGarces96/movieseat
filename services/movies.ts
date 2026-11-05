@@ -61,7 +61,7 @@ export const getMovies = async (
 
     const results: IMovie[] = await Movie.find(query)
       .sort({ releaseDate: type === MovieStatus.BILLBOARD ? -1 : 1 })
-      .skip(skip < 0 ? 0 : skip + 1)
+      .skip(skip < 0 ? 0 : skip)
       .limit(pageSize);
 
     const parsedResults = JSON.parse(JSON.stringify(results));
