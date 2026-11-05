@@ -22,6 +22,8 @@ export interface IMovieModel extends Document {
   popularity: number;
   lastSeenInColombia?: Date;
   isManual: boolean;
+  billboardPosition: number | null;
+  billboardListedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +44,7 @@ export interface IParsedMovie {
   status: MovieStatus;
   popularity?: number;
   lastSeenInColombia?: Date;
+  billboardPosition?: number | null;
 }
 
 export interface IMovie {

@@ -183,6 +183,37 @@ export const calculatePrice = (
   );
 };
 
+export const saveMovieFromTMDB = async (
+  tmdbId: number,
+  fields: Pick<IParsedMovie, "releaseDate"> & Partial<IParsedMovie>,
+) => {
+  const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(tmdbId);
+  const youtubeId =
+    dataTMDB.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    )?.key || "";
+
+  const parsedMovie: IParsedMovie = {
+    imdb_id: dataTMDB.id,
+    title: dataTMDB.title,
+    backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
+    description: dataTMDB.overview || "Sinopsis no disponible.",
+    duration: dataTMDB.runtime,
+    genre: dataTMDB.genres.map(({ name }) => name),
+    director:
+      dataTMDB.credits.crew.find((crewMember) => crewMember.job === "Director")
+        ?.original_name || "Por confirmar",
+    cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
+    language: dataTMDB.spoken_languages.map(({ english_name }) => english_name),
+    trailer: youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : "",
+    poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
+    status: getMovieStatus(fields.releaseDate.toISOString().split("T")[0]),
+    popularity: dataTMDB.popularity,
+    ...fields,
+  };
+  return Movie.create(parsedMovie);
+};
+
 // La fecha de la lista ya es la de Colombia cuando se consulta con region=CO.
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
@@ -202,43 +233,23 @@ export const parseMovie = async (
         ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
       };
 
-      const updated = await Movie.updateOne({ imdb_id: movie.id }, syncFields);
+      // La fecha de una película en la lista de cartelera no se reemplaza.
+      await Movie.updateOne(
+        { imdb_id: movie.id, billboardPosition: null },
+        { releaseDate },
+      );
+      const updated = await Movie.updateOne(
+        { imdb_id: movie.id },
+        {
+          popularity: movie.popularity,
+          ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
+        },
+      );
       if (updated.matchedCount > 0) {
         continue;
       }
 
-      const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-      const director =
-        dataTMDB.credits.crew.find(
-          (crewMember) => crewMember.job === "Director",
-        )?.original_name || "";
-      const youtubeId =
-        dataTMDB.videos.results.find(
-          (video) => video.type === "Trailer" || video.type === "Teaser",
-        )?.key || "";
-
-      const parsedMovie: IParsedMovie = {
-        imdb_id: dataTMDB.id,
-        title: dataTMDB.title,
-        backdrop: `https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`,
-        description: dataTMDB.overview || "",
-        releaseDate,
-        duration: dataTMDB.runtime,
-        genre: dataTMDB.genres.map(({ name }) => name),
-        director,
-        cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
-        language: dataTMDB.spoken_languages.map(
-          ({ english_name }) => english_name,
-        ),
-        trailer: youtubeId
-          ? `https://www.youtube.com/watch?v=${youtubeId}`
-          : "",
-        poster: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
-        status,
-        popularity: movie.popularity,
-        ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
-      };
-      await Movie.create(parsedMovie);
+      await saveMovieFromTMDB(movie.id, syncFields);
       await sleep(100);
     } catch (error: any) {
       // Una película con datos incompletos no debe detener a las demás.

@@ -25,6 +25,8 @@ const movieSchema = new Schema<IMovieModel>({
   popularity: { type: Number, default: 0 },
   lastSeenInColombia: { type: Date },
   isManual: { type: Boolean, default: false },
+  billboardPosition: { type: Number, default: null },
+  billboardListedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
