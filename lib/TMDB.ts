@@ -6,20 +6,13 @@ import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
 import { calculateDates } from "@/utils/calculateDays";
 import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
-import mongoose from "mongoose";
 import {
   SessionPrice,
   SessionPriceAfternoon,
   SessionRoom,
 } from "@/types/session";
-import Session from "@/models/Session";
-import Room from "@/models/Room";
-import { IRoom } from "@/interfaces/room";
-import { ISession } from "@/interfaces/session";
 import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
-import { getSeatsNumber } from "@/utils/getSeatsNumber";
-import { sessionTimes } from "@/constants/sessions";
 
 export const getNowPlayingTMDB = async (): Promise<void> => {
   const { startDate, endDate } = calculateDatesBillboard();
@@ -132,7 +125,7 @@ export const getMovieDetailTMDB = async (
   }
 };
 
-const getMovieStatus = (releaseDate: string): MovieStatus => {
+export const getMovieStatus = (releaseDate: string): MovieStatus => {
   const today = new Date();
   const release = new Date(releaseDate + "T00:00:00");
   const todayPlus8 = new Date(today);
@@ -170,7 +163,7 @@ const calculateSessionPrice = (
   }
 };
 
-const calculatePrice = (
+export const calculatePrice = (
   seatType: SeatType,
   roomType: SessionRoom,
   sessionDateTime: Date,
@@ -195,213 +188,6 @@ const calculatePrice = (
     seatType,
     SessionPriceAfternoon.BILLBOARD,
   );
-};
-
-const createSession = (
-  rooms: IRoom[],
-  sessionTime: Date,
-  existingSessions: ISession[],
-  movieId: mongoose.Types.ObjectId,
-  status: MovieStatus,
-  sessions: ISession[],
-  usedRoomTimes: Set<string | unknown>,
-) => {
-  const availableRooms = rooms.slice();
-
-  while (availableRooms.length > 0) {
-    const roomIndex = Math.floor(Math.random() * availableRooms.length);
-    const room = availableRooms[roomIndex];
-
-    const roomTimeKey = `${room._id}-${sessionTime.getTime()}`;
-
-    if (!usedRoomTimes.has(roomTimeKey)) {
-      const conflict = existingSessions?.some((session) => {
-        const sessionDateTime = new Date(session.dateTime).getTime();
-        return (
-          session.roomId._id === room._id &&
-          Math.abs(sessionDateTime - sessionTime.getTime()) < 0
-        );
-      });
-
-      if (!conflict) {
-        const session = new Session({
-          movieId: movieId._id,
-          roomId: room._id,
-          dateTime: sessionTime,
-          seatsPreferential: getSeatsNumber(room.totalSeatsPreferential),
-          availableSeatsPreferential: room.totalSeatsPreferential,
-          preferentialPrice: calculatePrice(
-            SeatType.PREFERENTIAL,
-            room.room,
-            sessionTime,
-            status,
-          ),
-          seatsGeneral: getSeatsNumber(room.totalSeatsGeneral),
-          availableSeatsGeneral: room.totalSeatsGeneral,
-          generalPrice: calculatePrice(
-            SeatType.GENERAL,
-            room.room,
-            sessionTime,
-            status,
-          ),
-          availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
-        });
-
-        sessions.push(session);
-        usedRoomTimes.add(roomTimeKey);
-        break;
-      }
-    }
-
-    availableRooms.splice(roomIndex, 1);
-  }
-};
-
-const createMovieSessions = async (
-  releaseDate: string,
-  status: MovieStatus,
-  movieId: mongoose.Types.ObjectId,
-): Promise<ISession[]> => {
-  const release: Date = new Date(releaseDate + "T00:00:00");
-  const today: Date = new Date();
-  const rooms: IRoom[] = await Room.find({});
-
-  if (status === MovieStatus.ARCHIVED || status === MovieStatus.UPCOMING)
-    return [];
-
-  const existingSessions: ISession[] = await Session.find({
-    dateTime: { $gte: today },
-  }).lean<ISession[]>();
-
-  const sessions: ISession[] = [];
-  const usedRoomTimes = new Set();
-  const sessionDays = 120;
-
-  if (status === MovieStatus.PRE_SALE) {
-    for (let day = 2; day > 0; day--) {
-      const sessionDay = new Date(today.getTime() - day * 24 * 60 * 60 * 1000);
-
-      const sessionsPerDay = 2;
-
-      const shuffledSessionTimes = sessionTimes
-        .slice(0, sessionsPerDay)
-        .sort(() => Math.random() - 0.5);
-
-      for (let sessionNumber = 0; sessionNumber < 2; sessionNumber++) {
-        const sessionTime = new Date(
-          `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[sessionNumber]}Z`,
-        );
-        createSession(
-          rooms,
-          sessionTime,
-          existingSessions,
-          movieId,
-          status,
-          sessions,
-          usedRoomTimes,
-        );
-      }
-    }
-
-    await Session.insertMany(sessions);
-    return sessions;
-  }
-
-  for (let day = 0; day < sessionDays; day++) {
-    const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
-    const daysSinceRelease = Math.floor(
-      (sessionDay.getTime() - release.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    let sessionsPerDay = 3;
-    if (daysSinceRelease > 30 && daysSinceRelease <= 60) {
-      sessionsPerDay = 2;
-    } else if (daysSinceRelease > 60 && daysSinceRelease <= 120) {
-      sessionsPerDay = 1;
-    } else if (daysSinceRelease > 120) {
-      break;
-    }
-
-    const shuffledSessionTimes = sessionTimes
-      .slice(0, sessionsPerDay)
-      .sort(() => Math.random() - 0.5);
-
-    for (let i = 0; i < sessionsPerDay; i++) {
-      const sessionTime = new Date(
-        `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[i]}Z`,
-      );
-      createSession(
-        rooms,
-        sessionTime,
-        existingSessions,
-        movieId,
-        status,
-        sessions,
-        usedRoomTimes,
-      );
-    }
-  }
-
-  await Session.insertMany(sessions);
-  return sessions;
-};
-
-const deleteArchivedMovies = async (_id: string): Promise<void> => {
-  await Movie.findOneAndDelete({ _id });
-  await Session.deleteMany({ movieId: _id });
-};
-
-const updateMovieStatus = async (
-  _id: string,
-  release_date: string,
-  status: MovieStatus,
-): Promise<void> => {
-  await Session.deleteMany({ movieId: _id });
-  const sessions = await createMovieSessions(
-    release_date,
-    status,
-    new mongoose.Types.ObjectId(_id),
-  );
-  await Movie.findOneAndUpdate(
-    { _id },
-    { status, sessions: sessions.map((session) => session._id) },
-  );
-};
-
-export const updateMoviesStatus = async (): Promise<void> => {
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-  await Session.deleteMany({
-    dateTime: { $lt: oneMonthAgo },
-  });
-
-  const movies: IMovie[] = await Movie.find({});
-  const totalMovies = movies.length;
-
-  for (let i = 0; i < totalMovies; i++) {
-    const currentMovie = movies[i];
-    const date = new Date(currentMovie.releaseDate);
-    const formattedDate = date.toISOString().split("T")[0];
-    const status = getMovieStatus(formattedDate);
-
-    if (status === MovieStatus.ARCHIVED) {
-      await deleteArchivedMovies(currentMovie._id);
-      continue;
-    }
-
-    if (
-      currentMovie.sessions.length === 0 &&
-      (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
-    ) {
-      await updateMovieStatus(currentMovie._id, formattedDate, status);
-      continue;
-    }
-
-    if (currentMovie.status !== status) {
-      await updateMovieStatus(currentMovie._id, formattedDate, status);
-    }
-  }
 };
 
 export const parseMovie = async (
