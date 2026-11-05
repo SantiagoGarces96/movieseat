@@ -23,6 +23,10 @@
     @apply bg-white/10 text-paper backdrop-blur hover:bg-white/20;
   }
 
+  .ms-input {
+    @apply mt-1.5 min-h-11 w-full rounded-xl border border-white/10 bg-ink-800 px-4 py-2.5 text-paper outline-none transition-colors focus:border-gold;
+  }
+
   .ms-link {
     @apply rounded transition-colors duration-200 hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold;
   }
