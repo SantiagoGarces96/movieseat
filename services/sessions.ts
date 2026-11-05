@@ -201,6 +201,7 @@ export const createSession = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const movieId = formData.get("movieId")?.toString().trim() || "";
     const roomId = formData.get("roomId")?.toString().trim() || "";
@@ -281,6 +282,7 @@ export const updateSession = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     const roomId = formData.get("roomId")?.toString().trim() || "";
     const date = formData.get("date")?.toString().trim() || "";
@@ -355,13 +357,14 @@ export const deleteSession = async (
   formData: FormData,
 ): Promise<FormState> => {
   await requireAdmin();
+  await dbConnect();
   try {
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/sessions");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Sessión eliminada con exito.",
+      success: true,
+      message: "Función eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
