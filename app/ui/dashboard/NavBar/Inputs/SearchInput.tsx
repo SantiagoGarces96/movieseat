@@ -11,7 +11,7 @@ function Input({
   inputRef,
   kbd,
 }: {
-  inputRef?: RefObject<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement | null>;
   kbd?: boolean;
 }) {
   const { getParam, updateParam, deleteParam } = useParams();
@@ -100,7 +100,7 @@ function Input({
 export default function SearchInput({
   inputRef,
 }: {
-  inputRef?: RefObject<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement | null>;
 }) {
   return (
     <div>

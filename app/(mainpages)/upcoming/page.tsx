@@ -6,10 +6,11 @@ import { getMovies } from "@/services/movies";
 import { MovieStatus } from "@/types/movie";
 
 interface PageProps {
-  searchParams: { UpcomingPage?: string };
+  searchParams: Promise<{ UpcomingPage?: string }>;
 }
 
-export default async function UpcomingPage({ searchParams }: PageProps) {
+export default async function UpcomingPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const movies = await getMovies(
     MovieStatus.UPCOMING,
     searchParams.UpcomingPage || "1",

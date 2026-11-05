@@ -8,9 +8,9 @@ import { FoodCategory } from "@/types/food";
 import { IFood } from "@/interfaces/food";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     category: FoodCategory;
-  };
+  }>;
 }
 
 const categoryTitles: Record<FoodCategory, string> = {
@@ -20,7 +20,7 @@ const categoryTitles: Record<FoodCategory, string> = {
 };
 
 export default async function FoodsByCategoryPage({ params }: PageProps) {
-  const { category } = params;
+  const { category } = await params;
 
   const foods: IFood[] = await getFoodsByCategory(category);
 

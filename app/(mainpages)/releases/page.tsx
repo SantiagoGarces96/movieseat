@@ -6,10 +6,11 @@ import { getMovies } from "@/services/movies";
 import { MovieStatus } from "@/types/movie";
 
 interface PageProps {
-  searchParams: { releasesPage?: string };
+  searchParams: Promise<{ releasesPage?: string }>;
 }
 
-export default async function ReleasesPage({ searchParams }: PageProps) {
+export default async function ReleasesPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const movies = await getMovies(
     MovieStatus.BILLBOARD,
     searchParams.releasesPage || "1",
