@@ -5,12 +5,14 @@ const TeamSection = () => {
   const teamData = getTeamData();
 
   return (
-    <section className="mx-auto p-6 sm:w-full hd:w-3/4 fhd:w-2/3">
-      <h1 className="text-center text-4xl font-bold">Nuestro Equipo</h1>
-      <div className="mx-auto my-10 grid grid-cols-1 gap-8 md:grid-cols-2">
-        {teamData.map((member, index) => (
+    <section>
+      <h2 className="mb-6 text-2xl font-bold tracking-tight md:text-3xl">
+        Nuestro equipo
+      </h2>
+      <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+        {teamData.map((member) => (
           <TeamCard
-            key={index}
+            key={member.name}
             role={member.role}
             name={member.name}
             photo={member.photo}

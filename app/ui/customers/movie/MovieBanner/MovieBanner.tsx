@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { MovieStatus } from "@/types/movie";
+import { formatDuration, movieStatusLabel } from "@/utils/format";
 import TrailerButton from "./TrailerButton";
 
 interface MovieBannerProps {
@@ -14,13 +15,6 @@ interface MovieBannerProps {
   status: MovieStatus;
 }
 
-const statusColors: Record<MovieStatus, string> = {
-  [MovieStatus.PRE_SALE]: "bg-blue-500",
-  [MovieStatus.UPCOMING]: "bg-yellow-500",
-  [MovieStatus.BILLBOARD]: "bg-green-500",
-  [MovieStatus.ARCHIVED]: "bg-gray-500",
-};
-
 const MovieBanner: React.FC<MovieBannerProps> = ({
   backdrop,
   poster,
@@ -31,69 +25,50 @@ const MovieBanner: React.FC<MovieBannerProps> = ({
   trailer,
   status,
 }) => {
+  const details = [formatDuration(duration), genre.join(", ")]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <section className="relative w-full pt-16 sm:h-[350px] hd:h-[400px] fhd:h-[450px]">
-      {/* Backdrop */}
-      <div className="absolute inset-0 h-full w-full overflow-hidden">
-        <Image
-          src={backdrop}
-          alt={`${title} backdrop`}
-          fill
-          style={{ objectFit: "cover" }}
-          quality={100}
-          className="brightness-75"
-          priority
-        />
-      </div>
+    <section className="relative isolate overflow-hidden">
+      <Image
+        src={backdrop}
+        alt=""
+        fill
+        sizes="100vw"
+        priority
+        className="-z-20 object-cover"
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/75 to-ink-950/30" />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 z-10 bg-black opacity-70"></div>
+      <div className="ms-container flex flex-col gap-6 pb-8 pt-16 sm:flex-row sm:items-end md:gap-10 md:pt-32">
+        <div className="relative aspect-[2/3] w-40 shrink-0 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 md:w-64">
+          <Image
+            src={poster}
+            alt={`Póster de ${title}`}
+            fill
+            sizes="(min-width: 830px) 256px, 160px"
+            priority
+            className="object-cover"
+          />
+        </div>
 
-      {/* Contenedor del contenido */}
-      <div className="container relative z-20 mx-auto flex h-full items-center justify-center px-8 sm:px-6 md:px-8">
-        <div className="flex w-screen flex-col items-center gap-8 sm:flex-row fhd:w-4/5">
-          {/* Poster */}
-          <div className="w-2/5 flex-shrink-0 overflow-hidden rounded-lg shadow-lg md:w-1/4 hd:w-1/5">
-            <Image
-              src={poster}
-              alt={`${title} poster`}
-              width={350}
-              height={500}
-              style={{ objectFit: "fill" }}
-              className="rounded-lg"
-              priority
-            />
-          </div>
-
-          {/* Información de la película */}
-          <div className="space-y-4 text-white sm:text-left">
-            <h1 className="text-2xl font-bold md:text-3xl hd:text-4xl">
-              {title}
-            </h1>
-            <p className="text-sm md:text-base hd:text-lg">{`Estreno: ${releaseDate}`}</p>
-            <p className="text-sm md:text-base hd:text-lg">{`Duración: ${duration} min`}</p>
-            <p className="text-sm md:text-base hd:text-lg">
-              {genre.join(", ")}
-            </p>
-
-            {/* estado */}
-            <div className="flex items-center space-x-2 sm:justify-start">
-              <span
-                className={`rounded px-2 py-1 text-xs text-white md:text-sm hd:text-base ${statusColors[status]}`}
-              >
-                {status === MovieStatus.PRE_SALE
-                  ? "Preventa"
-                  : status === MovieStatus.UPCOMING
-                    ? "Próximamente"
-                    : status === MovieStatus.BILLBOARD
-                      ? "Cartelera"
-                      : status}
-              </span>
+        <div className="min-w-0">
+          <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-gold backdrop-blur">
+            {movieStatusLabel[status]}
+          </span>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">
+            {title}
+          </h1>
+          <p className="mt-3 text-sm text-paper/80 md:text-base">{details}</p>
+          <p className="mt-1 text-sm text-muted md:text-base">
+            Estreno: {releaseDate}
+          </p>
+          {trailer && (
+            <div className="mt-5">
+              <TrailerButton trailerUrl={trailer} />
             </div>
-
-            {/* Botón para el tráiler */}
-            <TrailerButton trailerUrl={trailer} />
-          </div>
+          )}
         </div>
       </div>
     </section>

@@ -1,39 +1,20 @@
-import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import LoginMenu from "./LoginMenu";
+import Logo from "./Logo";
+import NavLinks from "./NavLinks";
 
 const Navbar = () => {
   return (
-    <div className="navbar sticky top-0 z-50 bg-base-100 shadow-md">
-      <div className="navbar-start">
+    <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-950/85 backdrop-blur-md">
+      <div className="ms-container flex h-16 items-center justify-between gap-6">
+        <Logo />
+        <NavLinks />
+        <div className="hidden lg:block">
+          <LoginMenu />
+        </div>
         <MobileMenu />
-
-        <Link href="/" className="btn btn-ghost text-xl font-bold">
-          MovieSeat
-        </Link>
       </div>
-
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          <li>
-            <Link href="/releases">Cartelera</Link>
-          </li>
-          <li>
-            <Link href="/upcoming">Próximos Estrenos</Link>
-          </li>
-          <li>
-            <Link href="/foods">Comidas</Link>
-          </li>
-          <li>
-            <Link href="/about">Nosotros</Link>
-          </li>
-        </ul>
-      </div>
-
-      <div className="navbar-end hidden lg:flex">
-        <LoginMenu />
-      </div>
-    </div>
+    </header>
   );
 };
 

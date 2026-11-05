@@ -1,98 +1,85 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  HiBars3,
-  HiOutlineXMark,
-  HiHome,
-  HiCalendar,
-  HiFilm,
-  HiUserGroup,
-  HiOutlineUserCircle,
-} from "react-icons/hi2";
 import { usePathname } from "next/navigation";
-import LoginMenu from "./LoginMenu"; // Asegúrate de importar el LoginMenu
+import { HiBars3, HiOutlineXMark } from "react-icons/hi2";
+import LoginMenu from "./LoginMenu";
+import { siteLinks } from "./links";
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  const menuItems = [
-    { name: "Cartelera", href: "/releases", icon: <HiHome /> },
-    { name: "Próximos Estrenos", href: "/upcoming", icon: <HiCalendar /> },
-    { name: "Comidas", href: "/foods", icon: <HiUserGroup /> },
-    { name: "Nosotros", href: "/about", icon: <HiFilm /> },
-  ];
-
-  const toggleMenu = () => setIsOpen(!isOpen);
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
 
   return (
-    <>
-      <input
-        type="checkbox"
-        id="menu-toggle"
-        className="hidden"
-        checked={isOpen}
-        onChange={toggleMenu}
-      />
+    <div className="lg:hidden">
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Abrir menú"
+        aria-expanded={isOpen}
+        className="ms-link flex h-11 w-11 items-center justify-center text-paper"
+      >
+        <HiBars3 className="h-6 w-6" aria-hidden />
+      </button>
 
-      <div className="lg:hidden">
-        <label htmlFor="menu-toggle" className="btn btn-ghost lg:hidden">
-          <HiBars3 className="h-6 w-6" />
-        </label>
-
-        {isOpen && (
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 h-dvh bg-black/60"
+          onClick={() => setIsOpen(false)}
+        >
           <div
-            className="fixed inset-0 z-50 flex bg-black bg-opacity-50"
-            onClick={toggleMenu}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menú"
+            className="absolute right-0 top-0 flex h-full w-72 max-w-[85vw] flex-col bg-ink-900 p-5 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
           >
-            <div
-              className="fixed left-0 top-0 h-full w-[250px] bg-base-100 p-6 shadow-lg"
-              onClick={(e) => e.stopPropagation()} // Evita cerrar el menú al hacer clic dentro
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Cerrar menú"
+              className="ms-link mb-4 flex h-11 w-11 items-center justify-center self-end text-paper"
             >
-              {/* Botón de cierre */}
-              <button
-                onClick={toggleMenu}
-                className="absolute right-4 top-4 text-xl"
-              >
-                <HiOutlineXMark />
-              </button>
+              <HiOutlineXMark className="h-6 w-6" aria-hidden />
+            </button>
 
-              {/* Logo */}
-              <div className="mb-6 flex items-center space-x-2">
-                <HiFilm className="h-6 w-6" />
-                <span className="text-xl font-bold">MovieSeat</span>
-              </div>
+            <nav aria-label="Principal" className="flex flex-col gap-1">
+              {siteLinks.map(({ name, href }) => {
+                const isActive = pathname.startsWith(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsOpen(false)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                      isActive
+                        ? "bg-white/5 text-gold"
+                        : "text-paper hover:bg-white/5"
+                    }`}
+                  >
+                    {name}
+                  </Link>
+                );
+              })}
+            </nav>
 
-              {/* Enlaces del menú */}
-              <ul className="space-y-4">
-                {menuItems.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center rounded-md p-2 ${
-                        pathname === item.href
-                          ? "bg-blue-200 text-blue-900"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                      onClick={toggleMenu} // Cierra el menú al hacer clic
-                    >
-                      <span className="mr-3">{item.icon}</span>
-                      <span>{item.name}</span>
-                    </Link>
-                  </li>
-                ))}
-
-                {/* Integrando el LoginMenu aquí */}
-                <li>
-                  <LoginMenu />
-                </li>
-              </ul>
+            <div className="mt-auto pt-6">
+              <LoginMenu />
             </div>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 
