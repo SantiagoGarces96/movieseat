@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { HiPause, HiPlay } from "react-icons/hi2";
 import TrailerButton from "@/app/ui/customers/movie/MovieBanner/TrailerButton";
 import { formatDuration } from "@/utils/format";
 
@@ -15,7 +16,7 @@ export interface HeroMovie {
   trailer: string;
 }
 
-const ROTATION_MS = 9000;
+const ROTATION_MS = 6000;
 
 const Hero = ({ movies }: { movies: HeroMovie[] }) => {
   const [current, setCurrent] = useState(0);
@@ -23,11 +24,7 @@ const Hero = ({ movies }: { movies: HeroMovie[] }) => {
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (movies.length < 2 || isPaused || isTrailerOpen || prefersReducedMotion)
-      return;
+    if (movies.length < 2 || isPaused || isTrailerOpen) return;
     const interval = setInterval(
       () => setCurrent((index) => (index + 1) % movies.length),
       ROTATION_MS,
@@ -57,8 +54,6 @@ const Hero = ({ movies }: { movies: HeroMovie[] }) => {
     <section
       aria-label="Películas destacadas"
       className="relative isolate flex min-h-[520px] items-end overflow-hidden md:min-h-[600px] xl:min-h-[680px]"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
       {movies.map((item, index) => (
         <Image
@@ -68,7 +63,7 @@ const Hero = ({ movies }: { movies: HeroMovie[] }) => {
           fill
           sizes="100vw"
           priority={index === 0}
-          className={`-z-20 object-cover transition-opacity duration-1000 ${
+          className={`-z-20 object-cover transition-opacity duration-1000 motion-reduce:transition-none ${
             index === current ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -99,7 +94,19 @@ const Hero = ({ movies }: { movies: HeroMovie[] }) => {
         </div>
 
         {movies.length > 1 && (
-          <div className="-ml-2 mt-6 flex">
+          <div className="-ml-2 mt-6 flex items-center">
+            <button
+              type="button"
+              onClick={() => setIsPaused((paused) => !paused)}
+              aria-label={isPaused ? "Reanudar carrusel" : "Pausar carrusel"}
+              className="flex h-8 w-8 items-center justify-center text-paper/70 transition-colors hover:text-paper"
+            >
+              {isPaused ? (
+                <HiPlay className="h-4 w-4" aria-hidden />
+              ) : (
+                <HiPause className="h-4 w-4" aria-hidden />
+              )}
+            </button>
             {movies.map((item, index) => (
               <button
                 key={item._id}
