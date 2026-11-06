@@ -1,10 +1,8 @@
-import { TestCard } from "@/types/payment";
 import { z } from "zod";
 
 export const MAX_UNITS_PER_FOOD = 10;
 
 export const CheckoutSchema = z.object({
-  testCard: z.nativeEnum(TestCard),
   foods: z
     .array(
       z.object({

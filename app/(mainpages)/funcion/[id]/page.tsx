@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiArrowLeft } from "react-icons/hi2";
 import dbConnect from "@/lib/dbConnect";
+import { releaseExpiredCheckouts } from "@/lib/payments/checkout";
 import { releaseExpiredReservations } from "@/lib/reservations";
 import Movie from "@/models/Movie";
 import Room from "@/models/Room";
@@ -41,6 +42,7 @@ export default async function SeatsPage({
 
   await dbConnect();
   await releaseExpiredReservations(id);
+  await releaseExpiredCheckouts(id);
 
   const session = await Session.findById(id);
   if (!session) {
