@@ -1,8 +1,6 @@
 import React from "react";
-import Link from "next/link";
-import { HiArrowLeft } from "react-icons/hi2";
 import FoodCard from "@/app/ui/customers/card/foods/Card";
-import PageHeader from "@/app/ui/customers/PageHeader";
+import FoodsHero from "@/app/ui/customers/foods/FoodsHero";
 import { getFoodsByCategory } from "@/services/food";
 import { FoodCategory } from "@/types/food";
 import { IFood } from "@/interfaces/food";
@@ -13,28 +11,32 @@ interface PageProps {
   }>;
 }
 
-const categoryTitles: Record<FoodCategory, string> = {
-  [FoodCategory.FOODS]: "Alimentos",
-  [FoodCategory.DRINKS]: "Bebidas",
-  [FoodCategory.COMBOS]: "Combos",
+const categoryDetails: Record<FoodCategory, { title: string; image: string }> = {
+  [FoodCategory.FOODS]: {
+    title: "Alimentos",
+    image: "/images/foods/portada-alimentos.webp",
+  },
+  [FoodCategory.DRINKS]: {
+    title: "Bebidas",
+    image: "/images/foods/portada-bebidas.webp",
+  },
+  [FoodCategory.COMBOS]: {
+    title: "Combos",
+    image: "/images/foods/portada-combos.webp",
+  },
 };
 
 export default async function FoodsByCategoryPage({ params }: PageProps) {
   const { category } = await params;
+  const { title, image } = categoryDetails[category] ?? {
+    title: "Comidas",
+    image: "/images/foods/portada.webp",
+  };
 
   const foods: IFood[] = await getFoodsByCategory(category);
 
   return (
-    <div className="ms-container py-10 md:py-14">
-      <Link
-        href="/foods"
-        className="ms-link mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted"
-      >
-        <HiArrowLeft aria-hidden />
-        Comidas
-      </Link>
-      <PageHeader title={categoryTitles[category] ?? "Comidas"} />
-
+    <FoodsHero title={title} image={image} showBackLink>
       {foods.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
           {foods.map((food) => (
@@ -46,6 +48,6 @@ export default async function FoodsByCategoryPage({ params }: PageProps) {
           Por ahora no hay opciones disponibles en esta categoría.
         </p>
       )}
-    </div>
+    </FoodsHero>
   );
 }
