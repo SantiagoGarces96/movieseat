@@ -9,6 +9,7 @@
     "dev": "next dev",
     "demo": "node scripts/demo.mjs",
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
+    "seed-menu": "node --env-file=.env.local scripts/seed-menu.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

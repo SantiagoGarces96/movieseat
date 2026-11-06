@@ -55,7 +55,7 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
           <input
             id="image"
             name="image"
-            type="url"
+            type="text"
             defaultValue={foodData.image}
             className="input input-sm input-bordered w-full"
             required

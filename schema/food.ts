@@ -32,7 +32,6 @@ export const FoodFormSchema = z.object({
     .string({
       required_error: "La url de la imagen es obligatoria",
     })
-    .url("El enlace de la imagen debe ser una URL válida")
     .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
   description: z
     .string({
