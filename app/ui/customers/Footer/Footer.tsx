@@ -5,7 +5,7 @@ import { siteLinks } from "../NavBar/links";
 
 const Footer = () => {
   return (
-    <footer className="mt-20 border-t border-white/5 bg-ink-900">
+    <footer className="relative z-10 mt-20 border-t border-white/5 bg-ink-900">
       <div className="ms-container py-10">
         <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <Logo />

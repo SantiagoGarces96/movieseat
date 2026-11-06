@@ -2,7 +2,7 @@
 // necesidad de MongoDB Atlas ni de claves de TMDB. Los datos se borran al cerrar.
 // Uso: npm run demo
 import bcrypt from "bcryptjs";
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -38,11 +38,8 @@ const upcoming = [
   ["Ciudad dormida", "Suspenso", "#111827", "#9ca3af", "Una madrugada, todos los relojes de la ciudad se detienen a la misma hora."],
 ];
 
+// El resto del menú lo agrega scripts/seed-menu.mjs, igual que en la base real.
 const foods = [
-  ["Crispetas de mantequilla", "Recién hechas y con mantequilla.", 16000, "large", "foods", "popcorn", "#b45309", "#fde68a"],
-  ["Perro caliente", "Pan suave, salchicha y salsas.", 18000, "small", "foods", "fast_food", "#9a3412", "#fdba74"],
-  ["Gaseosa", "Bien fría, con hielo.", 9000, "large", "drinks", "drink", "#991b1b", "#fca5a5"],
-  ["Agua", "Botella personal.", 6000, "small", "drinks", "drink", "#075985", "#7dd3fc"],
   ["Combo pareja", "Crispetas grandes y dos gaseosas.", 38000, "extralarge", "combos", "combo", "#5b21b6", "#c4b5fd"],
 ];
 
@@ -184,7 +181,11 @@ await mongoose.connection.collection("users").insertMany(
   ),
 );
 await mongoose.disconnect();
-console.log(`Datos de ejemplo listos: ${movies.length} películas y ${foods.length} comidas.`);
+execFileSync(process.execPath, [path.join(root, "scripts", "seed-menu.mjs")], {
+  stdio: "inherit",
+  env: { ...process.env, MONGODB_URI: uri },
+});
+console.log(`Datos de ejemplo listos: ${movies.length} películas.`);
 console.log(`Administrador de prueba: ${DEMO_ADMIN.email} / ${DEMO_ADMIN.password}`);
 
 const next = spawn(
