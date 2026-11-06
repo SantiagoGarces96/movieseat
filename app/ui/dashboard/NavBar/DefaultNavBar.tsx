@@ -1,8 +1,20 @@
-import Image from "next/image";
+import { requireAdmin } from "@/lib/auth";
+import LogoutButton from "./LogoutButton";
 import MenuIcon from "./Icons/MenuIcon";
 import SearchIcon from "./Icons/SearchIcon";
 
-export default function DefaultNavBar() {
+const getInitials = (name: string): string =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
+export default async function DefaultNavBar() {
+  const { name, email } = await requireAdmin();
+  const initials = getInitials(name);
+
   return (
     <div className="navbar sticky top-0 z-50 border-b bg-base-100">
       <div className="navbar-start">
@@ -10,50 +22,37 @@ export default function DefaultNavBar() {
         <SearchIcon />
       </div>
       <div className="navbar-end">
-        {/* TODO get all data from next-auth */}
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}
             role="button"
-            className="avatar btn btn-circle btn-ghost btn-sm"
+            aria-label="Cuenta"
+            className="avatar placeholder btn btn-circle btn-ghost btn-sm"
           >
-            <div className="w-8 rounded-full">
-              <Image
-                alt="Tailwind CSS Navbar component"
-                src="https://avatars.githubusercontent.com/u/93413716?v=4&size=256"
-                width={100}
-                height={100}
-              />
+            <div className="w-8 rounded-full bg-accent text-primary">
+              <span className="text-xs">{initials}</span>
             </div>
           </div>
           <div
             tabIndex={0}
             className="menu dropdown-content menu-sm z-[1] mt-3 w-64 rounded-lg bg-base-100 shadow-md"
           >
-            <div className="flex w-full items-center justify-start gap-3 border-b p-4">
+            <div className="flex w-full items-center justify-start gap-3 p-4">
               <div className="avatar placeholder">
                 <div className="w-12 rounded-full bg-accent text-primary">
-                  <span>FY</span>
+                  <span>{initials}</span>
                 </div>
               </div>
               <div className="flex flex-col gap-1 overflow-hidden">
-                <h3 className="truncate font-bold">Felipe Yepes</h3>
+                <h3 className="truncate font-bold">{name}</h3>
                 <div>
                   <div className="overflow-hidden truncate font-normal text-gray-400">
-                    yepilef@gmail.com
+                    {email}
                   </div>
-                  <a className="link link-secondary">Cerrar Sesion</a>
+                  <LogoutButton />
                 </div>
               </div>
             </div>
-            <ul className="menu menu-md bg-base-100">
-              <li>
-                <a>Profile</a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

@@ -1,11 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { IconType } from "react-icons";
+import { GiPopcorn, GiSodaCan } from "react-icons/gi";
+import { HiArrowRight } from "react-icons/hi2";
+import { MdFastfood } from "react-icons/md";
+import { FoodCategory } from "@/types/food";
 
 interface Category {
-  id: string;
+  id: FoodCategory;
   name: string;
-  image: string;
   description: string;
 }
 
@@ -13,54 +17,58 @@ interface CategoryCardsGridProps {
   categories: Category[];
 }
 
+const categoryStyles: Record<FoodCategory, { icon: IconType; image: string }> =
+  {
+    [FoodCategory.FOODS]: {
+      icon: GiPopcorn,
+      image: "/images/foods/nachos.webp",
+    },
+    [FoodCategory.DRINKS]: {
+      icon: GiSodaCan,
+      image: "/images/foods/gaseosa.webp",
+    },
+    [FoodCategory.COMBOS]: {
+      icon: MdFastfood,
+      image: "/images/foods/combo.webp",
+    },
+  };
+
 const CategoryCardsGrid: React.FC<CategoryCardsGridProps> = ({
   categories,
 }) => {
   return (
-    <div className="h-full w-full hd:w-9/12">
-      <div className="w-full">
-        <h2 className="text-3xl font-bold">Comidas</h2>
-        <br />
-        <p>
-          <strong>
-            Esta sección es informativa. <br /> Podrás agregar tu comida en el
-            proceso de compra de boletas.
-          </strong>
-        </p>
-      </div>
-      <br />
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 hd:grid-cols-3">
-        {categories.map((category) => (
-          <Link key={category.id} href={`/foods/${category.id}`}>
-            <div className="max-w-sm cursor-pointer overflow-hidden rounded border border-gray-200 bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl">
-              <div className="relative">
-                <span
-                  className={`absolute left-2 top-2 rounded px-2 py-1 text-lg font-semibold text-black ${category.name}`}
-                  style={{ zIndex: 10 }}
-                >
-                  {category.name}
-                </span>
-
-                {/* Imagen representativa */}
-                <Image
-                  className="w-full object-cover"
-                  src={category.image}
-                  alt={category.name}
-                  width={500}
-                  height={400}
-                />
-              </div>
-
-              {/* Descripción */}
-              <div className="px-6 py-4">
-                <p className="text-base text-gray-700">
-                  {category.description}
-                </p>
-              </div>
-            </div>
+    <div className="grid gap-4 md:grid-cols-3 md:gap-6">
+      {categories.map(({ id, name, description }) => {
+        const { icon: Icon, image } = categoryStyles[id];
+        return (
+          <Link
+            key={id}
+            href={`/foods/${id}`}
+            className="group relative isolate flex min-h-80 flex-col overflow-hidden rounded-2xl border border-white/10 p-6 transition-colors duration-200 hover:border-gold/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold md:p-8"
+          >
+            <Image
+              src={image}
+              alt=""
+              fill
+              sizes="(min-width: 830px) 33vw, 100vw"
+              className="-z-20 object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+            />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/85 to-ink-950/30" />
+            <Icon className="h-12 w-12 text-gold" aria-hidden />
+            <h2 className="mt-auto pt-6 text-xl font-bold tracking-tight">
+              {name}
+            </h2>
+            <p className="mt-2 text-paper/85">{description}</p>
+            <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-gold">
+              Ver opciones
+              <HiArrowRight
+                className="transition-transform motion-safe:group-hover:translate-x-1"
+                aria-hidden
+              />
+            </span>
           </Link>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 };

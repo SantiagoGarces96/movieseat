@@ -12,6 +12,20 @@ const config: Config = {
         primary: "#FFFDF6",
         secondary: "#1E91D6",
         accent: "#0072BB",
+        // Paleta del sitio público. El panel de administración sigue usando la anterior.
+        ink: {
+          950: "#0B0D12",
+          900: "#11141B",
+          800: "#191D27",
+          700: "#252A36",
+          600: "#3A4150",
+        },
+        paper: "#F3F1EC",
+        muted: "#A3AAB8",
+        gold: {
+          DEFAULT: "#F2B544",
+          light: "#FFCF70",
+        },
       },
       screens: {
         sm: "460px", // Minimum width for mobile devices

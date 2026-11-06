@@ -5,3 +5,29 @@
 * {
   scrollbar-width: thin;
 }
+
+@layer components {
+  .ms-container {
+    @apply mx-auto w-full max-w-[1440px] px-5 md:px-8 xl:px-12;
+  }
+
+  .ms-btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold;
+  }
+
+  .ms-btn-primary {
+    @apply bg-gold text-ink-950 hover:bg-gold-light;
+  }
+
+  .ms-btn-secondary {
+    @apply bg-white/10 text-paper backdrop-blur hover:bg-white/20;
+  }
+
+  .ms-input {
+    @apply mt-1.5 min-h-11 w-full rounded-xl border border-white/10 bg-ink-800 px-4 py-2.5 text-paper outline-none transition-colors focus:border-gold;
+  }
+
+  .ms-link {
+    @apply rounded transition-colors duration-200 hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold;
+  }
+}

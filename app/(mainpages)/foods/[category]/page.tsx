@@ -1,55 +1,53 @@
 import React from "react";
 import FoodCard from "@/app/ui/customers/card/foods/Card";
-import MobileFoodCard from "@/app/ui/customers/card/foods/MobileCard";
+import FoodsHero from "@/app/ui/customers/foods/FoodsHero";
 import { getFoodsByCategory } from "@/services/food";
 import { FoodCategory } from "@/types/food";
 import { IFood } from "@/interfaces/food";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     category: FoodCategory;
-  };
+  }>;
 }
 
+const categoryDetails: Record<FoodCategory, { title: string; image: string }> = {
+  [FoodCategory.FOODS]: {
+    title: "Alimentos",
+    image: "/images/foods/portada-alimentos.webp",
+  },
+  [FoodCategory.DRINKS]: {
+    title: "Bebidas",
+    image: "/images/foods/portada-bebidas.webp",
+  },
+  [FoodCategory.COMBOS]: {
+    title: "Combos",
+    image: "/images/foods/portada-combos.webp",
+  },
+};
+
 export default async function FoodsByCategoryPage({ params }: PageProps) {
-  const { category } = params;
+  const { category } = await params;
+  const { title, image } = categoryDetails[category] ?? {
+    title: "Comidas",
+    image: "/images/foods/portada.webp",
+  };
 
   const foods: IFood[] = await getFoodsByCategory(category);
 
   return (
-    <div className="flex w-full flex-col overflow-hidden p-4">
-      <h1 className="mb-6 flex justify-center text-4xl font-bold capitalize">
-        {category.charAt(0).toUpperCase() + category.slice(1)}
-      </h1>
-
-      {/* Versión para pantallas grandes (HD, FHD, 2K) */}
-      <div className="hidden flex-wrap justify-center gap-6 p-8 md:flex">
-        {foods.length > 0 ? (
-          foods.map((food) => (
-            <div
-              key={food._id}
-              className="w-[400px] transform transition-transform hover:scale-105"
-            >
-              <FoodCard food={food} />
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No hay alimentos disponibles</p>
-        )}
-      </div>
-
-      {/* Versión para pantallas pequeñas (SM y XS) */}
-      <div className="block w-full md:hidden">
-        {foods.length > 0 ? (
-          foods.map((food) => (
-            <div key={food._id} className="mb-4">
-              <MobileFoodCard food={food} />
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No hay alimentos disponibles</p>
-        )}
-      </div>
-    </div>
+    <FoodsHero title={title} image={image} showBackLink>
+      {foods.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
+          {foods.map((food) => (
+            <FoodCard key={String(food._id)} food={food} />
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-white/5 bg-ink-900 px-6 py-12 text-center text-muted">
+          Por ahora no hay opciones disponibles en esta categoría.
+        </p>
+      )}
+    </FoodsHero>
   );
 }

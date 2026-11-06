@@ -7,6 +7,7 @@ import {
   HiOutlineCake,
   HiOutlineCalendarDays,
   HiOutlineFilm,
+  HiOutlineListBullet,
   HiOutlineRectangleGroup,
   HiOutlineSquares2X2,
   HiOutlineTicket,
@@ -97,6 +98,18 @@ export default function NavLinks() {
         >
           <HiOutlineUserGroup className="h-5 w-5" />
           <span className="text-base font-normal">Usuarios</span>
+        </Link>
+      </li>
+      <li className="mb-3">
+        <Link
+          href="/dashboard/cartelera"
+          className={cn({
+            active: pathname.includes("/dashboard/cartelera"),
+          })}
+          onClick={handleClick}
+        >
+          <HiOutlineListBullet className="h-5 w-5" />
+          <span className="text-base font-normal">Cartelera</span>
         </Link>
       </li>
       <li className="mb-3">

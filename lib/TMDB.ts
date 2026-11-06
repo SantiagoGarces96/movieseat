@@ -1,62 +1,48 @@
-import { TMDB_API_URL, TMDB_API_URL_2 } from "@/constants";
-import { IMovie, IParsedMovie } from "@/interfaces/movie";
+import { TMDB_API_URL } from "@/constants";
+import { IParsedMovie } from "@/interfaces/movie";
 import { IDetailMovieListTMDB, IMovieDetailTMDB } from "@/interfaces/TMDB";
 import axios from "axios";
 import { sleep } from "@/utils/sleep";
 import { MovieStatus } from "@/types/movie";
-import { calculateDates } from "@/utils/calculateDays";
-import { calculateDatesBillboard } from "@/utils/calculateDaysBillboard";
-import mongoose from "mongoose";
 import {
   SessionPrice,
   SessionPriceAfternoon,
   SessionRoom,
 } from "@/types/session";
-import Session from "@/models/Session";
-import Room from "@/models/Room";
-import { IRoom } from "@/interfaces/room";
-import { ISession } from "@/interfaces/session";
 import { SeatType } from "@/types/room";
 import Movie from "@/models/Movie";
-import { getSeatsNumber } from "@/utils/getSeatsNumber";
-import { sessionTimes } from "@/constants/sessions";
 
-export const getNowPlayingTMDB = async (): Promise<void> => {
-  const { startDate, endDate } = calculateDatesBillboard();
-  try {
-    const options = {
-      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=MX&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
-      method: "GET",
+const getColombianList = async (
+  list: "now_playing" | "upcoming",
+): Promise<IDetailMovieListTMDB[]> => {
+  const { data } = await axios.get(
+    `${TMDB_API_URL}/${list}?language=es-MX&region=CO&page=1`,
+    {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
       },
-    };
+    },
+  );
+  return data.results;
+};
 
-    const { data } = await axios.request(options);
-    await parseMovie(data.results);
+export const getNowPlayingTMDB = async (): Promise<void> => {
+  try {
+    await parseMovie(await getColombianList("now_playing"), true);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
 
 export const getUpcomingTMDB = async (): Promise<void> => {
-  const { startDate, endDate } = calculateDates();
   try {
-    const options = {
-      url: `${TMDB_API_URL_2}/movie?include_adult=false&include_video=true&language=es-MX&page=1&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=MX&sort_by=popularity.desc&without_companies=4022%2C376%2C1302%2C235327%2C91505%2C3491%2C115960%2C30148%2C221665%2C14714%2C233618%2C21546%2C234649%2C90733%2C160071%2C22842%2C52270%2C210099%2C149142%2C2073%2C1976%2C4%2C127541%2C7764%2C202798%2C167711%2C235330%2C112425%2C10039%2C`,
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${process.env.TMDB_API_TOKEN}`,
-      },
-    };
-    const { data } = await axios.request(options);
-    await parseMovie(data.results);
+    await parseMovie(await getColombianList("upcoming"), false);
   } catch (error: any) {
     throw new Error(error.message || "An error occurred");
   }
 };
+
 const isNonLatin = (text: string) => /[^\u0000-\u00ff]/.test(text);
 
 export const getMovieDetailTMDB = async (
@@ -132,7 +118,7 @@ export const getMovieDetailTMDB = async (
   }
 };
 
-const getMovieStatus = (releaseDate: string): MovieStatus => {
+export const getMovieStatus = (releaseDate: string): MovieStatus => {
   const today = new Date();
   const release = new Date(releaseDate + "T00:00:00");
   const todayPlus8 = new Date(today);
@@ -170,7 +156,7 @@ const calculateSessionPrice = (
   }
 };
 
-const calculatePrice = (
+export const calculatePrice = (
   seatType: SeatType,
   roomType: SessionRoom,
   sessionDateTime: Date,
@@ -197,264 +183,77 @@ const calculatePrice = (
   );
 };
 
-const createSession = (
-  rooms: IRoom[],
-  sessionTime: Date,
-  existingSessions: ISession[],
-  movieId: mongoose.Types.ObjectId,
-  status: MovieStatus,
-  sessions: ISession[],
-  usedRoomTimes: Set<string | unknown>,
+export const saveMovieFromTMDB = async (
+  tmdbId: number,
+  fields: Pick<IParsedMovie, "releaseDate"> & Partial<IParsedMovie>,
 ) => {
-  const availableRooms = rooms.slice();
+  const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(tmdbId);
+  const youtubeId =
+    dataTMDB.videos.results.find(
+      (video) => video.type === "Trailer" || video.type === "Teaser",
+    )?.key || "";
 
-  while (availableRooms.length > 0) {
-    const roomIndex = Math.floor(Math.random() * availableRooms.length);
-    const room = availableRooms[roomIndex];
-
-    const roomTimeKey = `${room._id}-${sessionTime.getTime()}`;
-
-    if (!usedRoomTimes.has(roomTimeKey)) {
-      const conflict = existingSessions?.some((session) => {
-        const sessionDateTime = new Date(session.dateTime).getTime();
-        return (
-          session.roomId._id === room._id &&
-          Math.abs(sessionDateTime - sessionTime.getTime()) < 0
-        );
-      });
-
-      if (!conflict) {
-        const session = new Session({
-          movieId: movieId._id,
-          roomId: room._id,
-          dateTime: sessionTime,
-          seatsPreferential: getSeatsNumber(room.totalSeatsPreferential),
-          availableSeatsPreferential: room.totalSeatsPreferential,
-          preferentialPrice: calculatePrice(
-            SeatType.PREFERENTIAL,
-            room.room,
-            sessionTime,
-            status,
-          ),
-          seatsGeneral: getSeatsNumber(room.totalSeatsGeneral),
-          availableSeatsGeneral: room.totalSeatsGeneral,
-          generalPrice: calculatePrice(
-            SeatType.GENERAL,
-            room.room,
-            sessionTime,
-            status,
-          ),
-          availableSeats: room.totalSeatsPreferential + room.totalSeatsGeneral,
-        });
-
-        sessions.push(session);
-        usedRoomTimes.add(roomTimeKey);
-        break;
-      }
-    }
-
-    availableRooms.splice(roomIndex, 1);
-  }
+  const parsedMovie: IParsedMovie = {
+    imdb_id: dataTMDB.id,
+    title: dataTMDB.title,
+    backdrop: `https://image.tmdb.org/t/p/original${dataTMDB.backdrop_path || dataTMDB.poster_path}`,
+    description: dataTMDB.overview || "Sinopsis no disponible.",
+    duration: dataTMDB.runtime,
+    genre: dataTMDB.genres.map(({ name }) => name),
+    director:
+      dataTMDB.credits.crew.find((crewMember) => crewMember.job === "Director")
+        ?.original_name || "Por confirmar",
+    cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
+    language: dataTMDB.spoken_languages.map(({ english_name }) => english_name),
+    trailer: youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : "",
+    poster: `https://image.tmdb.org/t/p/original${dataTMDB.poster_path}`,
+    status: getMovieStatus(fields.releaseDate.toISOString().split("T")[0]),
+    popularity: dataTMDB.popularity,
+    ...fields,
+  };
+  return Movie.create(parsedMovie);
 };
 
-const createMovieSessions = async (
-  releaseDate: string,
-  status: MovieStatus,
-  movieId: mongoose.Types.ObjectId,
-): Promise<ISession[]> => {
-  const release: Date = new Date(releaseDate + "T00:00:00");
-  const today: Date = new Date();
-  const rooms: IRoom[] = await Room.find({});
-
-  if (status === MovieStatus.ARCHIVED || status === MovieStatus.UPCOMING)
-    return [];
-
-  const existingSessions: ISession[] = await Session.find({
-    dateTime: { $gte: today },
-  }).lean();
-
-  const sessions: ISession[] = [];
-  const usedRoomTimes = new Set();
-  const sessionDays = 120;
-
-  if (status === MovieStatus.PRE_SALE) {
-    for (let day = 2; day > 0; day--) {
-      const sessionDay = new Date(today.getTime() - day * 24 * 60 * 60 * 1000);
-
-      const sessionsPerDay = 2;
-
-      const shuffledSessionTimes = sessionTimes
-        .slice(0, sessionsPerDay)
-        .sort(() => Math.random() - 0.5);
-
-      for (let sessionNumber = 0; sessionNumber < 2; sessionNumber++) {
-        const sessionTime = new Date(
-          `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[sessionNumber]}Z`,
-        );
-        createSession(
-          rooms,
-          sessionTime,
-          existingSessions,
-          movieId,
-          status,
-          sessions,
-          usedRoomTimes,
-        );
-      }
-    }
-
-    await Session.insertMany(sessions);
-    return sessions;
-  }
-
-  for (let day = 0; day < sessionDays; day++) {
-    const sessionDay = new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
-    const daysSinceRelease = Math.floor(
-      (sessionDay.getTime() - release.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    let sessionsPerDay = 3;
-    if (daysSinceRelease > 30 && daysSinceRelease <= 60) {
-      sessionsPerDay = 2;
-    } else if (daysSinceRelease > 60 && daysSinceRelease <= 120) {
-      sessionsPerDay = 1;
-    } else if (daysSinceRelease > 120) {
-      break;
-    }
-
-    const shuffledSessionTimes = sessionTimes
-      .slice(0, sessionsPerDay)
-      .sort(() => Math.random() - 0.5);
-
-    for (let i = 0; i < sessionsPerDay; i++) {
-      const sessionTime = new Date(
-        `${sessionDay.toISOString().split("T")[0]}T${shuffledSessionTimes[i]}Z`,
-      );
-      createSession(
-        rooms,
-        sessionTime,
-        existingSessions,
-        movieId,
-        status,
-        sessions,
-        usedRoomTimes,
-      );
-    }
-  }
-
-  await Session.insertMany(sessions);
-  return sessions;
-};
-
-const deleteArchivedMovies = async (_id: string): Promise<void> => {
-  await Movie.findOneAndDelete({ _id });
-  await Session.deleteMany({ movieId: _id });
-};
-
-const updateMovieStatus = async (
-  _id: string,
-  release_date: string,
-  status: MovieStatus,
-): Promise<void> => {
-  await Session.deleteMany({ movieId: _id });
-  const sessions = await createMovieSessions(
-    release_date,
-    status,
-    new mongoose.Types.ObjectId(_id),
-  );
-  await Movie.findOneAndUpdate(
-    { _id },
-    { status, sessions: sessions.map((session) => session._id) },
-  );
-};
-
-export const updateMoviesStatus = async (): Promise<void> => {
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-  await Session.deleteMany({
-    dateTime: { $lt: oneMonthAgo },
-  });
-
-  const movies: IMovie[] = await Movie.find({});
-  const totalMovies = movies.length;
-
-  for (let i = 0; i < totalMovies; i++) {
-    const currentMovie = movies[i];
-    const date = new Date(currentMovie.releaseDate);
-    const formattedDate = date.toISOString().split("T")[0];
-    const status = getMovieStatus(formattedDate);
-
-    if (status === MovieStatus.ARCHIVED) {
-      await deleteArchivedMovies(currentMovie._id);
-      continue;
-    }
-
-    if (
-      currentMovie.sessions.length === 0 &&
-      (status === MovieStatus.PRE_SALE || status === MovieStatus.BILLBOARD)
-    ) {
-      await updateMovieStatus(currentMovie._id, formattedDate, status);
-      continue;
-    }
-
-    if (currentMovie.status !== status) {
-      await updateMovieStatus(currentMovie._id, formattedDate, status);
-    }
-  }
-};
-
+// La fecha de la lista ya es la de Colombia cuando se consulta con region=CO.
 export const parseMovie = async (
   moviesData: IDetailMovieListTMDB[],
+  playingInColombia: boolean,
 ): Promise<void> => {
-  const totalMovies = moviesData.length;
+  for (const movie of moviesData) {
+    try {
+      const status = getMovieStatus(movie.release_date);
+      if (status === MovieStatus.ARCHIVED || !movie.poster_path) {
+        continue;
+      }
 
-  for (let i = 0; i < totalMovies; i++) {
-    const movie = moviesData[i];
-    const dataTMDB: IMovieDetailTMDB = await getMovieDetailTMDB(movie.id);
-
-    const status = getMovieStatus(dataTMDB.release_date);
-
-    if (status === MovieStatus.ARCHIVED) {
-      continue;
-    }
-
-    const currentMovie: IMovie | null = await Movie.findOne({
-      imdb_id: dataTMDB.id,
-    });
-
-    if (!currentMovie) {
-      const director =
-        dataTMDB.credits.crew.find(
-          (crewMember) => crewMember.job === "Director",
-        )?.original_name || "";
-
-      const youtubeId =
-        dataTMDB.videos.results.find(
-          (video) => video.type === "Trailer" || video.type === "Teaser",
-        )?.key || "";
-
-      const parsedMovie: IParsedMovie = {
-        imdb_id: dataTMDB.id,
-        title: dataTMDB.title,
-        backdrop: `https://image.tmdb.org/t/p/original${moviesData[i].backdrop_path || moviesData[i].poster_path}`,
-        description: dataTMDB.overview || "",
-        releaseDate: new Date(moviesData[i].release_date + "T00:00:00"),
-        duration: dataTMDB.runtime,
-        genre: dataTMDB.genres.map(({ name }) => name),
-        director,
-        cast: dataTMDB.credits.cast.map(({ original_name }) => original_name),
-        language: dataTMDB.spoken_languages.map(
-          ({ english_name }) => english_name,
-        ),
-        trailer: youtubeId
-          ? `https://www.youtube.com/watch?v=${youtubeId}`
-          : "",
-        poster: `https://image.tmdb.org/t/p/original${moviesData[i].poster_path}`,
-        status,
+      const releaseDate = new Date(movie.release_date + "T00:00:00");
+      const syncFields = {
+        popularity: movie.popularity,
+        releaseDate,
+        ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
       };
-      await Movie.create(parsedMovie);
+
+      // La fecha de una película en la lista de cartelera no se reemplaza.
+      await Movie.updateOne(
+        { imdb_id: movie.id, billboardPosition: null },
+        { releaseDate },
+      );
+      const updated = await Movie.updateOne(
+        { imdb_id: movie.id },
+        {
+          popularity: movie.popularity,
+          ...(playingInColombia ? { lastSeenInColombia: new Date() } : {}),
+        },
+      );
+      if (updated.matchedCount > 0) {
+        continue;
+      }
+
+      await saveMovieFromTMDB(movie.id, syncFields);
       await sleep(100);
+    } catch (error: any) {
+      // Una película con datos incompletos no debe detener a las demás.
+      console.error(`Error syncing movie ${movie.id}: ${error.message}`);
     }
   }
 };

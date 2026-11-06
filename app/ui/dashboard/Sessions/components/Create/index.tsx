@@ -4,8 +4,8 @@ import DashboardLayout from "../../../DashboardLayout";
 import SessionCreateForm from "./components/CreateForm";
 
 export default async function CreateSession() {
-  const movies = JSON.parse(JSON.stringify(await getAllMovies()));
-  const rooms = JSON.parse(JSON.stringify(await getAllRooms()));
+  const movies = await getAllMovies();
+  const rooms = await getAllRooms();
   return (
     <DashboardLayout title="Crear sesión">
       <SessionCreateForm movies={movies} rooms={rooms} />

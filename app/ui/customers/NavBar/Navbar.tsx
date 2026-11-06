@@ -1,71 +1,20 @@
-import Link from "next/link";
-import { HiBars3 } from "react-icons/hi2";
 import MobileMenu from "./MobileMenu";
+import LoginMenu from "./LoginMenu";
+import Logo from "./Logo";
+import NavLinks from "./NavLinks";
 
 const Navbar = () => {
   return (
-    <div className="navbar sticky top-0 z-50 bg-base-100 shadow-md">
-      <div className="navbar-start">
-        {/* Menú para móvil */}
-        <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <HiBars3 className="h-6 w-6" />
-          </label>
-          <ul
-            tabIndex={0}
-            className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
-          >
-            <li>
-              <Link href="/releases">Cartelera</Link>
-            </li>
-            <li>
-              <Link href="/upcoming">Próximos Estrenos</Link>
-            </li>
-            <li>
-              <Link href="/foods">Comidas</Link>
-            </li>
-            <li>
-              <Link href="/about">Nosotros</Link>
-            </li>
-            <li>
-              <Link href="/login">
-                <button className="btn btn-primary w-full">Login</button>
-              </Link>
-            </li>
-          </ul>
+    <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-950/85 backdrop-blur-md">
+      <div className="ms-container flex h-16 items-center justify-between gap-6">
+        <Logo />
+        <NavLinks />
+        <div className="hidden lg:block">
+          <LoginMenu />
         </div>
-
-        {/* Logo */}
-        <Link href="/" className="btn btn-ghost text-xl normal-case">
-          MovieSeat
-        </Link>
+        <MobileMenu />
       </div>
-
-      {/* Menú para escritorio */}
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          <li>
-            <Link href="/releases">Cartelera</Link>
-          </li>
-          <li>
-            <Link href="/upcoming">Próximos Estrenos</Link>
-          </li>
-          <li>
-            <Link href="/foods">Comidas</Link>
-          </li>
-          <li>
-            <Link href="/about">Nosotros</Link>
-          </li>
-        </ul>
-      </div>
-
-      {/* Botón de Login */}
-      <div className="navbar-end hidden lg:flex">
-        <Link href="/login">
-          <button className="btn btn-primary">Login</button>
-        </Link>
-      </div>
-    </div>
+    </header>
   );
 };
 

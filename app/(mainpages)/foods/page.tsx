@@ -1,30 +1,16 @@
 import React from "react";
 import CategoryCardsGrid from "@/app/ui/customers/foods/category/CategoriesPage";
 import { getCategories } from "@/app/ui/customers/foods/category/Card";
-import CarouselSection from "@/app/ui/customers/foods/category/Carousel";
-import { getFoodsByCategory } from "@/services/food";
-import { FoodCategory } from "@/types/food";
+import FoodsHero from "@/app/ui/customers/foods/FoodsHero";
 
-interface PageProps {
-  searchParams: { categoryPage?: string };
-}
-
-export default async function CategoriesPage({}: PageProps) {
-  const categories = getCategories();
-
-  const foodsByCategory = {
-    [FoodCategory.FOODS]: await getFoodsByCategory(FoodCategory.FOODS),
-    [FoodCategory.DRINKS]: await getFoodsByCategory(FoodCategory.DRINKS),
-    [FoodCategory.COMBOS]: await getFoodsByCategory(FoodCategory.COMBOS),
-  };
-
+export default function CategoriesPage() {
   return (
-    <div className="container mx-auto">
-      <CarouselSection foodsByCategory={foodsByCategory} />
-
-      <div className="mt-6 flex justify-center p-4">
-        <CategoryCardsGrid categories={categories} />
-      </div>
-    </div>
+    <FoodsHero
+      title="Comidas"
+      image="/images/foods/portada.webp"
+      description="Esta sección es informativa. Podrás agregar tu comida en el proceso de compra de boletas."
+    >
+      <CategoryCardsGrid categories={getCategories()} />
+    </FoodsHero>
   );
 }

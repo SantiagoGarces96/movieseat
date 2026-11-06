@@ -7,6 +7,8 @@ const transactionSchema = new Schema<ITransactionModel>({
   ticketId: { type: Schema.Types.ObjectId, ref: "Ticket", required: true },
   foodItems: [{ type: Schema.Types.ObjectId, ref: "Food" }],
   totalAmount: { type: Number, required: true },
+  paymentMethod: { type: String },
+  paymentReference: { type: String },
   status: {
     type: String,
     enum: Object.values(TransactionStatus),

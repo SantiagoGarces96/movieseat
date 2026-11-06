@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
   IResultDataDashboard,
@@ -61,11 +62,13 @@ export const getMovies = async (
 
     const results: IMovie[] = await Movie.find(query)
       .sort({ releaseDate: type === MovieStatus.BILLBOARD ? -1 : 1 })
-      .skip(skip < 0 ? 0 : skip + 1)
+      .skip(skip < 0 ? 0 : skip)
       .limit(pageSize);
 
+    const parsedResults = JSON.parse(JSON.stringify(results));
+
     return {
-      results,
+      results: parsedResults,
       page: pageNumber,
       totalPages,
       totalResults,
@@ -221,8 +224,8 @@ export const getMoviesInDashboard = async (
 export const getAllMovies = async (): Promise<IMovie[]> => {
   await dbConnect();
   try {
-    const movie: IMovie[] = await Movie.find().sort({ title: 1 });
-    return movie;
+    const movies: IMovie[] = await Movie.find().sort({ title: 1 });
+    return JSON.parse(JSON.stringify(movies));
   } catch (error: any) {
     console.error(`Error in getAllMovies function: ${error.message}`);
     return [];
@@ -236,7 +239,7 @@ export const getMovieById = async (id: string): Promise<IMovie | null> => {
   await dbConnect();
   try {
     const movie: IMovie | null = await Movie.findById(id);
-    return movie;
+    return JSON.parse(JSON.stringify(movie));
   } catch (error: any) {
     console.error(`Error in getMovieById function: ${error.message}`);
     return null;
@@ -363,6 +366,8 @@ export const createMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
     const title = formData.get("title");
@@ -378,7 +383,7 @@ export const createMovie = async (
     const poster = formData.get("poster");
     const status = formData.get("status");
 
-    const fiels = {
+    const fields = {
       ...state,
       imdb_id,
       title,
@@ -393,7 +398,7 @@ export const createMovie = async (
       status,
     };
 
-    MovieFormSchema.parse(fiels);
+    MovieFormSchema.parse(fields);
 
     const movie: IMovie | null = await Movie.findOne({ imdb_id });
 
@@ -405,7 +410,7 @@ export const createMovie = async (
       };
     }
 
-    await Movie.create(fiels);
+    await Movie.create({ ...fields, isManual: true });
   } catch (error: any) {
     console.error(`Error in createMovie function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
@@ -429,6 +434,8 @@ export const updateMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
     const { cast, genre, language, id } = state;
     const imdb_id = parseInt(formData.get("imdb_id")?.toString() || "");
@@ -465,12 +472,21 @@ export const updateMovie = async (
     MovieFormSchema.parse(fiels);
 
     const movie: IMovie | null = await Movie.findById(id);
+    const isMovieTitle: IMovie | null = await Movie.findOne({ title });
 
     if (!movie) {
       return {
         status: FormStatus.COMPLETE,
         success: false,
         message: "La película no existe",
+      };
+    }
+
+    if (isMovieTitle && String(isMovieTitle._id) !== String(movie._id)) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: "El nombre de la pelicula ya existe",
       };
     }
 
@@ -498,13 +514,15 @@ export const deleteMovie = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
     await Movie.findByIdAndDelete(_id);
     revalidatePath("/dashboard/movies");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Sessión eliminada con exito.",
+      success: true,
+      message: "Película eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteMovie function: ${error.message}`);

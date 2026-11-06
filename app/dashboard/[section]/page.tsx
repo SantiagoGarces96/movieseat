@@ -1,14 +1,16 @@
+import FoodPage from "@/app/ui/dashboard/Food";
 import MoviesPage from "@/app/ui/dashboard/Movies";
+import RoomsPage from "@/app/ui/dashboard/Rooms";
 import SessionsPage from "@/app/ui/dashboard/Sessions";
 import { routes } from "@/constants/dashboard/routes";
 import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
 
 interface IPageProps {
-  params: {
+  params: Promise<{
     section: string;
-  };
-  searchParams: { [key: string]: string | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }
 
 export async function generateStaticParams() {
@@ -17,7 +19,11 @@ export async function generateStaticParams() {
   });
 }
 
-export default async function Page({ params, searchParams }: IPageProps) {
+export default async function Page(props: IPageProps) {
+  const [params, searchParams] = await Promise.all([
+    props.params,
+    props.searchParams,
+  ]);
   const section: string =
     params.section.toUpperCase() as keyof typeof AvailablesSections;
 
@@ -33,10 +39,10 @@ export default async function Page({ params, searchParams }: IPageProps) {
       return <MoviesPage searchParams={searchParams} />;
 
     case AvailablesSections.ROOMS:
-    // return <RoomsPage searchParams={searchParams} />;
+      return <RoomsPage searchParams={searchParams} />;
 
     case AvailablesSections.FOOD:
-    // return <FoodPage searchParams={searchParams} />;
+      return <FoodPage searchParams={searchParams} />;
 
     case AvailablesSections.USERS:
     // return <UsersPage searchParams={searchParams} />;

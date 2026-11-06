@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth";
 import { IRoom } from "@/interfaces/room";
 import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
 import dbConnect from "@/lib/dbConnect";
@@ -15,6 +16,11 @@ import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { IDashboardResponse } from "@/interfaces/dasboard";
+import { SessionFormSchema } from "@/schema/session";
+import { IMovie } from "@/interfaces/movie";
+import { z } from "zod";
+import { IShowtime } from "@/app/ui/customers/movie/Showtimes";
+import { getLocalNow } from "@/utils/showtime";
 
 export const getSessions = async (
   page: string = "1",
@@ -51,7 +57,6 @@ export const getSessions = async (
           : parseInt(page);
     const skip = (pageNumber - 1) * pageSize;
 
-    //TODO optomize query
     const results = await Session.aggregate([
       {
         $lookup: {
@@ -136,26 +141,26 @@ export const getSessionById = async (_id: string): Promise<ISession | null> => {
       return null;
     }
     const session: ISession | null = await Session.findById(_id);
-    return session;
+    return JSON.parse(JSON.stringify(session));
   } catch (error: any) {
     console.error(`Error in getSessionById function: ${error.message}`);
     return null;
   }
 };
 
-export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
+export const getSessionByIdMovie = async (
+  movieId: string,
+): Promise<IShowtime[]> => {
   await dbConnect();
   try {
-    const now = new Date();
-    const todayUTC = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
+    const now = getLocalNow();
+    const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const sessions = await Session.aggregate([
       {
         $match: {
           movieId: new mongoose.Types.ObjectId(movieId),
-          dateTime: { $gte: todayUTC },
+          dateTime: { $gt: now, $lte: twoWeeksFromNow },
         },
       },
       {
@@ -176,6 +181,9 @@ export const getSessionByIdMovie = async (movieId: string): Promise<any> => {
         $project: {
           _id: { $toString: "$_id" },
           room: { $toString: "$room.name" },
+          format: "$room.room",
+          availableSeats: 1,
+          dateTime: { $toString: "$dateTime" },
           date: {
             $dateToString: { format: "%Y-%m-%d", date: "$dateTime" },
           },
@@ -197,38 +205,50 @@ export const createSession = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
-    const movieId = formData.get("movieId");
-    const roomId = formData.get("roomId");
-    const date = formData.get("date");
-    const preferentialPrice = formData.get("preferentialPrice");
-    const generalPrice = formData.get("generalPrice");
+    const movieId = formData.get("movieId")?.toString().trim() || "";
+    const roomId = formData.get("roomId")?.toString().trim() || "";
+    const date = formData.get("date")?.toString().trim() || "";
+    const preferentialPrice = parseInt(
+      formData.get("preferentialPrice")?.toString().trim() || "0",
+    );
+    const generalPrice = parseInt(
+      formData.get("generalPrice")?.toString().trim() || "0",
+    );
 
-    if (
-      !movieId ||
-      !roomId ||
-      !date ||
-      !preferentialPrice ||
-      !generalPrice ||
-      !currentTime
-    ) {
-      throw new Error("Fields are required.");
-    }
+    const fields = {
+      movieId,
+      roomId,
+      date,
+      currentTime,
+      preferentialPrice,
+      generalPrice,
+    };
+
+    SessionFormSchema.parse(fields);
 
     const room: IRoom | null = await Room.findById(roomId);
+    const movie: IMovie | null = await Movie.findById(movieId);
 
-    if (!room) {
-      throw new Error("Room not found.");
+    if (!room || !movie) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: !room ? "La sala no existe" : "La película no existe",
+      };
     }
 
     const seatsPreferential = room.totalSeatsPreferential;
     const seatsGeneral = room.totalSeatsGeneral;
     const availableSeats = room.totalSeats;
+    const dateTime = new Date(date + "T" + currentTime + "Z");
 
-    const fields = {
+    const parsedFields = {
       movieId,
       roomId,
-      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
+      dateTime,
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -237,13 +257,19 @@ export const createSession = async (
       generalPrice,
       availableSeats,
     };
-    await Session.create(fields);
+
+    await Session.create(parsedFields);
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: errorMessage,
     };
   }
 
@@ -256,42 +282,53 @@ export const updateSession = async (
     id,
     movieId,
     currentTime,
-  }: { id: string; movieId: string; currentTime: string },
+  }: { id: string; movieId?: string; currentTime: string },
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
-    const roomId = formData.get("roomId");
-    const date = formData.get("date");
-    const preferentialPrice = formData.get("preferentialPrice");
-    const generalPrice = formData.get("generalPrice");
+    const roomId = formData.get("roomId")?.toString().trim() || "";
+    const date = formData.get("date")?.toString().trim() || "";
+    const preferentialPrice = parseInt(
+      formData.get("preferentialPrice")?.toString().trim() || "0",
+    );
+    const generalPrice = parseInt(
+      formData.get("generalPrice")?.toString().trim() || "0",
+    );
 
-    if (
-      !movieId ||
-      !roomId ||
-      !date ||
-      !preferentialPrice ||
-      !generalPrice ||
-      !currentTime ||
-      !id
-    ) {
-      throw new Error("Fields are required.");
-    }
+    const fields = {
+      movieId,
+      roomId,
+      date,
+      currentTime,
+      preferentialPrice,
+      generalPrice,
+    };
+
+    SessionFormSchema.parse(fields);
 
     const room: IRoom | null = await Room.findById(roomId);
+    const movie: IMovie | null = await Movie.findById(movieId);
 
-    if (!room) {
-      throw new Error("Room not found.");
+    if (!room || !movie) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message: !room ? "La sala no existe" : "La película no existe",
+      };
     }
 
     const seatsPreferential = room.totalSeatsPreferential;
     const seatsGeneral = room.totalSeatsGeneral;
     const availableSeats = room.totalSeats;
+    const dateTime = new Date(date + "T" + currentTime + "Z");
 
-    const fields = {
+    const parsedFields = {
       movieId,
       roomId,
-      dateTime: new Date(date.toString() + "T" + currentTime + "Z"),
+      dateTime,
       seatsPreferential: getSeatsNumber(seatsPreferential),
       availableSeatsPreferential: seatsPreferential,
       preferentialPrice,
@@ -300,13 +337,19 @@ export const updateSession = async (
       generalPrice,
       availableSeats,
     };
-    await Session.findByIdAndUpdate(id, fields);
+
+    await Session.findByIdAndUpdate(id, parsedFields);
   } catch (error: any) {
     console.error(`Error in updateSession function: ${error.message}`);
+    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    if (error instanceof z.ZodError) {
+      const { errors } = error;
+      errorMessage = errors[0].message;
+    }
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: errorMessage,
     };
   }
   revalidatePath("/dashboard/sessions");
@@ -318,13 +361,15 @@ export const deleteSession = async (
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> => {
+  await requireAdmin();
+  await dbConnect();
   try {
     await Session.findByIdAndDelete(_id);
-    revalidatePath("/dashboard/invoices");
+    revalidatePath("/dashboard/sessions");
     return {
       status: FormStatus.COMPLETE,
-      success: false,
-      message: "Sessión eliminada con exito.",
+      success: true,
+      message: "Función eliminada con éxito.",
     };
   } catch (error: any) {
     console.error(`Error in deleteSession function: ${error.message}`);
