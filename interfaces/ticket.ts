@@ -1,8 +1,25 @@
 import { Schema, Document } from "mongoose";
+import { ISeatSelection } from "@/types/reservation";
+
+export interface ITicketFood {
+  foodId: Schema.Types.ObjectId | string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+}
 
 export interface ITicketModel extends Document {
   sessionId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
+  reservationId: Schema.Types.ObjectId;
+  code: string;
+  movieTitle: string;
+  moviePoster: string;
+  roomName: string;
+  roomFormat: string;
+  dateTime: Date;
+  seats: ISeatSelection[];
+  foods: ITicketFood[];
   quantity: number;
   totalPrice: number;
   createdAt: Date;

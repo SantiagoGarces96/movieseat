@@ -121,6 +121,53 @@ await mongoose.connection.collection("foods").insertMany(
     })),
   ),
 );
+const seatMap = (total) => {
+  const seats = {};
+  for (let row = 0; row < total / 10; row++) {
+    for (let number = 1; number <= 10; number++) {
+      seats[String.fromCharCode(65 + row) + number] = true;
+    }
+  }
+  return seats;
+};
+
+const rooms = [
+  { name: "Sala 1", room: "2D", totalSeatsPreferential: 30, totalSeatsGeneral: 70, totalSeats: 100 },
+  { name: "Sala 2", room: "3D", totalSeatsPreferential: 20, totalSeatsGeneral: 50, totalSeats: 70 },
+  { name: "Sala 3", room: "IMAX", totalSeatsPreferential: 20, totalSeatsGeneral: 50, totalSeats: 70 },
+].map((room) => ({ ...room, createdAt: new Date(), updatedAt: new Date() }));
+await mongoose.connection.collection("rooms").insertMany(rooms);
+
+// La hora local del cine se guarda marcada como UTC, igual que en producción.
+const localToday = new Date(Date.now() - 5 * 60 * 60 * 1000);
+const movieDocs = await mongoose.connection.collection("movies").find({ status: "billboard" }).toArray();
+const sessions = [];
+for (let day = 0; day < 5; day++) {
+  for (const [hour, offset] of [[13, 0], [16, 1], [19, 2], [22, 0]]) {
+    const dateTime = new Date(Date.UTC(localToday.getUTCFullYear(), localToday.getUTCMonth(), localToday.getUTCDate() + day, hour));
+    if (dateTime <= localToday) continue;
+    movieDocs.forEach((movie, index) => {
+      const room = rooms[(index + offset) % rooms.length];
+      if (index >= rooms.length) return;
+      sessions.push({
+        movieId: movie._id,
+        roomId: room._id,
+        dateTime,
+        seatsPreferential: seatMap(room.totalSeatsPreferential),
+        availableSeatsPreferential: room.totalSeatsPreferential,
+        preferentialPrice: 42000,
+        seatsGeneral: seatMap(room.totalSeatsGeneral),
+        availableSeatsGeneral: room.totalSeatsGeneral,
+        generalPrice: 30000,
+        availableSeats: room.totalSeats,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    });
+  }
+}
+await mongoose.connection.collection("sessions").insertMany(sessions);
+
 await mongoose.connection.collection("users").insertMany(
   await Promise.all(
     [DEMO_ADMIN, DEMO_CLIENT].map(async ({ email, password, name, role }) => ({

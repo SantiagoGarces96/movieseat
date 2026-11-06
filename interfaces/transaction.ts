@@ -9,6 +9,8 @@ export interface ITransactionModel extends Document {
   ticketId: Schema.Types.ObjectId;
   foodItems: Schema.Types.ObjectId[];
   totalAmount: number;
+  paymentMethod?: string;
+  paymentReference?: string;
   status: TransactionStatus;
   createdAt: Date;
   updatedAt: Date;
