@@ -49,7 +49,7 @@ export default function FoodCreateForm() {
           <input
             id="image"
             name="image"
-            type="url"
+            type="text"
             className="input input-sm input-bordered w-full"
             required
           />
