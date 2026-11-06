@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import {
+  cancelUserCheckouts,
+  releaseExpiredCheckouts,
+} from "@/lib/payments/checkout";
+import {
   cancelUserReservations,
   holdSeats,
   releaseExpiredReservations,
@@ -46,7 +50,9 @@ export async function POST(request: Request) {
     }
 
     await releaseExpiredReservations(sessionId);
+    await releaseExpiredCheckouts(sessionId);
     await cancelUserReservations(user.userId);
+    await cancelUserCheckouts(user.userId);
 
     if (!(await holdSeats(sessionId, seats))) {
       return message(

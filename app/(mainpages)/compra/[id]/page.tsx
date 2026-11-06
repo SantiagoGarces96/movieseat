@@ -40,9 +40,17 @@ export default async function CheckoutPage({
   }
 
   await dbConnect();
-  const reservation = await Reservation.findOne({ _id: id, userId: user.userId });
+  const reservation = await Reservation.findOne({
+    _id: id,
+    userId: user.userId,
+  });
   if (!reservation) {
     return <Closed text="No encontramos esta compra" href="/releases" />;
+  }
+
+  // Volvió con el botón Atrás del navegador sin terminar de pagar en Stripe.
+  if (reservation.status === ReservationStatus.PROCESSING) {
+    redirect(`/api/reservations/${id}/resume`);
   }
 
   const seatsHref = `/funcion/${reservation.sessionId}`;
