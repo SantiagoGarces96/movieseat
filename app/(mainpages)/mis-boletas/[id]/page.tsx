@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import QRCode from "qrcode";
@@ -66,10 +67,27 @@ export default async function TicketPage({
 
       <article className="overflow-hidden rounded-3xl border border-white/10 bg-ink-900">
         <div className="p-6">
-          <p className="text-sm font-semibold text-gold">Compra confirmada</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">
-            {ticket.movieTitle}
-          </h1>
+          <div className="flex items-center gap-4">
+            {ticket.moviePoster && (
+              <div className="relative aspect-[2/3] w-24 shrink-0 overflow-hidden rounded-xl bg-ink-800">
+                <Image
+                  src={ticket.moviePoster}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-gold">
+                Compra confirmada
+              </p>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight">
+                {ticket.movieTitle}
+              </h1>
+            </div>
+          </div>
           <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
             <div className="col-span-2">
               <dt className="text-muted">Fecha</dt>
