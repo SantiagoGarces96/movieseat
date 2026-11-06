@@ -410,7 +410,7 @@ export const createMovie = async (
       };
     }
 
-    await Movie.create(fields);
+    await Movie.create({ ...fields, isManual: true });
   } catch (error: any) {
     console.error(`Error in createMovie function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";

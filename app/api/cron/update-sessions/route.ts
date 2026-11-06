@@ -1,5 +1,5 @@
-import dbConnect from "@/lib/dbConnect";
-import { updateMoviesStatus } from "@/lib/TMDB";
+﻿import dbConnect from "@/lib/dbConnect";
+import { updateMoviesStatus } from "@/lib/schedule";
 
 export const dynamic = "force-dynamic";
 
