@@ -39,6 +39,30 @@ const credits = [
     url: "https://commons.wikimedia.org/wiki/File:InterContinental_Yokohama_Grand_bottled_water_20111101.jpg",
   },
   {
+    label: "Sándwiches",
+    author: "jeffreyw",
+    license: "CC BY 2.0",
+    url: "https://commons.wikimedia.org/wiki/File:Ham_and_cheese_sandwich_with_toppings.jpg",
+  },
+  {
+    label: "Galletas",
+    author: "Thomson200",
+    license: "CC0",
+    url: "https://commons.wikimedia.org/wiki/File:Toll_House_Chocolate_Chip_Cookie_Sandwich.jpg",
+  },
+  {
+    label: "Adiciones de caramelo",
+    author: "Steven Miller",
+    license: "CC BY 2.0",
+    url: "https://commons.wikimedia.org/wiki/File:Caramel_Popcorn_(32402585090).jpg",
+  },
+  {
+    label: "Gomas",
+    author: "digipam",
+    license: "CC BY 2.0",
+    url: "https://commons.wikimedia.org/wiki/File:Gummy_Worms_(3955679201).jpg",
+  },
+  {
     label: "Sala 2D",
     author: "an-d",
     license: "CC BY-SA 3.0",
