@@ -2,7 +2,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { HiMinus, HiPlus } from "react-icons/hi2";
-import { TestCard } from "@/types/payment";
 import { MAX_UNITS_PER_FOOD } from "@/schema/checkout";
 import { formatPrice } from "@/utils/format";
 
@@ -22,19 +21,6 @@ interface CheckoutFormProps {
   foods: ICheckoutFood[];
 }
 
-const testCards = [
-  {
-    value: TestCard.APPROVED,
-    label: "Tarjeta de prueba aprobada",
-    hint: "Termina la compra y genera tu boleta.",
-  },
-  {
-    value: TestCard.DECLINED,
-    label: "Tarjeta de prueba rechazada",
-    hint: "Simula un pago rechazado. Tus sillas siguen guardadas.",
-  },
-];
-
 const CheckoutForm = ({
   reservationId,
   seatsCount,
@@ -42,7 +28,6 @@ const CheckoutForm = ({
   foods,
 }: CheckoutFormProps) => {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [card, setCard] = useState<TestCard>(TestCard.APPROVED);
   const [error, setError] = useState("");
   const [isPaying, setIsPaying] = useState(false);
 
@@ -68,7 +53,6 @@ const CheckoutForm = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          testCard: card,
           foods: selectedFoods.map((food) => ({
             id: food.id,
             quantity: quantities[food.id],
@@ -85,7 +69,7 @@ const CheckoutForm = ({
         setIsPaying(false);
         return;
       }
-      window.location.assign(`/mis-boletas/${data.ticketId}`);
+      window.location.assign(data.url ?? `/mis-boletas/${data.ticketId}`);
     } catch {
       setError("No pudimos conectarnos. Intenta de nuevo.");
       setIsPaying(false);
@@ -163,36 +147,25 @@ const CheckoutForm = ({
 
       <section className="mt-10">
         <h2 className="text-xl font-bold tracking-tight">Pago</h2>
-        <p className="mt-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
-          <strong className="font-semibold">Modo de prueba.</strong> No se hace
-          ningún cobro y no te pedimos datos de tarjeta.
+        <p className="mt-3 text-sm text-muted">
+          Al continuar irás a la página segura de Stripe. Aquí no guardamos
+          datos de tarjeta.
         </p>
-        <fieldset className="mt-3 space-y-2">
-          <legend className="sr-only">Elige una tarjeta de prueba</legend>
-          {testCards.map(({ value, label, hint }) => (
-            <label
-              key={value}
-              className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
-                card === value
-                  ? "border-gold bg-ink-800"
-                  : "border-white/10 bg-ink-900 hover:border-white/20"
-              }`}
-            >
-              <input
-                type="radio"
-                name="testCard"
-                value={value}
-                checked={card === value}
-                onChange={() => setCard(value)}
-                className="mt-1 h-4 w-4 accent-[#F2B544]"
-              />
-              <span>
-                <span className="block font-semibold">{label}</span>
-                <span className="mt-0.5 block text-sm text-muted">{hint}</span>
-              </span>
-            </label>
-          ))}
-        </fieldset>
+        <div className="mt-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
+          <p>
+            <strong className="font-semibold">Modo de prueba.</strong> No se
+            hace ningún cobro real. Usa estos datos en Stripe:
+          </p>
+          <ul className="mt-2 space-y-1">
+            <li>
+              Aprobada: <code className="font-mono">4242 4242 4242 4242</code>
+            </li>
+            <li>
+              Rechazada: <code className="font-mono">4000 0000 0000 0002</code>
+            </li>
+            <li>Cualquier fecha futura y cualquier código de 3 dígitos.</li>
+          </ul>
+        </div>
       </section>
 
       <section className="mt-10 rounded-2xl border border-white/5 bg-ink-900 p-6">
@@ -228,7 +201,7 @@ const CheckoutForm = ({
           disabled={isPaying}
           className="ms-btn ms-btn-primary mt-5 w-full disabled:opacity-60"
         >
-          {isPaying ? "Procesando..." : "Pagar"}
+          {isPaying ? "Abriendo Stripe..." : "Pagar con Stripe"}
         </button>
       </section>
     </>

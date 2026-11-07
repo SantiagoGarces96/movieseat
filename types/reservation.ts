@@ -18,12 +18,21 @@ export interface ISeatSelection {
   seat: string;
 }
 
+export interface IReservationFood {
+  foodId: Types.ObjectId | string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+}
+
 export interface IReservation {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   sessionId: Types.ObjectId;
   seats: ISeatSelection[];
   seatsTotal: number;
+  foods?: IReservationFood[];
+  stripeSessionId?: string | null;
   status: ReservationStatus;
   expiresAt: Date;
   createdAt: Date;

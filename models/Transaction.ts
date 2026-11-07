@@ -18,5 +18,11 @@ const transactionSchema = new Schema<ITransactionModel>({
   updatedAt: { type: Date, default: Date.now },
 });
 
+// Un mismo pago de Stripe no puede registrarse dos veces.
+transactionSchema.index(
+  { paymentReference: 1 },
+  { unique: true, sparse: true },
+);
+
 export default models.Transaction ||
   model<ITransactionModel>("Transaction", transactionSchema);
