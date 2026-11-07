@@ -263,8 +263,7 @@ export const createSession = async (
     console.error(`Error in createSession function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -343,8 +342,7 @@ export const updateSession = async (
     console.error(`Error in updateSession function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,

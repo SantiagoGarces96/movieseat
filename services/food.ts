@@ -204,8 +204,7 @@ export const createFood = async (
     console.error(`Error in createFood function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -266,8 +265,7 @@ export const updateFood = async (
     console.error(`Error in updateFood function: ${error.message}`);
     let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
