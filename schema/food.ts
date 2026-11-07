@@ -25,29 +25,29 @@ const TypeFoodEnum = z.enum([
 export const FoodFormSchema = z.object({
   name: z
     .string({
-      required_error: "El nombre es obligatorio",
+      error: "El nombre es obligatorio",
     })
     .min(1, "El nombre no puede estar vacío"),
   image: z
     .string({
-      required_error: "La url de la imagen es obligatoria",
+      error: "La url de la imagen es obligatoria",
     })
     .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
   description: z
     .string({
-      required_error: "La descripcion es obligatoria",
+      error: "La descripcion es obligatoria",
     })
     .min(3, "La descripcion no puede estar vacía"),
   price: z
     .number({
-      required_error: "El precio es obligatorio",
+      error: "El precio es obligatorio",
     })
     .int()
     .positive("El precio debe ser un número entero positivo"),
   size: SizeFoodEnum.default(FoodSize.SMALL).optional(),
   availableAmount: z
     .number({
-      required_error: "La cantidad disponible es obligatoria",
+      error: "La cantidad disponible es obligatoria",
     })
     .int()
     .positive("La cantidad disponible debe ser un número entero positivo"),

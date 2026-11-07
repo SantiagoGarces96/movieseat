@@ -8,7 +8,7 @@ export const ReservationSchema = z.object({
   seats: z
     .array(
       z.object({
-        type: z.nativeEnum(SeatType),
+        type: z.enum(SeatType),
         // El nombre de la silla se usa como parte de la ruta en la consulta,
         // así que solo se aceptan valores como A1 o C10.
         seat: z.string().regex(/^[A-Z][0-9]{1,2}$/),
