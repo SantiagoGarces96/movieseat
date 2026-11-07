@@ -106,12 +106,12 @@ export const getRoomsByQuery = async (
   }
   await dbConnect();
   try {
-    const sooms: IRoom[] = await Room.find({
+    const rooms: IRoom[] = await Room.find({
       $or: [{ name: { $regex: query, $options: "i" } }],
     });
-    const parsedRooms: IResultDataDashboard[] = sooms.map(({ _id, name }) => {
+    const parsedRooms: IResultDataDashboard[] = rooms.map(({ _id, name }) => {
       return {
-        src: "https://archivos-cms.cinecolombia.com/images/_aliases/medium/0/8/0/8/18080-3-esl-CO/17.png",
+        src: "/images/about/sala-2d.webp",
         label: name,
         href: `/dashboard/rooms/${_id}`,
       };
