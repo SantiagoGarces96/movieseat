@@ -156,15 +156,20 @@ const calculateSessionPrice = (
   }
 };
 
+const AFTERNOON_START_MINUTES = 13 * 60;
+
 export const calculatePrice = (
   seatType: SeatType,
   roomType: SessionRoom,
   sessionDateTime: Date,
   movieStatus: MovieStatus,
 ): number => {
-  const START_AFTERNOON = new Date("1970-01-01T13:00:00Z").getTime();
+  // Las funciones guardan la hora de Colombia marcada como UTC.
+  const startMinutes =
+    sessionDateTime.getUTCHours() * 60 + sessionDateTime.getUTCMinutes();
+  const isMorning = startMinutes <= AFTERNOON_START_MINUTES;
   if (movieStatus === MovieStatus.PRE_SALE) {
-    if (sessionDateTime.getTime() <= START_AFTERNOON) {
+    if (isMorning) {
       return calculateSessionPrice(roomType, seatType, 2);
     }
     return calculateSessionPrice(
@@ -173,7 +178,7 @@ export const calculatePrice = (
       SessionPriceAfternoon.PRE_SALE,
     );
   }
-  if (sessionDateTime.getTime() <= START_AFTERNOON) {
+  if (isMorning) {
     return calculateSessionPrice(roomType, seatType);
   }
   return calculateSessionPrice(
