@@ -3,12 +3,14 @@ import { cn } from "@/utils/cn";
 interface DashboardLayoutProps {
   title?: string;
   button?: React.ReactNode;
+  fullWidth?: boolean;
   children: React.ReactNode;
 }
 
 export default function DashboardLayout({
   title,
   button,
+  fullWidth = false,
   children,
 }: DashboardLayoutProps) {
   return (
@@ -19,7 +21,8 @@ export default function DashboardLayout({
       </div>
       <div
         className={cn("p-5", {
-          "flex h-full w-full items-start justify-center gap-3 p-8": !button,
+          "flex h-full w-full items-start justify-center gap-3 p-8":
+            !button && !fullWidth,
         })}
       >
         {children}
