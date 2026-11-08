@@ -18,6 +18,7 @@ import Movie from "@/models/Movie";
 import { MovieCreateFormState, MovieStatus } from "@/types/movie";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
+import { movieStatusLabel } from "@/utils/format";
 import axios from "axios";
 import { FormState, FormStatus } from "@/types/form";
 import { revalidatePath } from "next/cache";
@@ -292,16 +293,16 @@ export const getMoviesByGenre = async (): Promise<IMovieByGenre[]> => {
 export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
   await dbConnect();
   try {
-    const movies: IMovieByStatus[] = await Movie.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-    return movies;
+    const movies: { _id: MovieStatus; count: number }[] = await Movie.aggregate(
+      [
+        { $group: { _id: "$status", count: { $sum: 1 } } },
+        { $sort: { _id: 1 } },
+      ],
+    );
+    return movies.map(({ _id, count }) => ({
+      _id: movieStatusLabel[_id] ?? _id,
+      count,
+    }));
   } catch (error: any) {
     console.error(`Error in getMoviesByStatus function: ${error.message}`);
     return [];
