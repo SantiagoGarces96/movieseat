@@ -5,9 +5,9 @@ export enum FoodSize {
 }
 
 export enum SpanishFoodSize {
-  SMALL = "pequeño",
-  LARGE = "mediano",
-  EXTRALARGE = "grande",
+  SMALL = "Pequeño",
+  LARGE = "Mediano",
+  EXTRALARGE = "Grande",
 }
 
 export enum FoodCategory {
@@ -17,9 +17,9 @@ export enum FoodCategory {
 }
 
 export enum SpanishhFoodCategory {
-  FOODS = "comidas",
-  DRINKS = "bebidas",
-  COMBOS = "combos",
+  FOODS = "Comidas",
+  DRINKS = "Bebidas",
+  COMBOS = "Combos",
 }
 
 export enum FoodType {
@@ -31,9 +31,9 @@ export enum FoodType {
 }
 
 export enum SpanishFoodType {
-  POPCORN = "crispetas",
-  FAST_FOOD = "comida rapida",
-  BAKERY = "panaderia",
-  DRINK = "bebida",
-  COMBO = "combo",
+  POPCORN = "Crispetas",
+  FAST_FOOD = "Comida rápida",
+  BAKERY = "Panadería",
+  DRINK = "Bebida",
+  COMBO = "Combo",
 }

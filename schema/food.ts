@@ -30,14 +30,14 @@ export const FoodFormSchema = z.object({
     .min(1, "El nombre no puede estar vacío"),
   image: z
     .string({
-      error: "La url de la imagen es obligatoria",
+      error: "La imagen es obligatoria",
     })
     .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
   description: z
     .string({
-      error: "La descripcion es obligatoria",
+      error: "La descripción es obligatoria",
     })
-    .min(3, "La descripcion no puede estar vacía"),
+    .min(3, "La descripción debe tener al menos 3 caracteres"),
   price: z
     .number({
       error: "El precio es obligatorio",

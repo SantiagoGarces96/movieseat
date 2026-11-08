@@ -8,7 +8,7 @@ export default function LogoutButton() {
 
   return (
     <button type="button" className="link link-secondary" onClick={handleLogout}>
-      Cerrar Sesion
+      Cerrar sesión
     </button>
   );
 }

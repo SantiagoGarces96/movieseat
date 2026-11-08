@@ -29,8 +29,8 @@ export default async function MoviesTable({
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
         <ResultSearch
-          placeholder="Ingrese su busqueda"
-          tooltipText="Puedes buscar por: Titulo, Género, Director y Estado(En Inglés)."
+          placeholder="Escribe para buscar"
+          tooltipText="Puedes buscar por título, género, director y estado (en inglés: billboard, pre-sale, upcoming)."
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">
@@ -177,7 +177,7 @@ export default async function MoviesTable({
         <div className="flex w-full items-center justify-between px-1 py-5">
           <span className="text-base text-gray-400">
             {(current > movies.totalResults ? movies.totalResults : current) +
-              " of " +
+              " de " +
               movies.totalResults}
           </span>
           <ResultPagination

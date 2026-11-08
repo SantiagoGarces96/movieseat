@@ -19,7 +19,7 @@ export default function ResultCard({ src, label, href }: IResultDataDashboard) {
             <Image src={src} alt={label} width={100} height={100} />
           </div>
         </div>
-        <span className="text-base capitalize">{label}</span>
+        <span className="text-base">{label}</span>
       </Link>
     </li>
   );

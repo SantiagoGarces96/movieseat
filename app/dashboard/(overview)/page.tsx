@@ -20,33 +20,33 @@ export default async function OverviewPage() {
   return (
     <section className="flex w-full flex-col overflow-hidden px-2 py-9 2xl:max-w-[90rem]">
       <div className="flex flex-col gap-3">
-        <h2 className="text-3xl font-bold">Bienvenido</h2>
+        <h2 className="text-3xl font-bold">Te damos la bienvenida</h2>
         <p className="text-base text-gray-400">
-          Administra peliculas, sesiones, salas, comidas y usuarios; para
-          mantener a tu audiencia satiisfecha.
+          Administra películas, funciones, salas, comidas y usuarios para que
+          todo esté listo para el público.
         </p>
       </div>
       <div className="my-8 flex flex-col gap-4 overflow-auto">
         <div className="flex flex-col gap-4 lg:flex-row">
-          <OverviewCard title="Películas por Género">
+          <OverviewCard title="Películas por género">
             <div className="min-h-[300px]">
               <BarChartOverview data={moviesData} dataKey="count" />
             </div>
             <StatOverview data={moviesByStatus} />
           </OverviewCard>
-          <OverviewCard title="Ventas de Comida por Categoría">
+          <OverviewCard title="Ventas de comida por categoría">
             <div className="min-h-[300px]">
               <PieChartOverview data={foodSellsData} />
             </div>
           </OverviewCard>
         </div>
-        <OverviewCard title="Ingresos por Mes">
+        <OverviewCard title="Ingresos por mes">
           <div className="min-h-[300px]">
             <LineChartOverview data={monthlyRevenue} />
           </div>
         </OverviewCard>
         <div className="flex flex-col gap-4 lg:flex-row">
-          <OverviewCard title="Disponibilidad de Asientos">
+          <OverviewCard title="Disponibilidad de asientos">
             <div className="min-h-[300px]">
               <BarChartOverview
                 data={availableSeats}
@@ -54,7 +54,7 @@ export default async function OverviewPage() {
               />
             </div>
           </OverviewCard>
-          <OverviewCard title="Ventas de Boletos por Día">
+          <OverviewCard title="Boletas vendidas por día">
             <div className="min-h-[300px]">
               <AreaChartOverview data={dailyTicketSales} />
             </div>

@@ -14,7 +14,7 @@ export default function SessionsPage({
   const sortBy = searchParams.sortBy || "createdAt";
   const order = searchParams.order || "";
   return (
-    <DashboardLayout title="Sesiones" button={<CreateSessionButton />}>
+    <DashboardLayout title="Funciones" button={<CreateSessionButton />}>
       <SessionsTable
         page={page}
         limit={limit}

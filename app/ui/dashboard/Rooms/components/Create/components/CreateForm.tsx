@@ -41,7 +41,7 @@ export default function RoomCreateForm() {
           required
         >
           <option value="" disabled>
-            Seleccione un tipo
+            Selecciona un tipo
           </option>
           {Object.entries(SessionRoom).map(([_, value], index) => (
             <option key={value + index} value={value}>

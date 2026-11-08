@@ -176,7 +176,7 @@ export const createRooom = async (
     await Room.create({ ...fields, totalSeats });
   } catch (error: any) {
     console.error(`Error in createRooom function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -240,7 +240,7 @@ export const updateRoom = async (
     await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
   } catch (error: any) {
     console.error(`Error in updateRoom function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -271,11 +271,11 @@ export const deleteRoom = async (
       message: "Sala eliminada con éxito.",
     };
   } catch (error: any) {
-    console.error(`Error in deleteSession function: ${error.message}`);
+    console.error(`Error in deleteRoom function: ${error.message}`);
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };

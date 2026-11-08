@@ -26,8 +26,8 @@ export default async function SessionsTable({
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
         <ResultSearch
-          placeholder="Ingrese su busqueda"
-          tooltipText="Puedes buscar por: Nombre de la película."
+          placeholder="Escribe para buscar"
+          tooltipText="Puedes buscar por el nombre de la película."
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">
@@ -35,7 +35,7 @@ export default async function SessionsTable({
           <div key={data._id} className="mb-2 w-full rounded-md border p-4">
             <div className="flex w-full items-center justify-between pb-4 text-sm">
               <p className="w-1/2">
-                Sesión {(parseInt(page) - 1) * parseInt(limit) + index + 1}
+                Función {(parseInt(page) - 1) * parseInt(limit) + index + 1}
                 <br />
                 <strong>{data.dateTime}</strong>
               </p>
@@ -109,7 +109,7 @@ export default async function SessionsTable({
             {(current > sessions.totalResults
               ? sessions.totalResults
               : current) +
-              " of " +
+              " de " +
               sessions.totalResults}
           </span>
           <ResultPagination

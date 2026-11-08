@@ -39,7 +39,7 @@ export default function LanguageInput({
           onChange={handleChange}
         >
           <option value="" disabled>
-            Seleccione un idioma
+            Selecciona un idioma
           </option>
           {languageData.map(({ iso, name }) => (
             <option key={"language-" + iso} value={name}>

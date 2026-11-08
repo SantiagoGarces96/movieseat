@@ -12,7 +12,7 @@ export default async function EditFood({ id }: { id: string }) {
   }
 
   return (
-    <DashboardLayout title="Editar sesión">
+    <DashboardLayout title="Editar comida">
       <FoodEditForm foodData={food} />
     </DashboardLayout>
   );

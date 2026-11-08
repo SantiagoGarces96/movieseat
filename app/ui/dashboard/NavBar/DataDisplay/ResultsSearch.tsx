@@ -65,10 +65,10 @@ export default function ResultsSearchs() {
   return (
     <div className="lg:min-h-30 h-[85%] w-full overflow-auto lg:h-full lg:max-h-60">
       {loading && <ResultSearchSkeleton />}
-      <ContainResults title="Users" resultData={users} />
-      <ContainResults title="Movies" resultData={movies} />
-      <ContainResults title="Food" resultData={food} />
-      <ContainResults title="Rooms" resultData={rooms} />
+      <ContainResults title="Usuarios" resultData={users} />
+      <ContainResults title="Películas" resultData={movies} />
+      <ContainResults title="Comidas" resultData={food} />
+      <ContainResults title="Salas" resultData={rooms} />
     </div>
   );
 }

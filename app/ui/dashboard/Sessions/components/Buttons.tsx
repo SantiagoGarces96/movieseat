@@ -13,7 +13,7 @@ export function CreateSessionButton() {
       href="/dashboard/sessions/create"
       className="btn btn-secondary btn-sm text-primary"
     >
-      Crear sesión
+      Crear función
     </Link>
   );
 }

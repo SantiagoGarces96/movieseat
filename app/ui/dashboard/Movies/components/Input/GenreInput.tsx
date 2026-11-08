@@ -39,7 +39,7 @@ export default function GenreInput({
           onChange={handleChange}
         >
           <option value="" disabled>
-            Seleccione un género
+            Selecciona un género
           </option>
           {genresData.map(({ id, name }) => (
             <option key={"genre" + id} value={name}>

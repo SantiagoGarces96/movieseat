@@ -65,16 +65,16 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
         <div className="label text-lg font-bold">
-          <span className="label-text">Categoria</span>
+          <span className="label-text">Categoría</span>
         </div>
         <select
           id="category"
           name="category"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.category}
         >
           <option value="" disabled>
-            Seleccione una categoria
+            Selecciona una categoría
           </option>
           {Object.entries(FoodCategory).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -95,11 +95,11 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
         <select
           id="type"
           name="type"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.type}
         >
           <option value="" disabled>
-            Seleccione un tipo
+            Selecciona un tipo
           </option>
           {Object.entries(FoodType).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -120,11 +120,11 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
         <select
           id="size"
           name="size"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.size}
         >
           <option value="" disabled>
-            Seleccione un tamaño
+            Selecciona un tamaño
           </option>
           {Object.entries(FoodSize).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -141,7 +141,7 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Descripcion</span>
+            <span className="label-text">Descripción</span>
           </div>
           <textarea
             id="description"
