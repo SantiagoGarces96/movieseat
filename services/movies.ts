@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -98,7 +99,7 @@ export const getMoviesInDashboard = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Movie.countDocuments({
@@ -255,7 +256,7 @@ export const getMoviesByQuery = async (
   await dbConnect();
   try {
     const movies: IMovie[] = await Movie.find({
-      $or: [{ title: { $regex: query, $options: "i" } }],
+      $or: [{ title: { $regex: escapeRegex(query), $options: "i" } }],
     });
     const parsedMovies: IResultDataDashboard[] = movies.map(
       ({ _id, poster, title }) => {

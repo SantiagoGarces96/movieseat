@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -25,7 +26,7 @@ export const getFoodByQuery = async (
   await dbConnect();
   try {
     const food: IFood[] = await Food.find({
-      $or: [{ name: { $regex: query, $options: "i" } }],
+      $or: [{ name: { $regex: escapeRegex(query), $options: "i" } }],
     });
     const parsedFood: IResultDataDashboard[] = food.map(
       ({ _id, image, name }) => {
@@ -71,7 +72,7 @@ export const getFood = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Food.countDocuments({

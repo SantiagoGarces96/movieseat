@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import { IRoom } from "@/interfaces/room";
 import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
@@ -36,7 +37,7 @@ export const getSessions = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Session.countDocuments({
