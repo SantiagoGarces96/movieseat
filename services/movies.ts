@@ -19,6 +19,7 @@ import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
 import axios from "axios";
 import { FormState, FormStatus } from "@/types/form";
+import { removeUnusedSessions } from "@/lib/sessionUsage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -515,6 +516,14 @@ export const deleteMovie = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (!(await removeUnusedSessions({ movieId: _id }))) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta película tiene funciones con boletas vendidas. No se puede eliminar todavía.",
+      };
+    }
     await Movie.findByIdAndDelete(_id);
     revalidatePath("/dashboard/movies");
     return {
