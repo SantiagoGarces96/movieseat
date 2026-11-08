@@ -11,6 +11,7 @@ import Room from "@/models/Room";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { MongooseError, Schema, SortOrder } from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
+import { removeUnusedSessions } from "@/lib/sessionUsage";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -264,6 +265,14 @@ export const deleteRoom = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (!(await removeUnusedSessions({ roomId: _id }))) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta sala tiene funciones con boletas vendidas. No se puede eliminar todavía.",
+      };
+    }
     await Room.findByIdAndDelete(_id);
     revalidatePath("/dashboard/rooms");
     return {

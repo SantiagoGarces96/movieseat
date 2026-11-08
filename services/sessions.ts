@@ -14,6 +14,7 @@ import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
+import { isSessionInUse } from "@/lib/sessionUsage";
 import { sessionTimes } from "@/constants/sessions";
 import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
@@ -371,6 +372,14 @@ export const deleteSession = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (await isSessionInUse(_id)) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta función tiene sillas vendidas o apartadas. No se puede eliminar.",
+      };
+    }
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/sessions");
     return {
