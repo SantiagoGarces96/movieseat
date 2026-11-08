@@ -30,7 +30,11 @@ export default async function OverviewPage() {
         <div className="flex flex-col gap-4 lg:flex-row">
           <OverviewCard title="Películas por Género">
             <div className="min-h-[300px]">
-              <BarChartOverview data={moviesData} dataKey="count" />
+              <BarChartOverview
+                data={moviesData}
+                dataKey="count"
+                name="Películas"
+              />
             </div>
             <StatOverview data={moviesByStatus} />
           </OverviewCard>
@@ -51,6 +55,7 @@ export default async function OverviewPage() {
               <BarChartOverview
                 data={availableSeats}
                 dataKey="availableSeats"
+                name="Asientos disponibles"
               />
             </div>
           </OverviewCard>

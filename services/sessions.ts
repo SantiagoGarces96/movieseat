@@ -385,6 +385,8 @@ export const getAvailableSeatsByRoom = async (): Promise<
   await dbConnect();
   try {
     const availableSeats: IAvailableSeatsByRoom[] = await Session.aggregate([
+      // Solo cuentan las funciones que aún no empiezan.
+      { $match: { dateTime: { $gt: getLocalNow() } } },
       {
         $lookup: {
           from: "rooms",

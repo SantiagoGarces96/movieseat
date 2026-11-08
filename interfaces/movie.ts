@@ -75,7 +75,7 @@ export interface IMovieByGenre {
 }
 
 export interface IMovieByStatus {
-  _id: MovieStatus;
+  _id: string;
   count: number;
 }
 

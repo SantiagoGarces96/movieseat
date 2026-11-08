@@ -2,6 +2,12 @@ import DefaultNavBar from "@/app/ui/dashboard/NavBar/DefaultNavBar";
 import SideNav from "../ui/dashboard/NavBar/SideNavBar";
 import SearchModal from "../ui/dashboard/NavBar/Modals/SearchModal";
 import SideNavBarModal from "../ui/dashboard/NavBar/Modals/SideNavBarModal";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Panel de administración | MovieSeat",
+  robots: { index: false, follow: false },
+};
 
 export default function DashboardLayout({
   children,
