@@ -39,3 +39,32 @@ export const foodHeaders = [
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];
+
+export const usersHeaders = [
+  { label: "Nombre", value: "name" },
+  { label: "Correo", value: "email" },
+  { label: "Rol", value: "role" },
+  { label: "Boletas", value: "tickets", sortable: false },
+  { label: "Registro", value: "createdAt" },
+];
+
+export const ticketsHeaders = [
+  { label: "Código", value: "code" },
+  { label: "Película", value: "movieTitle" },
+  { label: "Sala", value: "room", sortable: false },
+  { label: "Función", value: "dateTime" },
+  { label: "Sillas", value: "seats", sortable: false },
+  { label: "Total", value: "totalPrice" },
+  { label: "Comprador", value: "buyer", sortable: false },
+  { label: "Compra", value: "createdAt" },
+];
+
+export const transactionsHeaders = [
+  { label: "Referencia de pago", value: "paymentReference" },
+  { label: "Comprador", value: "buyer", sortable: false },
+  { label: "Boleta", value: "ticket", sortable: false },
+  { label: "Total", value: "totalAmount" },
+  { label: "Medio de pago", value: "paymentMethod", sortable: false },
+  { label: "Estado", value: "status" },
+  { label: "Fecha", value: "createdAt" },
+];

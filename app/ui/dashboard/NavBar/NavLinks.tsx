@@ -11,7 +11,6 @@ import {
   HiOutlineRectangleGroup,
   HiOutlineSquares2X2,
   HiOutlineTicket,
-  HiOutlineUser,
   HiOutlineUserGroup,
 } from "react-icons/hi2";
 
@@ -134,18 +133,6 @@ export default function NavLinks() {
         >
           <HiOutlineArrowsRightLeft className="h-5 w-5" />
           <span className="text-base font-normal">Transacciones</span>
-        </Link>
-      </li>
-      <li className="mb-3">
-        <Link
-          href="/dashboard/profile"
-          className={cn({
-            active: pathname.includes("/dashboard/profile"),
-          })}
-          onClick={handleClick}
-        >
-          <HiOutlineUser className="h-5 w-5" />
-          <span className="text-base font-normal">Perfil</span>
         </Link>
       </li>
     </ul>

@@ -2,6 +2,11 @@ import FoodPage from "@/app/ui/dashboard/Food";
 import MoviesPage from "@/app/ui/dashboard/Movies";
 import RoomsPage from "@/app/ui/dashboard/Rooms";
 import SessionsPage from "@/app/ui/dashboard/Sessions";
+import {
+  TicketsPage,
+  TransactionsPage,
+  UsersPage,
+} from "@/app/ui/dashboard/Records";
 import { routes } from "@/constants/dashboard/routes";
 import { AvailablesSections } from "@/types/sections";
 import { notFound } from "next/navigation";
@@ -45,12 +50,12 @@ export default async function Page(props: IPageProps) {
       return <FoodPage searchParams={searchParams} />;
 
     case AvailablesSections.USERS:
-    // return <UsersPage searchParams={searchParams} />;
+      return <UsersPage searchParams={searchParams} />;
 
     case AvailablesSections.TICKETS:
-    // return <TicketsPage searchParams={searchParams} />;
+      return <TicketsPage searchParams={searchParams} />;
 
     default:
-    // return <TransactionsPage searchParams={searchParams} />;
+      return <TransactionsPage searchParams={searchParams} />;
   }
 }
