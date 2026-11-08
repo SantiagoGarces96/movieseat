@@ -2,7 +2,7 @@
 
 ## Requisitos
 
-- [Node.js](https://nodejs.org/) entre las versiones 18.17 y 22.
+- [Node.js](https://nodejs.org/) entre las versiones 20 y 22.
 - Para usar datos reales: una base de datos de MongoDB (por ejemplo, un clúster gratuito de MongoDB Atlas) y una cuenta de TMDB.
 - Para probar pagos: una cuenta de Stripe en modo de prueba.
 

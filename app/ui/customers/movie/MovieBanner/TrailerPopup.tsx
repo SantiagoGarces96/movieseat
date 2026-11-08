@@ -37,7 +37,7 @@ const TrailerPopup: React.FC<TrailerPopupProps> = ({ url, onClose }) => {
         onClick={(event) => event.stopPropagation()}
       >
         <ReactPlayer
-          url={url}
+          src={url}
           controls
           width="100%"
           height="100%"

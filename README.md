@@ -46,7 +46,7 @@ La hicimos como proyecto de grado. Queríamos una experiencia de compra parecida
 
 ## Probarlo en tu computador
 
-Necesitas [Node.js](https://nodejs.org/) entre las versiones 18.17 y 22.
+Necesitas [Node.js](https://nodejs.org/) entre las versiones 20 y 22.
 
 ### Opción rápida: el demo
 
