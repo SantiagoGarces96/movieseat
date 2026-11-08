@@ -81,7 +81,7 @@ export default function SessionCreateForm({
           required
         >
           <option value="" disabled>
-            Seleccione una película
+            Selecciona una película
           </option>
           {movies.map(({ _id, title }) => (
             <option key={_id} value={_id}>
@@ -104,7 +104,7 @@ export default function SessionCreateForm({
           required
         >
           <option value="" disabled>
-            Seleccione una sala
+            Selecciona una sala
           </option>
           {rooms.map(({ _id, name }) => (
             <option key={_id.toString()} value={_id.toString()}>

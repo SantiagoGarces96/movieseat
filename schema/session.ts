@@ -3,38 +3,38 @@ import { z } from "zod";
 export const SessionFormSchema = z.object({
   movieId: z
     .string({
-      error: "El nombre de la película es obligatorio",
+      error: "La película es obligatoria",
     })
-    .min(1, "El nombre de la película no puede estar vacío"),
+    .min(1, "Elige una película"),
   roomId: z
     .string({
-      error: "El nombre de la sala es obligatorio",
+      error: "La sala es obligatoria",
     })
-    .min(1, "El nombre de la sala no puede estar vacío"),
+    .min(1, "Elige una sala"),
   date: z
     .string({
       error: "La fecha de la función es obligatoria",
     })
-    .min(10, "La fecha de la función no puede estar vacío"),
+    .min(10, "Elige la fecha de la función"),
   currentTime: z
     .string({
       error: "La hora de la función es obligatoria",
     })
-    .min(8, "La hora de la función no puede estar vacío"),
+    .min(8, "Elige la hora de la función"),
   preferentialPrice: z
     .number({
-      error: "El precio asientos preferenciales es obligatorio",
+      error: "El precio de los asientos preferenciales es obligatorio",
     })
     .int()
     .positive(
-      "El precio asientos preferenciales debe ser un número entero positivo",
+      "El precio de los asientos preferenciales debe ser un número entero positivo",
     ),
   generalPrice: z
     .number({
-      error: "El precio asientos generales es obligatorio",
+      error: "El precio de los asientos generales es obligatorio",
     })
     .int()
     .positive(
-      "El precio asientos generales debe ser un número entero positivo",
+      "El precio de los asientos generales debe ser un número entero positivo",
     ),
 });

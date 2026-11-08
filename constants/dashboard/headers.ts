@@ -1,20 +1,20 @@
 export const sessionsHeaders = [
-  { label: "Pelicula", value: "movie.title" },
+  { label: "Película", value: "movie.title" },
   { label: "Sala", value: "room.name" },
-  { label: "Asientos Disponibles", value: "availableSeats" },
-  { label: "Precio Preferencial", value: "preferentialPrice" },
-  { label: "Precio General", value: "generalPrice" },
-  { label: "Fecha de la Funcion", value: "dateTime" },
+  { label: "Asientos disponibles", value: "availableSeats" },
+  { label: "Precio preferencial", value: "preferentialPrice" },
+  { label: "Precio general", value: "generalPrice" },
+  { label: "Fecha de la función", value: "dateTime" },
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];
 
 export const moviesHeaders = [
-  { label: "Titulo", value: "title" },
+  { label: "Título", value: "title" },
   { label: "Descripción", value: "description" },
   { label: "Estado", value: "status" },
   { label: "Director", value: "director" },
-  { label: "Duracion", value: "duration" },
+  { label: "Duración", value: "duration" },
   { label: "Fecha de estreno", value: "releaseDate" },
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
@@ -23,9 +23,9 @@ export const moviesHeaders = [
 export const roomsHeaders = [
   { label: "Nombre", value: "name" },
   { label: "Tipo", value: "room" },
-  { label: "Asientos Preferenciales", value: "totalSeatsPreferential" },
-  { label: "Asientos Generales", value: "totalSeatsGeneral" },
-  { label: "Total Asientos", value: "totalSeats" },
+  { label: "Asientos preferenciales", value: "totalSeatsPreferential" },
+  { label: "Asientos generales", value: "totalSeatsGeneral" },
+  { label: "Total de asientos", value: "totalSeats" },
   { label: "Creada", value: "createdAt" },
   { label: "Actualizada", value: "updatedAt" },
 ];

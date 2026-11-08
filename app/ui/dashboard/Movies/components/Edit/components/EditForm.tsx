@@ -66,7 +66,7 @@ export default function MovieEditForm({
         </label>
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Titulo</span>
+            <span className="label-text">Título</span>
           </div>
           <input
             id="title"
@@ -108,7 +108,7 @@ export default function MovieEditForm({
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Descripcion</span>
+            <span className="label-text">Descripción</span>
           </div>
           <textarea
             id="description"
@@ -226,12 +226,12 @@ export default function MovieEditForm({
                 className="w-full grow"
                 required
               />
-              <span className="font-bold text-gray-400">Min</span>
+              <span className="font-bold text-gray-400">min</span>
             </label>
           </label>
           <label className="flex w-full items-center justify-center gap-3">
             <div className="label text-lg font-bold">
-              <span className="label-text">Subtitulos</span>
+              <span className="label-text">Subtítulos</span>
             </div>
             <input
               id="subtitles"

@@ -260,10 +260,7 @@ export const getMoviesByQuery = async (
     const parsedMovies: IResultDataDashboard[] = movies.map(
       ({ _id, poster, title }) => {
         return {
-          src:
-            poster === "N/A"
-              ? "/images/about/vision.webp"
-              : poster,
+          src: poster === "N/A" ? "/images/about/vision.webp" : poster,
           label: title,
           href: `/dashboard/movies/${_id}`,
         };
@@ -413,7 +410,7 @@ export const createMovie = async (
     await Movie.create({ ...fields, isManual: true });
   } catch (error: any) {
     console.error(`Error in createMovie function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -485,14 +482,14 @@ export const updateMovie = async (
       return {
         status: FormStatus.COMPLETE,
         success: false,
-        message: "El nombre de la pelicula ya existe",
+        message: "El nombre de la película ya existe",
       };
     }
 
     await Movie.findByIdAndUpdate(id, fiels);
   } catch (error: any) {
     console.error(`Error in updateMovie function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -527,7 +524,7 @@ export const deleteMovie = async (
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };

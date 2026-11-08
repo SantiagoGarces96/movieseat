@@ -7,30 +7,30 @@ export default function Loading() {
   return (
     <section className="w-full px-2 py-9 2xl:max-w-[90rem]">
       <div className="flex flex-col gap-3">
-        <h2 className="text-3xl font-bold">Bienvenido</h2>
+        <h2 className="text-3xl font-bold">Te damos la bienvenida</h2>
         <p className="text-base text-gray-400">
-          Administra peliculas, sesiones, salas, comidas y usuarios; para
-          mantener a tu audiencia satiisfecha.
+          Administra películas, funciones, salas, comidas y usuarios para que
+          todo esté listo para el público.
         </p>
       </div>
       <div className="my-8 flex flex-col gap-4">
         <div className="flex flex-col gap-4 lg:flex-row">
-          <OverviewCard title="Películas por Género">
+          <OverviewCard title="Películas por género">
             <BarChartOverviewSkeleton />
             <StatOverviewSkeleton />
           </OverviewCard>
-          <OverviewCard title="Ventas de Comida por Categoría">
+          <OverviewCard title="Ventas de comida por categoría">
             <PieChartOverviewSkeleton />
           </OverviewCard>
         </div>
-        <OverviewCard title="Ingresos por Mes">
+        <OverviewCard title="Ingresos por mes">
           <BarChartOverviewSkeleton />
         </OverviewCard>
         <div className="flex flex-col gap-4 lg:flex-row">
-          <OverviewCard title="Disponibilidad de Asientos">
+          <OverviewCard title="Disponibilidad de asientos">
             <BarChartOverviewSkeleton />
           </OverviewCard>
-          <OverviewCard title="Ventas de Boletos por Día">
+          <OverviewCard title="Boletas vendidas por día">
             <BarChartOverviewSkeleton />
           </OverviewCard>
         </div>

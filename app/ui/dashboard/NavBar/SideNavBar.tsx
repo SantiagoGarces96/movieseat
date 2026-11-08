@@ -12,7 +12,7 @@ export default function SideNav() {
           href="/dashboard"
         >
           <HiOutlineVideoCamera className="h-9 w-9" />
-          <h1 className="text-xl font-bold">MoviesSeat</h1>
+          <h1 className="text-xl font-bold">MovieSeat</h1>
         </Link>
         <ShowHideMenu />
       </div>

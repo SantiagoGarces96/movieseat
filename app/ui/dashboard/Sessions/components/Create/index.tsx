@@ -7,7 +7,7 @@ export default async function CreateSession() {
   const movies = await getAllMovies();
   const rooms = await getAllRooms();
   return (
-    <DashboardLayout title="Crear sesión">
+    <DashboardLayout title="Crear función">
       <SessionCreateForm movies={movies} rooms={rooms} />
     </DashboardLayout>
   );

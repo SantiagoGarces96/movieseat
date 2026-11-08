@@ -110,7 +110,7 @@ export default function SessionEditForm({
           required
         >
           <option value="" disabled>
-            Seleccione una sala
+            Selecciona una sala
           </option>
           {rooms.map(({ _id, name }) => (
             <option key={_id.toString()} value={_id.toString()}>

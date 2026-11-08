@@ -7,6 +7,8 @@ import Movie from "@/models/Movie";
 import Room from "@/models/Room";
 import Session from "@/models/Session";
 import { getSeatsNumber } from "@/utils/getSeatsNumber";
+import { formatPrice } from "@/utils/format";
+import { formatShowDate, formatShowTime } from "@/utils/showtime";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
@@ -102,11 +104,9 @@ export const getSessions = async (
           movie: { $toString: "$movie.title" },
           room: { $toString: "$room.name" },
           availableSeats: { $toString: "$availableSeats" },
-          preferentialPrice: { $toString: "$preferentialPrice" },
-          generalPrice: { $toString: "$generalPrice" },
-          dateTime: {
-            $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$dateTime" },
-          },
+          preferentialPrice: 1,
+          generalPrice: 1,
+          dateTime: 1,
           createdAt: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
@@ -117,8 +117,16 @@ export const getSessions = async (
       },
     ]);
 
+    // Las funciones guardan la hora de Colombia marcada como UTC.
+    const formatted = results.map((session: any) => ({
+      ...session,
+      preferentialPrice: formatPrice(session.preferentialPrice),
+      generalPrice: formatPrice(session.generalPrice),
+      dateTime: `${formatShowDate(session.dateTime)}, ${formatShowTime(session.dateTime)}`,
+    }));
+
     return {
-      results,
+      results: formatted,
       page: pageNumber,
       totalPages,
       totalResults,
@@ -261,7 +269,7 @@ export const createSession = async (
     await Session.create(parsedFields);
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -340,7 +348,7 @@ export const updateSession = async (
     await Session.findByIdAndUpdate(id, parsedFields);
   } catch (error: any) {
     console.error(`Error in updateSession function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
       errorMessage = error.issues[0].message;
     }
@@ -374,7 +382,7 @@ export const deleteSession = async (
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };
