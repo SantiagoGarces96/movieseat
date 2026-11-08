@@ -1,11 +1,11 @@
+import { isCronRequest } from "@/lib/cron";
 import dbConnect from "@/lib/dbConnect";
 import { getNowPlayingTMDB, getUpcomingTMDB } from "@/lib/TMDB";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronRequest(request)) {
     return new Response("Unauthorized", {
       status: 401,
     });
@@ -14,8 +14,8 @@ export async function GET(request: Request) {
     await dbConnect();
     await getNowPlayingTMDB();
     await getUpcomingTMDB();
-    console.log("Fullfilled DB with new data.");
-    return new Response("Fullfilled DB with new data.", { status: 200 });
+    console.log("Movies updated from TMDB.");
+    return new Response("Movies updated from TMDB.", { status: 200 });
   } catch (error: any) {
     console.log(error);
     return new Response(error.message || "An error occurred", {
