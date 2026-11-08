@@ -21,7 +21,12 @@ export const RoomFormSchema = z.object({
     .int()
     .positive(
       "El total de asientos preferenciales debe ser un número entero positivo",
-    ),
+    )
+    .multipleOf(
+      10,
+      "Los asientos preferenciales van en filas de 10: usa 10, 20, 30...",
+    )
+    .max(260, "Una sala puede tener hasta 26 filas de asientos preferenciales"),
   totalSeatsGeneral: z
     .number({
       error: "El total de asientos generales es obligatorio",
@@ -29,5 +34,10 @@ export const RoomFormSchema = z.object({
     .int()
     .positive(
       "El total de asientos generales debe ser un número entero positivo",
-    ),
+    )
+    .multipleOf(
+      10,
+      "Los asientos generales van en filas de 10: usa 10, 20, 30...",
+    )
+    .max(260, "Una sala puede tener hasta 26 filas de asientos generales"),
 });

@@ -57,6 +57,9 @@ export default function RoomCreateForm() {
         <input
           id="totalSeatsPreferential"
           name="totalSeatsPreferential"
+          min={10}
+          max={260}
+          step={10}
           type="number"
           className="input input-sm input-bordered w-full"
           required
@@ -69,6 +72,9 @@ export default function RoomCreateForm() {
         <input
           id="totalSeatsGeneral"
           name="totalSeatsGeneral"
+          min={10}
+          max={260}
+          step={10}
           type="number"
           className="input input-sm input-bordered w-full"
           required
