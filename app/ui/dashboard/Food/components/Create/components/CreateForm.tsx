@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../../../../Button";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { initialState } from "@/constants/dashboard/form";
 import Alert from "@/app/ui/dashboard/Alert";
 import useAlert from "@/app/hooks/useAlert";
@@ -16,13 +16,17 @@ import {
 import { createFood } from "@/services/food";
 
 export default function FoodCreateForm() {
-  const [stateAction, formAction] = useFormState(createFood, initialState);
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
+    createFood,
+    initialState,
+  );
 
   const { showAlert } = useAlert(stateAction);
 
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -182,7 +186,9 @@ export default function FoodCreateForm() {
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Crear"}
+          </Button>
         </div>
       </div>
     </form>

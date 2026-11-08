@@ -11,7 +11,7 @@ import {
   SpanishMovieStatus,
 } from "@/types/movie";
 import { useState } from "react";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import CastInput from "../../Input/CastInput";
 import GenreInput from "../../Input/GenreInput";
 import LanguageInput from "../../Input/LanguageInput";
@@ -37,7 +37,7 @@ export default function MovieEditForm({
     language: movieData.language,
   });
 
-  const [stateAction, formAction] = useFormState(
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
     updateMovie.bind(null, state),
     initialState,
   );
@@ -47,6 +47,7 @@ export default function MovieEditForm({
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -252,7 +253,9 @@ export default function MovieEditForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Actualizar</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Actualizar"}
+          </Button>
         </div>
       </div>
     </form>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../../../Alert";
@@ -9,11 +9,15 @@ import { SessionRoom } from "@/types/session";
 import { createRooom } from "@/services/rooms";
 
 export default function RoomCreateForm() {
-  const [state, formAction] = useFormState(createRooom, initialState);
+  const [state, onSubmit, isPending, formAction] = useFormSubmit(
+    createRooom,
+    initialState,
+  );
   const { showAlert } = useAlert(state);
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...state} />}
@@ -88,7 +92,9 @@ export default function RoomCreateForm() {
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Crear"}
+          </Button>
         </div>
       </div>
     </form>
