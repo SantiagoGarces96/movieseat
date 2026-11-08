@@ -63,6 +63,9 @@ export default function RoomEditForm({ room }: { room: IRoom }) {
         <input
           id="totalSeatsPreferential"
           name="totalSeatsPreferential"
+          min={10}
+          max={260}
+          step={10}
           type="number"
           defaultValue={room.totalSeatsPreferential}
           className="input input-sm input-bordered w-full"
@@ -76,6 +79,9 @@ export default function RoomEditForm({ room }: { room: IRoom }) {
         <input
           id="totalSeatsGeneral"
           name="totalSeatsGeneral"
+          min={10}
+          max={260}
+          step={10}
           type="number"
           defaultValue={room.totalSeatsGeneral}
           className="input input-sm input-bordered w-full"
