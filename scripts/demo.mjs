@@ -135,6 +135,15 @@ const rooms = [
 ].map((room) => ({ ...room, createdAt: new Date(), updatedAt: new Date() }));
 await mongoose.connection.collection("rooms").insertMany(rooms);
 
+// Mismas reglas de lib/TMDB.ts (calculatePrice) para películas en cartelera:
+// precio base hasta la 1:00 p. m. y el triple después.
+const BASE_PRICES = { "2D": [5000, 8000], "3D": [10000, 14000], IMAX: [8000, 12000] };
+const showPrices = (format, hour) => {
+  const multiplier = hour <= 13 ? 1 : 3;
+  const [general, preferential] = BASE_PRICES[format];
+  return { general: general * multiplier, preferential: preferential * multiplier };
+};
+
 // La hora local del cine se guarda marcada como UTC, igual que en producción.
 const localToday = new Date(Date.now() - 5 * 60 * 60 * 1000);
 const movieDocs = await mongoose.connection.collection("movies").find({ status: "billboard" }).toArray();
@@ -145,6 +154,7 @@ for (let day = 0; day < 5; day++) {
     if (dateTime <= localToday) continue;
     movieDocs.forEach((movie, index) => {
       const room = rooms[(index + offset) % rooms.length];
+      const prices = showPrices(room.room, hour);
       if (index >= rooms.length) return;
       sessions.push({
         movieId: movie._id,
@@ -152,10 +162,10 @@ for (let day = 0; day < 5; day++) {
         dateTime,
         seatsPreferential: seatMap(room.totalSeatsPreferential),
         availableSeatsPreferential: room.totalSeatsPreferential,
-        preferentialPrice: 42000,
+        preferentialPrice: prices.preferential,
         seatsGeneral: seatMap(room.totalSeatsGeneral),
         availableSeatsGeneral: room.totalSeatsGeneral,
-        generalPrice: 30000,
+        generalPrice: prices.general,
         availableSeats: room.totalSeats,
         createdAt: new Date(),
         updatedAt: new Date(),
