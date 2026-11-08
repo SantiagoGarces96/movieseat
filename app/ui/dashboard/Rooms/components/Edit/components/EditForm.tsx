@@ -1,7 +1,7 @@
 "use client";
 import { IRoom } from "@/interfaces/room";
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../../../Alert";
@@ -10,7 +10,7 @@ import { SessionRoom } from "@/types/session";
 import { updateRoom } from "@/services/rooms";
 
 export default function RoomEditForm({ room }: { room: IRoom }) {
-  const [state, formAction] = useFormState(
+  const [state, onSubmit, isPending, formAction] = useFormSubmit(
     updateRoom.bind(null, room._id),
     initialState,
   );
@@ -20,6 +20,7 @@ export default function RoomEditForm({ room }: { room: IRoom }) {
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...state} />}
@@ -90,7 +91,9 @@ export default function RoomEditForm({ room }: { room: IRoom }) {
           >
             Cancelar
           </Link>
-          <Button type="submit">Actualizar</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Actualizar"}
+          </Button>
         </div>
       </div>
     </form>

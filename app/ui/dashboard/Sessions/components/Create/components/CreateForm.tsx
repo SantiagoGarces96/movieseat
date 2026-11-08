@@ -4,7 +4,7 @@ import { IRoom } from "@/interfaces/room";
 import { createSession, getAvailableSessionTimes } from "@/services/sessions";
 import Link from "next/link";
 import { useState } from "react";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { cn } from "@/utils/cn";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
@@ -32,7 +32,7 @@ export default function SessionCreateForm({
   );
   const [currentTime, setCurrentTime] = useState<string>("");
 
-  const [state, formAction] = useFormState(
+  const [state, onSubmit, isPending, formAction] = useFormSubmit(
     createSession.bind(null, currentTime),
     initialState,
   );
@@ -66,6 +66,7 @@ export default function SessionCreateForm({
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...state} />}
@@ -228,7 +229,9 @@ export default function SessionCreateForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Crear"}
+          </Button>
         </div>
       </div>
     </form>

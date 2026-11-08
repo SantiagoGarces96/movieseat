@@ -11,7 +11,7 @@ import CastInput from "../../Input/CastInput";
 import { IGenresMovies, ILanguagesMovies } from "@/interfaces/movie";
 import GenreInput from "../../Input/GenreInput";
 import LanguageInput from "../../Input/LanguageInput";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { createMovie } from "@/services/movies";
 import { initialState } from "@/constants/dashboard/form";
 import Alert from "@/app/ui/dashboard/Alert";
@@ -30,7 +30,7 @@ export default function MovieCreateForm({
     language: [],
   });
 
-  const [stateAction, formAction] = useFormState(
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
     createMovie.bind(null, state),
     initialState,
   );
@@ -40,6 +40,7 @@ export default function MovieCreateForm({
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -233,7 +234,9 @@ export default function MovieCreateForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Crear"}
+          </Button>
         </div>
       </div>
     </form>
