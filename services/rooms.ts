@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -40,7 +41,7 @@ export const getRooms = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Room.countDocuments({
@@ -107,7 +108,7 @@ export const getRoomsByQuery = async (
   await dbConnect();
   try {
     const rooms: IRoom[] = await Room.find({
-      $or: [{ name: { $regex: query, $options: "i" } }],
+      $or: [{ name: { $regex: escapeRegex(query), $options: "i" } }],
     });
     const parsedRooms: IResultDataDashboard[] = rooms.map(({ _id, name }) => {
       return {

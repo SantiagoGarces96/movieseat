@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import { IResultDataDashboard } from "@/interfaces/dasboard";
 import { IUser } from "@/interfaces/user";
@@ -16,8 +17,8 @@ export const getUsersByQuery = async (
   try {
     const users: IUser[] = await User.find({
       $or: [
-        { name: { $regex: query, $options: "i" } },
-        { email: { $regex: query, $options: "i" } },
+        { name: { $regex: escapeRegex(query), $options: "i" } },
+        { email: { $regex: escapeRegex(query), $options: "i" } },
       ],
     });
     const parsedUsers: IResultDataDashboard[] = users.map(({ _id, name }) => {
