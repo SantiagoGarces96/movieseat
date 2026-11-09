@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -17,8 +18,10 @@ import Movie from "@/models/Movie";
 import { MovieCreateFormState, MovieStatus } from "@/types/movie";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { SortOrder } from "mongoose";
+import { movieStatusLabel } from "@/utils/format";
 import axios from "axios";
 import { FormState, FormStatus } from "@/types/form";
+import { removeUnusedSessions } from "@/lib/sessionUsage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -98,7 +101,7 @@ export const getMoviesInDashboard = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Movie.countDocuments({
@@ -255,15 +258,12 @@ export const getMoviesByQuery = async (
   await dbConnect();
   try {
     const movies: IMovie[] = await Movie.find({
-      $or: [{ title: { $regex: query, $options: "i" } }],
+      $or: [{ title: { $regex: escapeRegex(query), $options: "i" } }],
     });
     const parsedMovies: IResultDataDashboard[] = movies.map(
       ({ _id, poster, title }) => {
         return {
-          src:
-            poster === "N/A"
-              ? "https://archivos-cms.cinecolombia.com/images/_aliases/medium/3/4/2/8/8243-6-esl-CO/clasificaci%C3%B3n-de-peliculas.jpg"
-              : poster,
+          src: poster === "N/A" ? "/images/about/vision.webp" : poster,
           label: title,
           href: `/dashboard/movies/${_id}`,
         };
@@ -294,16 +294,16 @@ export const getMoviesByGenre = async (): Promise<IMovieByGenre[]> => {
 export const getMoviesByStatus = async (): Promise<IMovieByStatus[]> => {
   await dbConnect();
   try {
-    const movies: IMovieByStatus[] = await Movie.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-    return movies;
+    const movies: { _id: MovieStatus; count: number }[] = await Movie.aggregate(
+      [
+        { $group: { _id: "$status", count: { $sum: 1 } } },
+        { $sort: { _id: 1 } },
+      ],
+    );
+    return movies.map(({ _id, count }) => ({
+      _id: movieStatusLabel[_id] ?? _id,
+      count,
+    }));
   } catch (error: any) {
     console.error(`Error in getMoviesByStatus function: ${error.message}`);
     return [];
@@ -413,10 +413,9 @@ export const createMovie = async (
     await Movie.create({ ...fields, isManual: true });
   } catch (error: any) {
     console.error(`Error in createMovie function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -486,17 +485,16 @@ export const updateMovie = async (
       return {
         status: FormStatus.COMPLETE,
         success: false,
-        message: "El nombre de la pelicula ya existe",
+        message: "El nombre de la película ya existe",
       };
     }
 
     await Movie.findByIdAndUpdate(id, fiels);
   } catch (error: any) {
     console.error(`Error in updateMovie function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -517,6 +515,14 @@ export const deleteMovie = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (!(await removeUnusedSessions({ movieId: _id }))) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta película tiene funciones con boletas vendidas. No se puede eliminar todavía.",
+      };
+    }
     await Movie.findByIdAndDelete(_id);
     revalidatePath("/dashboard/movies");
     return {
@@ -529,7 +535,7 @@ export const deleteMovie = async (
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };

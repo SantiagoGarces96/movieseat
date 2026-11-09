@@ -11,7 +11,6 @@ import {
   HiOutlineRectangleGroup,
   HiOutlineSquares2X2,
   HiOutlineTicket,
-  HiOutlineUser,
   HiOutlineUserGroup,
 } from "react-icons/hi2";
 
@@ -36,10 +35,10 @@ export default function NavLinks() {
           onClick={handleClick}
         >
           <HiOutlineRectangleGroup className="h-5 w-5" />
-          <span className="text-base font-normal">Dashboard</span>
+          <span className="text-base font-normal">Resumen</span>
         </Link>
       </li>
-      <li className="menu-title">Pages</li>
+      <li className="menu-title">Secciones</li>
       <li className="mb-3">
         <Link
           href="/dashboard/sessions"
@@ -49,7 +48,7 @@ export default function NavLinks() {
           onClick={handleClick}
         >
           <HiOutlineCalendarDays className="h-5 w-5" />
-          <span className="text-base font-normal">Sesiones</span>
+          <span className="text-base font-normal">Funciones</span>
         </Link>
       </li>
       <li className="mb-3">
@@ -121,7 +120,7 @@ export default function NavLinks() {
           onClick={handleClick}
         >
           <HiOutlineTicket className="h-5 w-5" />
-          <span className="text-base font-normal">Boletos</span>
+          <span className="text-base font-normal">Boletas</span>
         </Link>
       </li>
       <li className="mb-3">
@@ -134,18 +133,6 @@ export default function NavLinks() {
         >
           <HiOutlineArrowsRightLeft className="h-5 w-5" />
           <span className="text-base font-normal">Transacciones</span>
-        </Link>
-      </li>
-      <li className="mb-3">
-        <Link
-          href="/dashboard/profile"
-          className={cn({
-            active: pathname.includes("/dashboard/profile"),
-          })}
-          onClick={handleClick}
-        >
-          <HiOutlineUser className="h-5 w-5" />
-          <span className="text-base font-normal">Perfil</span>
         </Link>
       </li>
     </ul>

@@ -11,7 +11,7 @@ import {
   SpanishMovieStatus,
 } from "@/types/movie";
 import { useState } from "react";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import CastInput from "../../Input/CastInput";
 import GenreInput from "../../Input/GenreInput";
 import LanguageInput from "../../Input/LanguageInput";
@@ -37,7 +37,7 @@ export default function MovieEditForm({
     language: movieData.language,
   });
 
-  const [stateAction, formAction] = useFormState(
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
     updateMovie.bind(null, state),
     initialState,
   );
@@ -47,6 +47,7 @@ export default function MovieEditForm({
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -66,7 +67,7 @@ export default function MovieEditForm({
         </label>
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Titulo</span>
+            <span className="label-text">Título</span>
           </div>
           <input
             id="title"
@@ -108,7 +109,7 @@ export default function MovieEditForm({
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Descripcion</span>
+            <span className="label-text">Descripción</span>
           </div>
           <textarea
             id="description"
@@ -145,7 +146,7 @@ export default function MovieEditForm({
         <input
           id="poster"
           name="poster"
-          type="url"
+          type="text"
           defaultValue={movieData.poster}
           className="input input-sm input-bordered w-full"
           required
@@ -159,7 +160,7 @@ export default function MovieEditForm({
         <input
           id="backdrop"
           name="backdrop"
-          type="url"
+          type="text"
           defaultValue={movieData.backdrop}
           className="input input-sm input-bordered w-full"
           required
@@ -226,12 +227,12 @@ export default function MovieEditForm({
                 className="w-full grow"
                 required
               />
-              <span className="font-bold text-gray-400">Min</span>
+              <span className="font-bold text-gray-400">min</span>
             </label>
           </label>
           <label className="flex w-full items-center justify-center gap-3">
             <div className="label text-lg font-bold">
-              <span className="label-text">Subtitulos</span>
+              <span className="label-text">Subtítulos</span>
             </div>
             <input
               id="subtitles"
@@ -252,7 +253,9 @@ export default function MovieEditForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Actualizar</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Actualizar"}
+          </Button>
         </div>
       </div>
     </form>

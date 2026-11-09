@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import { IRoom } from "@/interfaces/room";
 import { IAvailableSeatsByRoom, ISession } from "@/interfaces/session";
@@ -7,10 +8,13 @@ import Movie from "@/models/Movie";
 import Room from "@/models/Room";
 import Session from "@/models/Session";
 import { getSeatsNumber } from "@/utils/getSeatsNumber";
+import { formatPrice } from "@/utils/format";
+import { formatShowDate, formatShowTime } from "@/utils/showtime";
 import { SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
+import { isSessionInUse } from "@/lib/sessionUsage";
 import { sessionTimes } from "@/constants/sessions";
 import { parseToTimeUTC } from "@/utils/parseDate";
 import { redirect } from "next/navigation";
@@ -36,7 +40,7 @@ export const getSessions = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Session.countDocuments({
@@ -102,11 +106,9 @@ export const getSessions = async (
           movie: { $toString: "$movie.title" },
           room: { $toString: "$room.name" },
           availableSeats: { $toString: "$availableSeats" },
-          preferentialPrice: { $toString: "$preferentialPrice" },
-          generalPrice: { $toString: "$generalPrice" },
-          dateTime: {
-            $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$dateTime" },
-          },
+          preferentialPrice: 1,
+          generalPrice: 1,
+          dateTime: 1,
           createdAt: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
@@ -117,8 +119,16 @@ export const getSessions = async (
       },
     ]);
 
+    // Las funciones guardan la hora de Colombia marcada como UTC.
+    const formatted = results.map((session: any) => ({
+      ...session,
+      preferentialPrice: formatPrice(session.preferentialPrice),
+      generalPrice: formatPrice(session.generalPrice),
+      dateTime: `${formatShowDate(session.dateTime)}, ${formatShowTime(session.dateTime)}`,
+    }));
+
     return {
-      results,
+      results: formatted,
       page: pageNumber,
       totalPages,
       totalResults,
@@ -261,10 +271,9 @@ export const createSession = async (
     await Session.create(parsedFields);
   } catch (error: any) {
     console.error(`Error in createSession function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -341,10 +350,9 @@ export const updateSession = async (
     await Session.findByIdAndUpdate(id, parsedFields);
   } catch (error: any) {
     console.error(`Error in updateSession function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -364,6 +372,14 @@ export const deleteSession = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (await isSessionInUse(_id)) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta función tiene sillas vendidas o apartadas. No se puede eliminar.",
+      };
+    }
     await Session.findByIdAndDelete(_id);
     revalidatePath("/dashboard/sessions");
     return {
@@ -376,7 +392,7 @@ export const deleteSession = async (
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };
@@ -387,6 +403,8 @@ export const getAvailableSeatsByRoom = async (): Promise<
   await dbConnect();
   try {
     const availableSeats: IAvailableSeatsByRoom[] = await Session.aggregate([
+      // Solo cuentan las funciones que aún no empiezan.
+      { $match: { dateTime: { $gt: getLocalNow() } } },
       {
         $lookup: {
           from: "rooms",

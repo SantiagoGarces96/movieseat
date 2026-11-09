@@ -28,14 +28,16 @@ export default function RecentSearch() {
 
   return (
     <div className="flex flex-col gap-3 p-5">
-      <span className="text-sm font-medium text-gray-400">Recent Search</span>
+      <span className="text-sm font-medium text-gray-400">
+        Búsquedas recientes
+      </span>
       <div className="flex flex-grow gap-2">
         {recentSearchData.length > 0 ? (
           recentSearchData.map((label, index) => (
             <Badge key={label + index} label={label} />
           ))
         ) : (
-          <span className="text-gray-500">No recent searches.</span>
+          <span className="text-gray-500">Aún no hay búsquedas recientes.</span>
         )}
       </div>
     </div>

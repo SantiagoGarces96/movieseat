@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -10,6 +11,7 @@ import Room from "@/models/Room";
 import { CountResultOpt } from "@/constants/dashboard/table";
 import { MongooseError, Schema, SortOrder } from "mongoose";
 import { FormState, FormStatus } from "@/types/form";
+import { removeUnusedSessions } from "@/lib/sessionUsage";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -40,7 +42,7 @@ export const getRooms = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Room.countDocuments({
@@ -106,12 +108,12 @@ export const getRoomsByQuery = async (
   }
   await dbConnect();
   try {
-    const sooms: IRoom[] = await Room.find({
-      $or: [{ name: { $regex: query, $options: "i" } }],
+    const rooms: IRoom[] = await Room.find({
+      $or: [{ name: { $regex: escapeRegex(query), $options: "i" } }],
     });
-    const parsedRooms: IResultDataDashboard[] = sooms.map(({ _id, name }) => {
+    const parsedRooms: IResultDataDashboard[] = rooms.map(({ _id, name }) => {
       return {
-        src: "https://archivos-cms.cinecolombia.com/images/_aliases/medium/0/8/0/8/18080-3-esl-CO/17.png",
+        src: "/images/about/sala-2d.webp",
         label: name,
         href: `/dashboard/rooms/${_id}`,
       };
@@ -176,10 +178,9 @@ export const createRooom = async (
     await Room.create({ ...fields, totalSeats });
   } catch (error: any) {
     console.error(`Error in createRooom function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -241,10 +242,9 @@ export const updateRoom = async (
     await Room.findByIdAndUpdate(room._id, { ...fields, totalSeats });
   } catch (error: any) {
     console.error(`Error in updateRoom function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -265,6 +265,14 @@ export const deleteRoom = async (
   await requireAdmin();
   await dbConnect();
   try {
+    if (!(await removeUnusedSessions({ roomId: _id }))) {
+      return {
+        status: FormStatus.COMPLETE,
+        success: false,
+        message:
+          "Esta sala tiene funciones con boletas vendidas. No se puede eliminar todavía.",
+      };
+    }
     await Room.findByIdAndDelete(_id);
     revalidatePath("/dashboard/rooms");
     return {
@@ -273,11 +281,11 @@ export const deleteRoom = async (
       message: "Sala eliminada con éxito.",
     };
   } catch (error: any) {
-    console.error(`Error in deleteSession function: ${error.message}`);
+    console.error(`Error in deleteRoom function: ${error.message}`);
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };

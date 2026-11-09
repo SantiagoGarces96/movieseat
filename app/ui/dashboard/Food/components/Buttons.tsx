@@ -1,7 +1,7 @@
 "use client";
 import { HiOutlineTrash, HiOutlinePencil } from "react-icons/hi2";
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { initialState } from "@/constants/dashboard/form";
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "../../Alert";
@@ -31,12 +31,31 @@ export function UpdateFoodButton({ id }: { id: string }) {
 
 export function DeleteFoodButton({ id }: { id: string }) {
   const deleteFoodWithId = deleteFood.bind(null, id);
-  const [state, formAction] = useFormState(deleteFoodWithId, initialState);
+  const [state, formAction, isPending] = useActionState(
+    deleteFoodWithId,
+    initialState,
+  );
   const { showAlert } = useAlert(state);
   return (
-    <form action={formAction}>
+    <form
+      action={formAction}
+      onSubmit={(event) => {
+        if (
+          !window.confirm(
+            "¿Seguro que quieres eliminar esta comida? No se puede deshacer.",
+          )
+        ) {
+          event.preventDefault();
+        }
+      }}
+    >
       {showAlert && <Alert {...state} />}
-      <button type="submit" className="btn btn-circle btn-ghost btn-sm">
+      <button
+        type="submit"
+        disabled={isPending}
+        aria-label="Eliminar esta comida"
+        className="btn btn-circle btn-ghost btn-sm"
+      >
         <HiOutlineTrash className="h-4 w-4" />
       </button>
     </form>

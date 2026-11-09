@@ -22,7 +22,7 @@ export default function PieChartOverview({ data }: { data: IFoodSells[] }) {
           cy="50%"
           outerRadius={100}
           fill="#0072BB"
-          label
+          label={({ name, value }) => `${name}: ${value}`}
         />
         <Tooltip />
       </PieChart>

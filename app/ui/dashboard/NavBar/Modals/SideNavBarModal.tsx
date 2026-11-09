@@ -7,7 +7,7 @@ export default function SideNavBarModal() {
         <SideNav />
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button>Cerrar</button>
       </form>
     </dialog>
   );

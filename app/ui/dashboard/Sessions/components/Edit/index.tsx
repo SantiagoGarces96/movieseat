@@ -22,7 +22,7 @@ export default async function EditSession({ id }: { id: string }) {
   );
 
   return (
-    <DashboardLayout title="Editar sesión">
+    <DashboardLayout title="Editar función">
       <SessionEditForm
         session={session}
         rooms={rooms}

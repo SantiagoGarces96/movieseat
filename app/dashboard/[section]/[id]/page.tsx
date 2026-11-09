@@ -2,6 +2,7 @@ import EditFood from "@/app/ui/dashboard/Food/components/Edit";
 import EditMovie from "@/app/ui/dashboard/Movies/components/Edit";
 import EditRoom from "@/app/ui/dashboard/Rooms/components/Edit";
 import EditSession from "@/app/ui/dashboard/Sessions/components/Edit";
+import { notFound } from "next/navigation";
 import { AvailablesSections } from "@/types/sections";
 
 export default async function Page({
@@ -24,13 +25,8 @@ export default async function Page({
     case AvailablesSections.FOOD:
       return <EditFood id={id} />;
 
-    case AvailablesSections.USERS:
-    // return <EditUser id={id} />;
-
-    case AvailablesSections.TICKETS:
-    // return <EditTicket id={id} />;
-
+    // Usuarios, boletas y transacciones son registros: se consultan, no se editan.
     default:
-    // return <EditTransaction id={id} />;
+      notFound();
   }
 }

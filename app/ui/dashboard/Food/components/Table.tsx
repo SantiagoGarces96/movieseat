@@ -34,8 +34,8 @@ export default async function FoodTable({
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
         <ResultSearch
-          placeholder="Ingrese su busqueda"
-          tooltipText="Puedes buscar por: Nombre, Categoria y tipo."
+          placeholder="Escribe para buscar"
+          tooltipText="Puedes buscar por nombre, categoría y tipo."
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">
@@ -59,14 +59,14 @@ export default async function FoodTable({
                   </div>
                   <div className="h-28 w-full max-w-[70%]">
                     <div className="truncate text-sm font-bold">{name}</div>
-                    <p className="truncate text-xs capitalize">
+                    <p className="truncate text-xs">
                       {prasedCategory in SpanishhFoodCategory
                         ? SpanishhFoodCategory[
                             prasedCategory as keyof typeof SpanishhFoodCategory
                           ]
                         : "-"}
                     </p>
-                    <p className="truncate text-xs capitalize">
+                    <p className="truncate text-xs">
                       {prasedType in SpanishFoodType
                         ? SpanishFoodType[
                             prasedType as keyof typeof SpanishFoodType
@@ -74,7 +74,7 @@ export default async function FoodTable({
                         : "-"}
                     </p>
                     <div
-                      className={cn("badge badge-xs capitalize", {
+                      className={cn("badge badge-xs", {
                         "badge-info": data.size === FoodSize.EXTRALARGE,
                         "badge-warning": data.size === FoodSize.LARGE,
                         "badge-success": data.size === FoodSize.SMALL,
@@ -86,7 +86,7 @@ export default async function FoodTable({
                           ]
                         : "-"}
                     </div>
-                    <p className="truncate text-xs font-bold">$ {data.price}</p>
+                    <p className="truncate text-xs font-bold">{data.price}</p>
                   </div>
                 </div>
                 <div className="flex h-full max-h-52 w-full flex-col md:w-1/2">
@@ -148,14 +148,14 @@ export default async function FoodTable({
                             </div>
                             <div className="max-w-56">
                               <div className="truncate font-bold">{name}</div>
-                              <p className="max-w-56 truncate capitalize">
+                              <p className="max-w-56 truncate">
                                 {prasedCategory in SpanishhFoodCategory
                                   ? SpanishhFoodCategory[
                                       prasedCategory as keyof typeof SpanishhFoodCategory
                                     ]
                                   : "-"}
                               </p>
-                              <p className="max-w-56 truncate capitalize">
+                              <p className="max-w-56 truncate">
                                 {prasedType in SpanishFoodType
                                   ? SpanishFoodType[
                                       prasedType as keyof typeof SpanishFoodType
@@ -170,7 +170,7 @@ export default async function FoodTable({
                     case "size":
                       const prasedValue = value.toUpperCase();
                       return (
-                        <td key={key} className="capitalize">
+                        <td key={key}>
                           {prasedValue in SpanishFoodSize
                             ? SpanishFoodSize[
                                 prasedValue as keyof typeof SpanishFoodSize
@@ -209,7 +209,7 @@ export default async function FoodTable({
         <div className="flex w-full items-center justify-between px-1 py-5">
           <span className="text-base text-gray-400">
             {(current > food.totalResults ? food.totalResults : current) +
-              " of " +
+              " de " +
               food.totalResults}
           </span>
           <ResultPagination

@@ -1,4 +1,5 @@
 "use server";
+import { escapeRegex } from "@/utils/escapeRegex";
 import { requireAdmin } from "@/lib/auth";
 import {
   IDashboardResponse,
@@ -15,6 +16,7 @@ import { FoodFormSchema } from "@/schema/food";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { formatPrice } from "@/utils/format";
 
 export const getFoodByQuery = async (
   query: string,
@@ -25,7 +27,7 @@ export const getFoodByQuery = async (
   await dbConnect();
   try {
     const food: IFood[] = await Food.find({
-      $or: [{ name: { $regex: query, $options: "i" } }],
+      $or: [{ name: { $regex: escapeRegex(query), $options: "i" } }],
     });
     const parsedFood: IResultDataDashboard[] = food.map(
       ({ _id, image, name }) => {
@@ -71,7 +73,7 @@ export const getFood = async (
       : prev,
   );
   const orderType: SortOrder = order === "desc" ? -1 : 1;
-  const clearQuery = query.trim();
+  const clearQuery = escapeRegex(query.trim());
 
   try {
     const totalResults = await Food.countDocuments({
@@ -114,7 +116,7 @@ export const getFood = async (
         "|" +
         result.type,
       description: result.description,
-      price: result.price.toString(),
+      price: formatPrice(result.price),
       size: result.size.toString(),
       availableAmount: result.availableAmount.toString(),
       createdAt: result.createdAt.toISOString().slice(0, 10),
@@ -202,10 +204,9 @@ export const createFood = async (
     await Food.create(fields);
   } catch (error: any) {
     console.error(`Error in createFood function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente.";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo.";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -264,10 +265,9 @@ export const updateFood = async (
     await Food.findByIdAndUpdate(foodId, fields);
   } catch (error: any) {
     console.error(`Error in updateFood function: ${error.message}`);
-    let errorMessage = "Algo salió mal, por favor intentalo nuevamente";
+    let errorMessage = "Algo salió mal, por favor inténtalo de nuevo";
     if (error instanceof z.ZodError) {
-      const { errors } = error;
-      errorMessage = errors[0].message;
+      errorMessage = error.issues[0].message;
     }
     return {
       status: FormStatus.COMPLETE,
@@ -300,7 +300,7 @@ export const deleteFood = async (
     return {
       status: FormStatus.COMPLETE,
       success: false,
-      message: "Algo salió mal, por favor intentalo nuevamente.",
+      message: "Algo salió mal, por favor inténtalo de nuevo.",
     };
   }
 };

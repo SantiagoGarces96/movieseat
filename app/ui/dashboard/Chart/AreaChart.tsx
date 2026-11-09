@@ -35,6 +35,7 @@ export default function AreaChartOverview({
         <Area
           type="monotone"
           dataKey="ticketsSold"
+          name="Boletas"
           stroke="#0072BB"
           fill="#0072BB"
         />

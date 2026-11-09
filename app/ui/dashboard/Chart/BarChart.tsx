@@ -16,9 +16,11 @@ import {
 export default function BarChartOverview({
   data,
   dataKey,
+  name,
 }: {
   data: (IMovieByGenre | IAvailableSeatsByRoom)[];
   dataKey: string;
+  name: string;
 }) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function BarChartOverview({
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey={dataKey} fill="#0072BB" />
+        <Bar dataKey={dataKey} name={name} fill="#0072BB" />
       </BarChart>
     </ResponsiveContainer>
   );

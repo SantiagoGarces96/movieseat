@@ -8,8 +8,10 @@ export default function NotFound() {
   return (
     <main className="flex h-full flex-col items-center justify-center gap-2">
       <HiOutlineFaceFrown className="h-40 w-40 text-gray-400" />
-      <h2 className="text-xl font-semibold">404 No Encontrado</h2>
-      <p>No se ha encontrado el recurso solicitado.</p>
+      <h2 className="text-xl font-semibold">No encontramos esta página</h2>
+      <p>
+        Puede que la dirección esté mal escrita o que el elemento ya no exista.
+      </p>
       <button
         type="button"
         onClick={router.back}

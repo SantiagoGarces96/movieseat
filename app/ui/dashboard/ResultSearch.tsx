@@ -13,8 +13,8 @@ export default function ResultSearch({
   tooltipText,
   ...rest
 }: ResultSearchProps) {
-  const { updateParam, deleteParam } = useParams();
-  const [value, setValue] = useState("");
+  const { getParam, updateParam, deleteParam } = useParams();
+  const [value, setValue] = useState(() => getParam("tableQuery"));
 
   const handleSearch = useDebouncedCallback((value: string) => {
     if (value) {

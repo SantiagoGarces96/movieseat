@@ -26,8 +26,8 @@ export default async function RoomTable({
       <div className="flex w-full items-center justify-between px-1 py-5">
         <ResultCount />
         <ResultSearch
-          placeholder="Ingrese su busqueda"
-          tooltipText="Puedes buscar por: nombre y tipo."
+          placeholder="Escribe para buscar"
+          tooltipText="Puedes buscar por nombre y tipo."
         />
       </div>
       <div className="h-full max-h-[75vh] w-full overflow-auto 2xl:hidden">
@@ -105,7 +105,7 @@ export default async function RoomTable({
         <div className="flex w-full items-center justify-between px-1 py-5">
           <span className="text-base text-gray-400">
             {(current > rooms.totalResults ? rooms.totalResults : current) +
-              " of " +
+              " de " +
               rooms.totalResults}
           </span>
           <ResultPagination

@@ -14,7 +14,7 @@ export default async function EditMovie({ id }: { id: string }) {
   const languagesData = await getLanguages();
 
   return (
-    <DashboardLayout title="Editar sesión">
+    <DashboardLayout title="Editar película">
       <MovieEditForm
         genres={genresData}
         languages={languagesData}

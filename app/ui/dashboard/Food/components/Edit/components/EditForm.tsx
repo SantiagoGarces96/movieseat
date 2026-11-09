@@ -3,7 +3,7 @@
 import useAlert from "@/app/hooks/useAlert";
 import Alert from "@/app/ui/dashboard/Alert";
 import { initialState } from "@/constants/dashboard/form";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import Link from "next/link";
 import { Button } from "@/app/ui/dashboard/Button";
 import { IFood } from "@/interfaces/food";
@@ -18,7 +18,7 @@ import {
 import { updateFood } from "@/services/food";
 
 export default function FoodEditForm({ foodData }: { foodData: IFood }) {
-  const [stateAction, formAction] = useFormState(
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
     updateFood.bind(null, foodData._id),
     initialState,
   );
@@ -28,6 +28,7 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -65,16 +66,16 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
 
       <label className="form-control col-span-12 grid w-full lg:col-span-4">
         <div className="label text-lg font-bold">
-          <span className="label-text">Categoria</span>
+          <span className="label-text">Categoría</span>
         </div>
         <select
           id="category"
           name="category"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.category}
         >
           <option value="" disabled>
-            Seleccione una categoria
+            Selecciona una categoría
           </option>
           {Object.entries(FoodCategory).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -95,11 +96,11 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
         <select
           id="type"
           name="type"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.type}
         >
           <option value="" disabled>
-            Seleccione un tipo
+            Selecciona un tipo
           </option>
           {Object.entries(FoodType).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -120,11 +121,11 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
         <select
           id="size"
           name="size"
-          className="select select-bordered select-sm w-full capitalize"
+          className="select select-bordered select-sm w-full"
           defaultValue={foodData.size}
         >
           <option value="" disabled>
-            Seleccione un tamaño
+            Selecciona un tamaño
           </option>
           {Object.entries(FoodSize).map(([_, value], index) => (
             <option key={value + index} value={value}>
@@ -141,7 +142,7 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Descripcion</span>
+            <span className="label-text">Descripción</span>
           </div>
           <textarea
             id="description"
@@ -192,7 +193,9 @@ export default function FoodEditForm({ foodData }: { foodData: IFood }) {
           >
             Cancelar
           </Link>
-          <Button type="submit">Actualizar</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Actualizar"}
+          </Button>
         </div>
       </div>
     </form>

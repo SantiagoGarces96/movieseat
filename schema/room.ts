@@ -10,22 +10,34 @@ const SessionRoomEnum = z.enum([
 export const RoomFormSchema = z.object({
   name: z
     .string({
-      required_error: "El título es obligatorio",
+      error: "El nombre de la sala es obligatorio",
     })
-    .min(1, "El título no puede estar vacío"),
+    .min(1, "El nombre de la sala no puede estar vacío"),
   room: SessionRoomEnum.default(SessionRoom["2D"]),
   totalSeatsPreferential: z
     .number({
-      required_error: "El Total asientos preferenciales es obligatorio",
+      error: "El total de asientos preferenciales es obligatorio",
     })
     .int()
     .positive(
-      "El Total asientos preferenciales debe ser un número entero positivo",
-    ),
+      "El total de asientos preferenciales debe ser un número entero positivo",
+    )
+    .multipleOf(
+      10,
+      "Los asientos preferenciales van en filas de 10: usa 10, 20, 30...",
+    )
+    .max(260, "Una sala puede tener hasta 26 filas de asientos preferenciales"),
   totalSeatsGeneral: z
     .number({
-      required_error: "El Total asientos generales es obligatorio",
+      error: "El total de asientos generales es obligatorio",
     })
     .int()
-    .positive("El Total asientos generales debe ser un número entero positivo"),
+    .positive(
+      "El total de asientos generales debe ser un número entero positivo",
+    )
+    .multipleOf(
+      10,
+      "Los asientos generales van en filas de 10: usa 10, 20, 30...",
+    )
+    .max(260, "Una sala puede tener hasta 26 filas de asientos generales"),
 });

@@ -11,7 +11,7 @@ import CastInput from "../../Input/CastInput";
 import { IGenresMovies, ILanguagesMovies } from "@/interfaces/movie";
 import GenreInput from "../../Input/GenreInput";
 import LanguageInput from "../../Input/LanguageInput";
-import { useFormState } from "react-dom";
+import useFormSubmit from "@/app/hooks/useFormSubmit";
 import { createMovie } from "@/services/movies";
 import { initialState } from "@/constants/dashboard/form";
 import Alert from "@/app/ui/dashboard/Alert";
@@ -30,7 +30,7 @@ export default function MovieCreateForm({
     language: [],
   });
 
-  const [stateAction, formAction] = useFormState(
+  const [stateAction, onSubmit, isPending, formAction] = useFormSubmit(
     createMovie.bind(null, state),
     initialState,
   );
@@ -40,6 +40,7 @@ export default function MovieCreateForm({
   return (
     <form
       action={formAction}
+      onSubmit={onSubmit}
       className="grid w-full grid-cols-12 gap-4 rounded-xl border px-8 py-8 lg:px-10 xl:px-16 2xl:w-3/4"
     >
       {showAlert && <Alert {...stateAction} />}
@@ -58,7 +59,7 @@ export default function MovieCreateForm({
         </label>
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Titulo</span>
+            <span className="label-text">Título</span>
           </div>
           <input
             id="title"
@@ -97,7 +98,7 @@ export default function MovieCreateForm({
       <div className="col-span-12 grid w-full lg:col-span-6">
         <label className="form-control w-full">
           <div className="label text-lg font-bold">
-            <span className="label-text">Descripcion</span>
+            <span className="label-text">Descripción</span>
           </div>
           <textarea
             id="description"
@@ -132,7 +133,7 @@ export default function MovieCreateForm({
         <input
           id="poster"
           name="poster"
-          type="url"
+          type="text"
           className="input input-sm input-bordered w-full"
           required
         />
@@ -145,7 +146,7 @@ export default function MovieCreateForm({
         <input
           id="backdrop"
           name="backdrop"
-          type="url"
+          type="text"
           className="input input-sm input-bordered w-full"
           required
         />
@@ -208,12 +209,12 @@ export default function MovieCreateForm({
                 className="w-full grow"
                 required
               />
-              <span className="font-bold text-gray-400">Min</span>
+              <span className="font-bold text-gray-400">min</span>
             </label>
           </label>
           <label className="flex w-full items-center justify-center gap-3">
             <div className="label text-lg font-bold">
-              <span className="label-text">Subtitulos</span>
+              <span className="label-text">Subtítulos</span>
             </div>
             <input
               id="subtitles"
@@ -233,7 +234,9 @@ export default function MovieCreateForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Guardando..." : "Crear"}
+          </Button>
         </div>
       </div>
     </form>
