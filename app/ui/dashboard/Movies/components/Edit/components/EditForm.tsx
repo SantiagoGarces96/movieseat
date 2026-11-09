@@ -146,7 +146,7 @@ export default function MovieEditForm({
         <input
           id="poster"
           name="poster"
-          type="url"
+          type="text"
           defaultValue={movieData.poster}
           className="input input-sm input-bordered w-full"
           required
@@ -160,7 +160,7 @@ export default function MovieEditForm({
         <input
           id="backdrop"
           name="backdrop"
-          type="url"
+          type="text"
           defaultValue={movieData.backdrop}
           className="input input-sm input-bordered w-full"
           required
