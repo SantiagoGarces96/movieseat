@@ -42,23 +42,24 @@ export const MovieFormSchema = z.object({
     })
     .nonempty("Debe especificarse al menos un género"),
 
+  // El tráiler es opcional: el formulario lo envía vacío si no hay.
   trailer: z
-    .string()
-    .url("El enlace del tráiler debe ser una URL válida")
+    .union([
+      z.literal(""),
+      z.string().url("El enlace del tráiler debe ser una URL válida"),
+    ])
     .optional(),
 
   poster: z
     .string({
       error: "La portada es obligatoria",
     })
-    .url("La portada debe ser una URL válida")
     .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
 
   backdrop: z
     .string({
       error: "La contraportada es obligatoria",
     })
-    .url("La contraportada debe ser una URL válida")
     .refine(isAllowedImageUrl, IMAGE_HOST_ERROR),
 
   status: z

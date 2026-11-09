@@ -133,7 +133,7 @@ export default function MovieCreateForm({
         <input
           id="poster"
           name="poster"
-          type="url"
+          type="text"
           className="input input-sm input-bordered w-full"
           required
         />
@@ -146,7 +146,7 @@ export default function MovieCreateForm({
         <input
           id="backdrop"
           name="backdrop"
-          type="url"
+          type="text"
           className="input input-sm input-bordered w-full"
           required
         />
