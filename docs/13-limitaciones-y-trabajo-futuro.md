@@ -18,7 +18,7 @@
 
 **Roles en la sesión.** El rol queda guardado en la sesión. Si a un administrador se le quita el rol, conserva el acceso hasta que su sesión venza, como máximo 8 horas.
 
-**Dependencias por actualizar.** `npm audit` reporta avisos en `next` y `postcss` que se resuelven con Next 16, y uno de severidad baja en `deepmerge`. Actualizar a Next 16 es un cambio grande que también reemplaza `next lint`.
+**Next 15.** El proyecto usa Next 15. Las alertas de seguridad de sus dependencias se resolvieron forzando versiones corregidas en `package.json`, pero la versión actual es Next 16. Actualizar es un cambio grande que también reemplaza `next lint`.
 
 **Sin pruebas automáticas.** Las pruebas de [Pruebas](12-pruebas.md) se hicieron a mano o con scripts sueltos.
 

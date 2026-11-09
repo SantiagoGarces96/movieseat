@@ -83,6 +83,6 @@ También se quita el encabezado `X-Powered-By`, que revelaba la tecnología del 
 
 ## Riesgos conocidos
 
-- **Dependencias:** `npm audit` reporta avisos en `next` y `postcss` que se corrigen con Next 16, y uno de severidad baja en `deepmerge`. La actualización a Next 16 está en [trabajo futuro](13-limitaciones-y-trabajo-futuro.md).
+- **Dependencias:** `npm audit` no reporta vulnerabilidades. Para lograrlo, `package.json` obliga a usar versiones corregidas de `postcss`, `glob`, `minimatch` y `brace-expansion` (sección `overrides`). Cuando el proyecto pase a Next 16, esas excepciones se pueden revisar y quitar.
 - **Política de contenido:** la política de seguridad de contenido (CSP) es parcial. Todavía no restringe los scripts, porque Next y el reproductor de YouTube necesitan una configuración propia.
 - **Cambio de rol:** si a un administrador se le quita el rol, su sesión abierta sigue siendo válida hasta que vence, como máximo 8 horas.
